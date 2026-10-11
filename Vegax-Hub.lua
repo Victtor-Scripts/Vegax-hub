@@ -1,0 +1,1662 @@
+--[[
+    ╔══════════════════════════════════════════════════════════════════╗
+    ║              VEGAX HUB — V27 COMPLETO                            ║
+    ║              Steal an Egg + Blox Fruits • 115+ scripts           ║
+    ║              40+ features • 15 atalhos • 6 temas                 ║
+    ╚══════════════════════════════════════════════════════════════════╝
+--]]
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
+local RunService = game:GetService("RunService")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+
+local CoreGui
+if gethui then CoreGui = gethui()
+elseif protect_gui then CoreGui = protect_gui()
+else CoreGui = game:GetService("CoreGui") end
+
+local LOGO_ID = "rbxassetid://96373255363269"
+local HUB_NAME = "VEGAX HUB"
+local VERSION = "V27"
+
+local C = {
+    Bg = Color3.fromRGB(8, 6, 14), Panel = Color3.fromRGB(18, 14, 28),
+    PanelLight = Color3.fromRGB(28, 22, 42), Primary = Color3.fromRGB(160, 120, 255),
+    PrimaryDark = Color3.fromRGB(110, 80, 210), Accent = Color3.fromRGB(200, 150, 255),
+    Text = Color3.fromRGB(235, 230, 255), TextDim = Color3.fromRGB(140, 130, 180),
+    Success = Color3.fromRGB(120, 255, 180), Danger = Color3.fromRGB(255, 90, 120),
+    Gold = Color3.fromRGB(255, 220, 120), KeyPurple = Color3.fromRGB(190, 130, 255),
+}
+
+local F = { Title = Enum.Font.GothamBold, Body = Enum.Font.Gotham }
+local SND = "rbxassetid://6042053626"
+
+local function playSound(id, vol, pitch)
+    pcall(function()
+        local s = Instance.new("Sound")
+        s.SoundId = id or SND
+        s.Volume = vol or 0.5
+        s.PlaybackSpeed = pitch or 1
+        s.Parent = SoundService
+        s:Play()
+        task.delay(2, function() if s then s:Destroy() end end)
+    end)
+end
+
+local CATEGORIES = {
+    {
+        Name = "Egg • Destaques", Icon = "🌟",
+        Scripts = {
+            { Name = "Chilli Hub", Desc = "Auto Steal • Target Areas • Min Rarity", Url = "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua", Color = Color3.fromRGB(255, 90, 60) },
+            { Name = "Clouthub Hub", Desc = "ESP • Egg Sniper Lock • Auto Grab", Url = "https://raw.githubusercontent.com/ClouthubOnTop/Loader/main/main.lua", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "Kira Hub", Desc = "Auto Steal • Plot • Serverhop", Url = "https://raw.githubusercontent.com/LSSOPS/OpenSource/refs/heads/main/KiraHub_Steal_An_Egg.lua", Color = Color3.fromRGB(239, 68, 68) },
+            { Name = "Ouroboros Hub", Desc = "Instant Steal • Auto Return • ESP", Url = "https://raw.githubusercontent.com/joustingmatch/Ouroboros/main/loader.lua", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "CRZHub", Desc = "Auto Steal • Egg Prediction • Fly", Url = "https://flowauth.net/v1/loaders/3c4e87ed34813171b0f8d53a108a7d88.lua", Color = Color3.fromRGB(255, 215, 90) },
+            { Name = "Clone to Steal Eggs", Desc = "Auto Eggs • Auto Place • Auto Hatch", Url = "https://raw.githubusercontent.com/gumanba/Scripts/main/ClonetoStealEggs", Color = Color3.fromRGB(88, 200, 255) },
+            { Name = "Miranda Hub", Desc = "Auto Steal • Fast Steal • Noclip", Url = "https://raw.githubusercontent.com/miirandahub/loader/refs/heads/main/stealaegg", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "Neva Hub", Desc = "Auto Farm • Egg Selection", Url = "https://raw.githubusercontent.com/VEZ2/NEVAHUB/main/2", Color = Color3.fromRGB(88, 200, 255) },
+        },
+    },
+    {
+        Name = "Egg • Auto Farm", Icon = "⚡",
+        Scripts = {
+            { Name = "Decode Hub", Desc = "Auto Steal • Auto Treadmill", Url = "https://raw.githubusercontent.com/ItzYumi/Decode/refs/heads/main/DE%3ACODE.lua", Color = Color3.fromRGB(88, 200, 255) },
+            { Name = "ON Hub", Desc = "Auto Farm • Fast Grab", Url = "https://raw.githubusercontent.com/davizin713/ONhub/refs/heads/main/script.lua", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "Toolbox Hub", Desc = "Bypass • Respawn • Teleport", Url = "https://raw.githubusercontent.com/Abdullahking20/loader-lua/main/loader", Color = Color3.fromRGB(255, 190, 60) },
+            { Name = "YOKUDO HUB", Desc = "Farming • Combat", Url = "https://raw.githubusercontent.com/betdoyvaka/stealanegg/main/Loader.lua", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "Goha Hub", Desc = "Auto Steal • Auto Hatch • Auto Fuse", Url = "https://api.goha.dev/loader", Color = Color3.fromRGB(255, 215, 90) },
+            { Name = "UB Hub", Desc = "Auto Steal • Auto Place • Auto Hatch", Url = "https://raw.githubusercontent.com/TeamUBHub/UBLoader/refs/heads/main/index/Key.lua", Color = Color3.fromRGB(88, 200, 255) },
+            { Name = "Cyrus Hub", Desc = "Auto Steal Modes • Teleport", Url = "https://raw.githubusercontent.com/CyrusOffc/scriptcyrus/refs/heads/main/loader", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "Pig Hub", Desc = "Auto Sell • Auto Farm • Egg ESP", Url = "https://raw.githubusercontent.com/mopsscript7-gif/steal-an-egg/refs/heads/main/script.lua", Color = Color3.fromRGB(255, 190, 60) },
+            { Name = "UlamHUB", Desc = "Auto Farm • Instant Steal • God Mode", Url = "https://api.jnkie.com/api/v1/luascripts/public/4fa5547b587b1f3110ad121fd9650a8256ed00c0c73ae49ecf07d2130a206125/download", Color = Color3.fromRGB(239, 68, 68) },
+        },
+    },
+    {
+        Name = "Egg • Keyless", Icon = "🎁",
+        Scripts = {
+            { Name = "Valinc Hub", Desc = "Auto Steal • Auto Hatch", Url = "https://api.valincsyndicate.com/v1/releases/5502cba03703f4a3628d522d396b80d8.lua", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "Zeroin Hub", Desc = "Instant Steal • Bosses", Url = "https://zeroinhub.com/api/script", Color = Color3.fromRGB(88, 200, 255) },
+            { Name = "FoxName Hub", Desc = "Auto Steal", Url = "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Fn-stealanegg.lua", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "Oxide Hub", Desc = "Auto Farm • Instant Steal", Url = "https://pastefy.app/aIzaPmW9/raw", Color = Color3.fromRGB(255, 190, 60) },
+            { Name = "Zero Point Hub", Desc = "Instant Steal • Anti-Hit", Url = "https://raw.githubusercontent.com/JaxRol/ZeroPoint/refs/heads/main/KeySystem", Color = Color3.fromRGB(239, 68, 68) },
+            { Name = "Blyxo Hub", Desc = "Instant Steal • Auto Events", Url = "https://flowauth.net/v1/loaders/69d3463240384f3a73fbe32c178093a2.lua", Color = Color3.fromRGB(255, 215, 90) },
+            { Name = "BK Hub", Desc = "Auto Steal • Rift & Boss", Url = "https://api.luarmor.net/files/v4/loaders/9ee4edde227ac85f50872bf9e4226508.lua", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "Tsuo Hub", Desc = "Fast Steal • Angel/Demon", Url = "https://raw.githubusercontent.com/Tsuo7/TsuoHub/main/stealanegg", Color = Color3.fromRGB(88, 200, 255) },
+            { Name = "BigFroot Hub", Desc = "Auto Steal • Auto Collect", Url = "https://raw.githubusercontent.com/hanniii1/Loader/main/Loader.lua", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "Airflow Script", Desc = "Instant Steal • Ultra-fast", Url = "https://airflowscript.com/loader", Color = Color3.fromRGB(255, 190, 60) },
+            { Name = "Echo_Gaming V2", Desc = "Auto Sell • Auto Hatch", Url = "https://gist.githubusercontent.com/spiritualgaming1123-beep/9cf64bc30cec4168a762fc8b55c527c3/raw/3df15bf0a16263ed0676084b98d9d363fa77258b/gistfile1.lua", Color = Color3.fromRGB(255, 215, 90) },
+            { Name = "Axurs Games Hub", Desc = "Speed Bypass • Egg ESP", Url = "https://raw.githubusercontent.com/XE3Scripts/Axur-sGamesHub/refs/heads/main/StealAnEgg", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "Monarch Hub", Desc = "Fly • ESP • Egg Sniper", Url = "https://raw.githubusercontent.com/nobuxy/monarch.win/refs/heads/main/Monarch.lua", Color = Color3.fromRGB(88, 200, 255) },
+            { Name = "Solix Hub", Desc = "Auto Farm • Godmode", Url = "https://solixhub.com/loader", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "Genesis Hub", Desc = "Auto-Steal • Simple", Url = "https://api.luarmor.net/files/v4/loaders/5946add9ab91f1e04cb005346a8b1968.lua", Color = Color3.fromRGB(255, 190, 60) },
+            { Name = "Lumin Hub", Desc = "Instant Steal • Auto Fuse", Url = "https://api.luarmor.net/files/v4/loaders/bb52b20f68271ba3e60fffc8f902f25b.lua", Color = Color3.fromRGB(239, 68, 68) },
+            { Name = "Ronix Hub", Desc = "Area Loop Steal • DNA", Url = "https://api.luarmor.net/files/v3/loaders/fda9babd071d6b536a745774b6bc681c.lua", Color = Color3.fromRGB(255, 215, 90) },
+            { Name = "Jacob Helper v3.3", Desc = "Auto Steal Best Egg", Url = "https://gist.githubusercontent.com/asdasdasd1214/ec9c608ea0bf456c0f7e70db69b8f6e2/raw/gistfile1.txt", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "SoftKillz", Desc = "Auto Cosmic", Url = "https://pastebin.com/raw/ZuEBwb5K", Color = Color3.fromRGB(255, 215, 90) },
+        },
+    },
+    {
+        Name = "Egg • Progressão", Icon = "📈",
+        Scripts = {
+            { Name = "Clover Hub", Desc = "Persistent Steal • Anti-Trap", Url = "https://raw.githubusercontent.com/Ryuun0x/Clover/main/main.lua", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "Script by rndm", Desc = "Select Product • Buy All", Url = "https://raw.githubusercontent.com/rndmq/Serverlist/refs/heads/main/Server87", Color = Color3.fromRGB(255, 190, 60) },
+            { Name = "FriezGG Script", Desc = "Auto Farm • Auto Steal", Url = "https://raw.githubusercontent.com/FriezGG/Scripts/refs/heads/main/obfuscated%20(7).lua", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "Steal an Egg (Delta)", Desc = "Instant Steal • Auto Return", Url = "https://pastefy.app/7R8VlLN9/raw", Color = Color3.fromRGB(239, 68, 68) },
+        },
+    },
+    {
+        Name = "BF • Auto Farm", Icon = "🏴‍☠️",
+        Scripts = {
+            { Name = "Cokka Hub", Desc = "Auto Farm • Boss • Raids", Url = "https://raw.githubusercontent.com/ShowScript79/cokkahub/refs/heads/main/cokkahub", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "Gravity Hub", Desc = "Auto Farm • Magnet • Sea Events", Url = "https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/main/MainPremium.lua", Color = Color3.fromRGB(88, 200, 255) },
+            { Name = "GHOSTYHUB", Desc = "Villain Auto Attack", Url = "https://raw.githubusercontent.com/GHOSTYHUB/Main/main/GHOSTYHUB", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "SAKURA HUB", Desc = "Fruit ESP • Auto Farm", Url = "https://flowauth.net/v1/ui/d00ec69382de97372fc9559efc722298.lua", Color = Color3.fromRGB(255, 190, 60) },
+            { Name = "ARC HUB", Desc = "Auto Farm • Quest • ESP", Url = "https://raw.githubusercontent.com/bloxfruitsnokey/Arcylic/refs/heads/main/ARC/update.luau", Color = Color3.fromRGB(255, 215, 90) },
+            { Name = "Quantum Onyx", Desc = "Auto Farm • ESP • PvP", Url = "https://raw.githubusercontent.com/flazhy/QuantumOnyx/refs/heads/main/QuantumOnyx.lua", Color = Color3.fromRGB(239, 68, 68) },
+            { Name = "Speed Hub X", Desc = "Auto Farm Level • ESP", Url = "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "Void Hub", Desc = "Auto Bounty • Sniper", Url = "https://raw.githubusercontent.com/VoidDeveloper67/Void-Hub/refs/heads/main/VoidHub.lua", Color = Color3.fromRGB(88, 200, 255) },
+            { Name = "HoHo Hub", Desc = "Auto Quest • Sniper", Url = "https://raw.githubusercontent.com/acsu123/HOHO_H/main/Loading_UI", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "Night Hub", Desc = "Eventos sazonais • Auto Farm", Url = "https://raw.githubusercontent.com/Dev-NightMystic/Bloxfruits/refs/heads/main/Script.lua", Color = Color3.fromRGB(255, 190, 60) },
+            { Name = "Dragon Hub", Desc = "Auto Farm Level", Url = "https://raw.githubusercontent.com/dragonhubdev/dragonwitheveryone/refs/heads/main/Main-BF.lua", Color = Color3.fromRGB(255, 215, 90) },
+            { Name = "Synergy X HUB", Desc = "Magnet • One Hit", Url = "https://raw.githubusercontent.com/synerxkirin/synergyXhub/refs/heads/main/bloxfruits/v2", Color = Color3.fromRGB(239, 68, 68) },
+            { Name = "NexusHub COMPLEX", Desc = "Auto Raid • Sea Events", Url = "https://api.tgferr.com.br/nexusproxy", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "RONI HUB", Desc = "Auto Farm • Max Level", Url = "https://api.luarmor.net/files/v4/loaders/030c18901831a9df3ddf3b8bce0bf9cb.lua", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "Meow Hub", Desc = "X100 Luck", Url = "https://raw.githubusercontent.com/MeowOnTopHub/MeowHub/refs/heads/main/loader.luau", Color = Color3.fromRGB(255, 190, 60) },
+            { Name = "Tradesmith", Desc = "Auto Trade", Url = "https://raw.githubusercontent.com/robomohit/tradesmith/main/tradesmith.luau", Color = Color3.fromRGB(255, 215, 90) },
+            { Name = "Neru Hub", Desc = "Auto Farm • Sniper • Raid", Url = "https://raw.githubusercontent.com/Kenniel123/BloxFruits/refs/heads/main/BloxFruits", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "Banana Hub", Desc = "Leve • Roda em celular fraco", Url = "https://raw.githubusercontent.com/kimprobloxdz/banana-free/refs/heads/main/protected_5609200582002947.lua.txt", Color = Color3.fromRGB(255, 215, 90) },
+            { Name = "RedZ Hub", Desc = "Auto Farm • Mastery", Url = "https://raw.githubusercontent.com/LuaCrack/Min/refs/heads/main/MinXt2Eng", Color = Color3.fromRGB(88, 200, 255) },
+            { Name = "Zee Hub VIP", Desc = "Eventos • Raros", Url = "https://scripts.alchemyhub.xyz", Color = Color3.fromRGB(255, 215, 90) },
+            { Name = "Teddy Hub", Desc = "Velocidade Máxima", Url = "https://raw.githubusercontent.com/Teddyseetink/Haidepzai/refs/heads/main/TeddyHub.lua", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "Raito Hub", Desc = "PvP Premium", Url = "https://raw.githubusercontent.com/Efe0626/RaitoHub/main/Script", Color = Color3.fromRGB(239, 68, 68) },
+            { Name = "Hermanos Hub", Desc = "PvP • Silent Aim", Url = "https://raw.githubusercontent.com/hermanos-dev/hermanos-hub/refs/heads/main/Loader.lua", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "Leaf Hub", Desc = "Auto Farm", Url = "https://leaf-zeta.onrender.com/api/script", Color = Color3.fromRGB(88, 200, 255) },
+            { Name = "Nix Hub", Desc = "Auto Level • Raid", Url = "https://raw.githubusercontent.com/NYX8HUB/premium/refs/heads/main/script", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "Cookie Script", Desc = "Auto Raid", Url = "https://raw.githubusercontent.com/Jadelly261/BloxFruits/refs/heads/main/Cookie", Color = Color3.fromRGB(255, 215, 90) },
+            { Name = "Annie Hub", Desc = "All-in-One", Url = "https://raw.githubusercontent.com/1st-Mars/Annie/main/1st.lua", Color = Color3.fromRGB(255, 190, 60) },
+            { Name = "Zyn Hub", Desc = "Auto Farm GUI", Url = "https://raw.githubusercontent.com/GoblinKun009/Script/refs/heads/main/ZynHub", Color = Color3.fromRGB(239, 68, 68) },
+            { Name = "Thanh Hub", Desc = "Auto Farm Fast", Url = "https://raw.githubusercontent.com/thantzy/thanhub/refs/heads/main/thanv1", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "HoangTrong", Desc = "Auto Farm • Raid", Url = "https://raw.githubusercontent.com/trongdeptraihucscript/Main/refs/heads/main/Hoangtrongdepzai.lua", Color = Color3.fromRGB(88, 200, 255) },
+            { Name = "TheScripter + Quantum", Desc = "ESP • Trails", Url = "https://gist.githubusercontent.com/sheshiidriz-netizen/b880b0c514479292c62a95457031709a/raw", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "BeanHub", Desc = "Auto Farm Multi-Sea", Url = "https://raw.githubusercontent.com/SoyElPekka/BeanHub/main/LoadingScreen", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "HULK Hub", Desc = "Auto Farm • Sniper", Url = "https://raw.githubusercontent.com/HULKUexe/Free---Script/main/3GAME", Color = Color3.fromRGB(239, 68, 68) },
+            { Name = "ThunderZ Hub", Desc = "Auto Farm • Chest", Url = "https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/BloxFruit/Chest/AllDevices.lua", Color = Color3.fromRGB(255, 190, 60) },
+            { Name = "NOKA V3", Desc = "Skin Changer", Url = "https://rawscripts.net/raw/RIVALS-Noks-unlock-all-205613", Color = Color3.fromRGB(255, 215, 90) },
+            { Name = "Rasputin Hub", Desc = "Auto Farm • Sniper • ESP", Url = "https://raw.githubusercontent.com/rasputin-hub/BloxFruits/main/loader.lua", Color = Color3.fromRGB(180, 120, 255) },
+            { Name = "Xeter Hub", Desc = "Auto Farm simples", Url = "https://raw.githubusercontent.com/XeterHub/BloxFruits/main/loader.lua", Color = Color3.fromRGB(88, 200, 255) },
+        },
+    },
+    {
+        Name = "Movimento / Visual", Icon = "🚀",
+        Scripts = {
+            { Name = "Fly Script", Desc = "Fly • Speed", Url = "https://pastefy.app/kQ2m1nSa/raw", Color = Color3.fromRGB(255, 170, 60) },
+            { Name = "Cyrus Steal Tween", Desc = "Steal Tween • Teleport", Url = "https://raw.githubusercontent.com/CyrusOffc/scriptcyrus/refs/heads/main/loader", Color = Color3.fromRGB(88, 200, 255) },
+        },
+    },
+    {
+        Name = "Premium / Key", Icon = "💎",
+        Scripts = {
+            { Name = "Snowy Hub", Desc = "Fly • NoClip • KEY", Url = "https://flowauth.net/v1/ui/a87f00d9adf63658655fcd02ab86a4ef.lua", Color = Color3.fromRGB(180, 120, 255), Key = true },
+            { Name = "Goha Hub (Rift)", Desc = "Rift Eggs • KEY", Url = "https://api.goha.dev/loader", Color = Color3.fromRGB(255, 190, 60), Key = true },
+            { Name = "Fyy Community", Desc = "Auto Steal • KEY", Url = "https://FyyCommunity.my.id", Color = Color3.fromRGB(239, 68, 68), Key = true },
+            { Name = "Spiritual Gaming", Desc = "Auto Farm • KEY", Url = "https://gist.githubusercontent.com/spiritualgaming1123-beep/f2c8c4009b2c4d4dda1b3d5fcb263ef3/raw/121ff8c9b59476a7a362b543edc61499e5832937/gistfile1.lua", Color = Color3.fromRGB(255, 215, 90), Key = true },
+            { Name = "Reaper Aim", Desc = "Speed Hack • KEY", Url = "https://raw.githubusercontent.com/morenoffproScriptsRoblox/ReaperAim/refs/heads/main/README.md", Color = Color3.fromRGB(255, 190, 60), Key = true },
+            { Name = "Arxki Hub", Desc = "Silent Aim • KEY", Url = "https://api.jnkie.com/api/v1/luascripts/public/aacde3676be5688ad17cbf78842b8e6061834b0cd70a82298f3b1600d8d2c690/download", Color = Color3.fromRGB(239, 68, 68), Key = true },
+            { Name = "Sable Hub", Desc = "Auto Steal • KEY", Url = "https://raw.githubusercontent.com/raphaelmaboi/wayout/refs/heads/main/loader.lua", Color = Color3.fromRGB(180, 120, 255), Key = true },
+            { Name = "Forge Hub", Desc = "Auto Steal • KEY", Url = "https://cdn.forgehub.store/loader", Color = Color3.fromRGB(255, 190, 60), Key = true },
+            { Name = "Zero Impact", Desc = "Egg Prediction • KEY", Url = "https://raw.githubusercontent.com/FakeModz/ZeroImpact/refs/heads/main/Loader.lua", Color = Color3.fromRGB(239, 68, 68), Key = true },
+            { Name = "Lennon Hub", Desc = "Top 4 Eggs • KEY", Url = "https://api.jnkie.com/api/v1/luascripts/public/bf52181bce5c28e6ecd16eebfa1a88ddaf646c7acb10015fbaa7b30dc7bad0a8/download", Color = Color3.fromRGB(255, 215, 90), Key = true },
+            { Name = "Avalon Hub", Desc = "Auto Farm • KEY", Url = "https://scripts.h4xscripts.xyz/mallo/main", Color = Color3.fromRGB(255, 190, 60), Key = true },
+            { Name = "Moonyx Hub", Desc = "Auto Raid • KEY", Url = "https://raw.githubusercontent.com/nstgaymingnst-crypto/MoonyxHub/main/Monnyx%20Hub", Color = Color3.fromRGB(239, 68, 68), Key = true },
+            { Name = "Symbiote Hub", Desc = "Auto Farm • KEY", Url = "https://raw.githubusercontent.com/ssssssssss21/Symbiote/refs/heads/main/symbiote-loader.lua", Color = Color3.fromRGB(180, 120, 255), Key = true },
+            { Name = "wawaHUB", Desc = "Mobile • KEY", Url = "https://raw.githubusercontent.com/wawageekk/wawascripts/refs/heads/main/script", Color = Color3.fromRGB(239, 68, 68), Key = true },
+            { Name = "Chill Hub", Desc = "ESP Skeleton • Aimbot • KEY", Url = "https://github.com/hehelmao18-hue/Chill-hub/raw/refs/heads/main/obfuscated_script-1782819898130.lua.txt", Color = Color3.fromRGB(180, 120, 255), Key = true },
+            { Name = "4479 Hub", Desc = "Auto Farm • Full ESP • KEY", Url = "https://raw.githubusercontent.com/4479cantcode/4479Hub/refs/heads/main/Script.lua", Color = Color3.fromRGB(255, 190, 60), Key = true },
+        },
+    },
+    {
+        Name = "Server Hop", Icon = "🌐",
+        Scripts = {
+            { Name = "Server Hop Universal", Desc = "Pula pra outro servidor", Url = "https://raw.githubusercontent.com/Prox-Dev/ServerHop/main/ServerHop.lua", Color = Color3.fromRGB(88, 200, 255) },
+            { Name = "Server Hop Roblox", Desc = "Universal", Url = "https://raw.githubusercontent.com/Anonym-Dev/ServerHop/refs/heads/main/ServerHop.lua", Color = Color3.fromRGB(74, 222, 128) },
+            { Name = "Server Hop Rápido", Desc = "Filtro região", Url = "https://pastefy.app/8PqLLNV7/raw", Color = Color3.fromRGB(255, 190, 60) },
+            { Name = "Smaller Servers Finder", Desc = "Servidores vazios", Url = "https://pastefy.app/jFqM5U1o/raw", Color = Color3.fromRGB(239, 68, 68) },
+        },
+    },
+    {
+        Name = "Aleatório", Icon = "🎲",
+        Scripts = {
+            { Name = "Random Script", Desc = "Executa script aleatório", Url = "RANDOM", Color = Color3.fromRGB(255, 220, 120) },
+        },
+    },
+}
+
+local State = {
+    UI = {}, Loading = false, CurrentTab = 1, PanelOpen = false,
+    Favorites = {}, AutoHop = false, History = {}, ExecuteCounts = {},
+    RGBMode = false, Filter = "ALL", Cache = {},
+    SoundEnabled = true, Stealth = false,
+    CurrentTheme = "Roxo", CurrentGame = "Desconhecido", GameFilter = "ALL",
+    Bindings = {}, ExecQueue = {},
+}
+
+local function addCorner(inst, r)
+    local c = Instance.new("UICorner")
+    c.CornerRadius = r or UDim.new(0, 12)
+    c.Parent = inst
+end
+
+local function addShadow(inst, t)
+    local s = Instance.new("ImageLabel")
+    s.Name = "Shadow"; s.BackgroundTransparency = 1
+    s.Image = "rbxassetid://6015897843"
+    s.ImageColor3 = Color3.fromRGB(0, 0, 0)
+    s.ImageTransparency = t or 0.5
+    s.ScaleType = Enum.ScaleType.Slice
+    s.SliceCenter = Rect.new(49, 49, 450, 450)
+    s.ZIndex = inst.ZIndex - 1
+    s.Size = UDim2.new(1, 20, 1, 20)
+    s.Position = UDim2.new(0, -10, 0, -10)
+    s.Parent = inst
+end
+
+local function tween(inst, time, props, style, dir)
+    local t = TweenService:Create(inst,
+        TweenInfo.new(time or 0.2, style or Enum.EasingStyle.Quart, dir or Enum.EasingDirection.Out),
+        props)
+    t:Play()
+    return t
+end
+
+local function saveData()
+    pcall(function()
+        local data = { Favorites = State.Favorites, History = State.History, Filter = State.Filter, RGBMode = State.RGBMode, SoundEnabled = State.SoundEnabled, CurrentTheme = State.CurrentTheme, ExecuteCounts = State.ExecuteCounts }
+        if writefile and isfolder and not isfolder("VEGAX_HUB") then makefolder("VEGAX_HUB") end
+        if writefile then writefile("VEGAX_HUB/config.json", HttpService:JSONEncode(data)) end
+    end)
+end
+
+local function loadData()
+    pcall(function()
+        if isfile and isfile("VEGAX_HUB/config.json") then
+            local data = HttpService:JSONDecode(readfile("VEGAX_HUB/config.json"))
+            if data.Favorites then State.Favorites = data.Favorites end
+            if data.History then State.History = data.History end
+            if data.Filter then State.Filter = data.Filter end
+            if data.RGBMode then State.RGBMode = data.RGBMode end
+            if data.SoundEnabled ~= nil then State.SoundEnabled = data.SoundEnabled end
+            if data.CurrentTheme then State.CurrentTheme = data.CurrentTheme end
+            if data.ExecuteCounts then State.ExecuteCounts = data.ExecuteCounts end
+        end
+    end)
+end
+loadData()
+
+-- DETECTOR DE JOGO
+local function detectGame()
+    local placeId = game.PlaceId
+    if placeId == 2753915549 or placeId == 4442272183 or placeId == 7449423635 then
+        return "Blox Fruits"
+    elseif placeId == 17722859762 or placeId == 16845384299 then
+        return "Steal an Egg"
+    end
+    local gameName = "Desconhecido"
+    pcall(function()
+        local info = game:GetService("MarketplaceService"):GetProductInfo(placeId)
+        if info and info.Name then gameName = info.Name end
+    end)
+    return gameName
+end
+State.CurrentGame = detectGame()
+
+print("[VEGAX HUB] Parte 1/3 carregada ✅")
+print("[VEGAX HUB] Peça a Parte 2/3 pra continuar")
+--══════════════════════════════════════════════════════════════════
+-- 🔔 TOAST
+--══════════════════════════════════════════════════════════════════
+local function showToast(title, msg, color)
+    if not State.UI.Gui then return end
+    local toast = Instance.new("Frame")
+    toast.Size = UDim2.new(0, 260, 0, 50)
+    toast.Position = UDim2.new(1, 300, 0, 20)
+    toast.BackgroundColor3 = C.Panel
+    toast.BorderSizePixel = 0
+    toast.ZIndex = 200
+    toast.Parent = State.UI.Gui
+    addCorner(toast, UDim.new(0, 12))
+
+    local strip = Instance.new("Frame")
+    strip.Size = UDim2.new(0, 4, 1, -12); strip.Position = UDim2.new(0, 4, 0, 6)
+    strip.BackgroundColor3 = color or C.Primary
+    strip.BorderSizePixel = 0; strip.ZIndex = 201; strip.Parent = toast
+    addCorner(strip, UDim.new(1, 0))
+
+    local t = Instance.new("TextLabel")
+    t.Size = UDim2.new(1, -20, 0, 18); t.Position = UDim2.new(0, 16, 0, 8)
+    t.BackgroundTransparency = 1; t.Text = title
+    t.TextColor3 = C.Text; t.Font = F.Title; t.TextSize = 12
+    t.TextXAlignment = Enum.TextXAlignment.Left; t.Parent = toast
+
+    local m = Instance.new("TextLabel")
+    m.Size = UDim2.new(1, -20, 0, 16); m.Position = UDim2.new(0, 16, 0, 26)
+    m.BackgroundTransparency = 1; m.Text = msg
+    m.TextColor3 = C.TextDim; m.Font = F.Body; m.TextSize = 10
+    m.TextXAlignment = Enum.TextXAlignment.Left
+    m.TextTruncate = Enum.TextTruncate.AtEnd; m.Parent = toast
+
+    tween(toast, 0.4, { Position = UDim2.new(1, -280, 0, 20) })
+    task.delay(3, function()
+        tween(toast, 0.3, { Position = UDim2.new(1, 300, 0, 20) })
+        task.wait(0.3)
+        if toast then toast:Destroy() end
+    end)
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🔷 LOGO
+--══════════════════════════════════════════════════════════════════
+local function createLogo(parent, size)
+    local container = Instance.new("Frame")
+    container.Size = size or UDim2.new(0, 40, 0, 40)
+    container.BackgroundTransparency = 1
+    container.Parent = parent
+    local logo = Instance.new("ImageLabel")
+    logo.Size = UDim2.new(1, 0, 1, 0)
+    logo.BackgroundTransparency = 1
+    logo.Image = LOGO_ID
+    logo.ScaleType = Enum.ScaleType.Fit
+    logo.Parent = container
+    return container
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🌐 SERVER HOP
+--══════════════════════════════════════════════════════════════════
+local function serverHop(autoMode)
+    local req = (syn and syn.request) or (http and http.request) or http_request or request
+    if not req then showToast("✕ Erro", "Executor sem HTTP", C.Danger) return end
+    if not autoMode then showToast("🌐 Hop", "Buscando servidor...", C.Accent) end
+
+    local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+    local ok, res = pcall(function() return req({ Url = url, Method = "GET" }).Body end)
+    if not ok or not res then showToast("✕ Erro", "Falha ao buscar", C.Danger) return end
+
+    local ok2, data = pcall(function() return HttpService:JSONDecode(res) end)
+    if not ok2 or not data or not data.data then showToast("✕ Erro", "Resposta inválida", C.Danger) return end
+
+    local servers = {}
+    for _, s in ipairs(data.data) do
+        if s.playing < s.maxPlayers and s.id ~= game.JobId then table.insert(servers, s.id) end
+    end
+
+    if #servers == 0 then showToast("✕ Erro", "Sem servidor disponível", C.Danger) return end
+    local target = servers[math.random(1, #servers)]
+    showToast("🌐 Hop", "Entrando...", C.Success)
+    task.wait(0.5)
+    TeleportService:TeleportToPlaceInstance(game.PlaceId, target, Players.LocalPlayer)
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 📊 STATS
+--══════════════════════════════════════════════════════════════════
+local sessionStart = tick()
+local function startStats()
+    task.spawn(function()
+        local frames, lastTime, fps = 0, tick(), 60
+        RunService.RenderStepped:Connect(function()
+            frames = frames + 1
+            local now = tick()
+            if now - lastTime >= 1 then fps = frames; frames = 0; lastTime = now end
+        end)
+
+        while State.UI.Gui and State.UI.Gui.Parent do
+            task.wait(2)
+            if State.UI.StatsLabel and State.UI.StatsLabel.Parent then
+                local ping = 0
+                pcall(function() ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()) end)
+                local pc = #game.Players:GetPlayers()
+                local elapsed = tick() - sessionStart
+                local hh = math.floor(elapsed / 3600)
+                local mm = math.floor((elapsed % 3600) / 60)
+                local ss = math.floor(elapsed % 60)
+                local timeStr = hh > 0 and string.format("%dh%dm", hh, mm) or (mm > 0 and string.format("%dm%ds", mm, ss) or string.format("%ds", ss))
+                State.UI.StatsLabel.Text = string.format("FPS: %d • Ping: %dms • Players: %d • ⏱️ %s", fps, ping, pc, timeStr)
+            end
+        end
+    end)
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🕐 RELÓGIO
+--══════════════════════════════════════════════════════════════════
+local function startClock(label)
+    task.spawn(function()
+        while label and label.Parent do
+            local now = os.date("*t")
+            label.Text = string.format("🕐 %02d:%02d:%02d", now.hour, now.min, now.sec)
+            task.wait(1)
+        end
+    end)
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🌈 RGB
+--══════════════════════════════════════════════════════════════════
+local function startRGB()
+    task.spawn(function()
+        while State.RGBMode do
+            local hue = tick() % 1
+            C.Primary = Color3.fromHSV(hue, 0.7, 1)
+            C.Accent = Color3.fromHSV((hue + 0.1) % 1, 0.7, 1)
+            task.wait(0.05)
+        end
+    end)
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🎨 TEMAS
+--══════════════════════════════════════════════════════════════════
+local THEMES = {
+    Roxo = { Bg = Color3.fromRGB(8, 6, 14), Panel = Color3.fromRGB(18, 14, 28), PanelLight = Color3.fromRGB(28, 22, 42), Primary = Color3.fromRGB(160, 120, 255), Accent = Color3.fromRGB(200, 150, 255), Text = Color3.fromRGB(235, 230, 255), TextDim = Color3.fromRGB(140, 130, 180), Success = Color3.fromRGB(120, 255, 180), Danger = Color3.fromRGB(255, 90, 120), Gold = Color3.fromRGB(255, 220, 120) },
+    Ovo = { Bg = Color3.fromRGB(20, 18, 14), Panel = Color3.fromRGB(34, 30, 24), PanelLight = Color3.fromRGB(46, 41, 32), Primary = Color3.fromRGB(255, 170, 60), Accent = Color3.fromRGB(255, 200, 100), Text = Color3.fromRGB(245, 240, 230), TextDim = Color3.fromRGB(165, 155, 140), Success = Color3.fromRGB(74, 222, 128), Danger = Color3.fromRGB(239, 68, 68), Gold = Color3.fromRGB(255, 215, 90) },
+    Neon = { Bg = Color3.fromRGB(8, 12, 20), Panel = Color3.fromRGB(16, 22, 36), PanelLight = Color3.fromRGB(26, 34, 52), Primary = Color3.fromRGB(0, 255, 200), Accent = Color3.fromRGB(255, 0, 200), Text = Color3.fromRGB(240, 255, 255), TextDim = Color3.fromRGB(120, 200, 200), Success = Color3.fromRGB(0, 255, 120), Danger = Color3.fromRGB(255, 60, 100), Gold = Color3.fromRGB(255, 240, 100) },
+    Dark = { Bg = Color3.fromRGB(5, 5, 8), Panel = Color3.fromRGB(15, 15, 20), PanelLight = Color3.fromRGB(25, 25, 32), Primary = Color3.fromRGB(100, 100, 120), Accent = Color3.fromRGB(150, 150, 180), Text = Color3.fromRGB(220, 220, 230), TextDim = Color3.fromRGB(120, 120, 140), Success = Color3.fromRGB(80, 200, 120), Danger = Color3.fromRGB(220, 70, 90), Gold = Color3.fromRGB(220, 190, 100) },
+    Gold = { Bg = Color3.fromRGB(15, 12, 5), Panel = Color3.fromRGB(30, 25, 12), PanelLight = Color3.fromRGB(45, 38, 20), Primary = Color3.fromRGB(255, 215, 90), Accent = Color3.fromRGB(255, 240, 150), Text = Color3.fromRGB(255, 250, 230), TextDim = Color3.fromRGB(190, 170, 120), Success = Color3.fromRGB(150, 255, 150), Danger = Color3.fromRGB(255, 100, 100), Gold = Color3.fromRGB(255, 240, 100) },
+    Cyberpunk = { Bg = Color3.fromRGB(10, 5, 20), Panel = Color3.fromRGB(20, 10, 40), PanelLight = Color3.fromRGB(35, 20, 60), Primary = Color3.fromRGB(255, 0, 150), Accent = Color3.fromRGB(0, 255, 255), Text = Color3.fromRGB(240, 230, 255), TextDim = Color3.fromRGB(180, 130, 200), Success = Color3.fromRGB(0, 255, 150), Danger = Color3.fromRGB(255, 50, 100), Gold = Color3.fromRGB(255, 220, 100) },
+}
+
+local function applyTheme(themeName)
+    local theme = THEMES[themeName]
+    if not theme then return end
+    for k, v in pairs(theme) do if C[k] then C[k] = v end end
+    State.CurrentTheme = themeName
+    if State.UI.Main then State.UI.Main.BackgroundColor3 = C.Bg end
+    if State.UI.renderCategory then State.UI.renderCategory(State.CurrentTab) end
+    showToast("🎨 Tema", themeName .. " aplicado!", C.Primary)
+    saveData()
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 📜 HISTÓRICO
+--══════════════════════════════════════════════════════════════════
+local function addHistory(name)
+    table.insert(State.History, 1, { Name = name, Time = os.time() })
+    if #State.History > 10 then table.remove(State.History) end
+end
+
+local function showHistory()
+    if not State.UI.Gui then return end
+    local h = Instance.new("Frame")
+    h.Size = UDim2.new(0, 400, 0, 400)
+    h.Position = UDim2.new(0.5, -200, 0.5, -200)
+    h.BackgroundColor3 = C.Bg; h.BorderSizePixel = 0; h.ZIndex = 300
+    h.Parent = State.UI.Gui
+    addCorner(h, UDim.new(0, 16)); addShadow(h, 0.3)
+
+    local t = Instance.new("TextLabel")
+    t.Size = UDim2.new(1, 0, 0, 40); t.Position = UDim2.new(0, 0, 0, 10)
+    t.BackgroundTransparency = 1; t.Text = "📜 Histórico"
+    t.TextColor3 = C.Text; t.Font = F.Title; t.TextSize = 18; t.Parent = h
+
+    local close = Instance.new("TextButton")
+    close.Size = UDim2.new(0, 30, 0, 30); close.Position = UDim2.new(1, -40, 0, 15)
+    close.BackgroundColor3 = C.PanelLight; close.Text = "✕"
+    close.TextColor3 = C.TextDim; close.TextSize = 14
+    close.BorderSizePixel = 0; close.Parent = h
+    addCorner(close, UDim.new(0, 8))
+    close.MouseButton1Click:Connect(function() h:Destroy() end)
+
+    local list = Instance.new("ScrollingFrame")
+    list.Size = UDim2.new(1, -30, 1, -80); list.Position = UDim2.new(0, 15, 0, 60)
+    list.BackgroundTransparency = 1; list.BorderSizePixel = 0
+    list.ScrollBarThickness = 4; list.ScrollBarImageColor3 = C.Primary
+    list.CanvasSize = UDim2.new(0, 0, 0, 0); list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    list.Parent = h
+    local l = Instance.new("UIListLayout")
+    l.Padding = UDim.new(0, 6); l.Parent = list
+
+    for _, item in ipairs(State.History) do
+        local row = Instance.new("Frame")
+        row.Size = UDim2.new(1, -6, 0, 40)
+        row.BackgroundColor3 = C.Panel; row.BorderSizePixel = 0
+        row.Parent = list; addCorner(row, UDim.new(0, 8))
+        local n = Instance.new("TextLabel")
+        n.Size = UDim2.new(1, -100, 1, 0); n.Position = UDim2.new(0, 15, 0, 0)
+        n.BackgroundTransparency = 1; n.Text = item.Name
+        n.TextColor3 = C.Text; n.Font = F.Title; n.TextSize = 12
+        n.TextXAlignment = Enum.TextXAlignment.Left; n.Parent = row
+        local tm = Instance.new("TextLabel")
+        tm.Size = UDim2.new(0, 90, 1, 0); tm.Position = UDim2.new(1, -95, 0, 0)
+        tm.BackgroundTransparency = 1; tm.Text = os.date("%H:%M", item.Time)
+        tm.TextColor3 = C.TextDim; tm.Font = F.Body; tm.TextSize = 11
+        tm.TextXAlignment = Enum.TextXAlignment.Right; tm.Parent = row
+    end
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🎯 RADAR DE JOGADORES
+--══════════════════════════════════════════════════════════════════
+local function showRadar()
+    if not State.UI.Gui then return end
+    local r = Instance.new("Frame")
+    r.Size = UDim2.new(0, 400, 0, 420)
+    r.Position = UDim2.new(0.5, -200, 0.5, -210)
+    r.BackgroundColor3 = C.Bg; r.BorderSizePixel = 0; r.ZIndex = 300
+    r.Parent = State.UI.Gui
+    addCorner(r, UDim.new(0, 16)); addShadow(r, 0.3)
+
+    local t = Instance.new("TextLabel")
+    t.Size = UDim2.new(1, 0, 0, 40); t.Position = UDim2.new(0, 0, 0, 10)
+    t.BackgroundTransparency = 1
+    t.Text = "🎯 Radar • " .. #game.Players:GetPlayers() .. " jogadores"
+    t.TextColor3 = C.Text; t.Font = F.Title; t.TextSize = 16; t.Parent = r
+
+    local close = Instance.new("TextButton")
+    close.Size = UDim2.new(0, 30, 0, 30); close.Position = UDim2.new(1, -40, 0, 15)
+    close.BackgroundColor3 = C.PanelLight; close.Text = "✕"
+    close.TextColor3 = C.TextDim; close.TextSize = 14
+    close.BorderSizePixel = 0; close.Parent = r
+    addCorner(close, UDim.new(0, 8))
+    close.MouseButton1Click:Connect(function() r:Destroy() end)
+
+    local list = Instance.new("ScrollingFrame")
+    list.Size = UDim2.new(1, -30, 1, -80); list.Position = UDim2.new(0, 15, 0, 60)
+    list.BackgroundTransparency = 1; list.BorderSizePixel = 0
+    list.ScrollBarThickness = 4; list.ScrollBarImageColor3 = C.Primary
+    list.CanvasSize = UDim2.new(0, 0, 0, 0); list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    list.Parent = r
+    local l = Instance.new("UIListLayout")
+    l.Padding = UDim.new(0, 6); l.Parent = list
+
+    local lp = game.Players.LocalPlayer
+    local lpRoot = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+
+    for _, p in ipairs(game.Players:GetPlayers()) do
+        local row = Instance.new("Frame")
+        row.Size = UDim2.new(1, -6, 0, 45)
+        row.BackgroundColor3 = C.Panel; row.BorderSizePixel = 0
+        row.Parent = list; addCorner(row, UDim.new(0, 8))
+
+        local name = Instance.new("TextLabel")
+        name.Size = UDim2.new(1, -100, 0, 20); name.Position = UDim2.new(0, 12, 0, 6)
+        name.BackgroundTransparency = 1; name.Text = p.Name
+        name.TextColor3 = C.Text; name.Font = F.Title; name.TextSize = 13
+        name.TextXAlignment = Enum.TextXAlignment.Left; name.Parent = row
+
+        local dist = "∞"
+        if lpRoot and p.Character then
+            local pr = p.Character:FindFirstChild("HumanoidRootPart")
+            if pr then dist = string.format("%.0f studs", (pr.Position - lpRoot.Position).Magnitude) end
+        end
+
+        local dl = Instance.new("TextLabel")
+        dl.Size = UDim2.new(0, 90, 0, 16); dl.Position = UDim2.new(0, 12, 0, 24)
+        dl.BackgroundTransparency = 1; dl.Text = dist
+        dl.TextColor3 = C.TextDim; dl.Font = F.Body; dl.TextSize = 11
+        dl.TextXAlignment = Enum.TextXAlignment.Left; dl.Parent = row
+
+        local tpBtn = Instance.new("TextButton")
+        tpBtn.Size = UDim2.new(0, 70, 0, 30); tpBtn.Position = UDim2.new(1, -80, 0.5, -15)
+        tpBtn.BackgroundColor3 = C.Primary; tpBtn.Text = "TP"
+        tpBtn.TextColor3 = Color3.fromRGB(30, 20, 10); tpBtn.Font = F.Title
+        tpBtn.TextSize = 11; tpBtn.BorderSizePixel = 0; tpBtn.AutoButtonColor = false
+        tpBtn.Parent = row; addCorner(tpBtn, UDim.new(0, 6))
+        tpBtn.MouseButton1Click:Connect(function()
+            if lpRoot and p.Character then
+                local pr = p.Character:FindFirstChild("HumanoidRootPart")
+                if pr then
+                    lpRoot.CFrame = pr.CFrame * CFrame.new(0, 0, -5)
+                    showToast("🎯 TP", "Teleportado pra " .. p.Name, C.Success)
+                    playSound(SND, 0.5, 1.2)
+                end
+            end
+        end)
+    end
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🌐 INFO DO SERVIDOR
+--══════════════════════════════════════════════════════════════════
+local function showServerInfo()
+    if not State.UI.Gui then return end
+    local s = Instance.new("Frame")
+    s.Size = UDim2.new(0, 340, 0, 300)
+    s.Position = UDim2.new(0.5, -170, 0.5, -150)
+    s.BackgroundColor3 = C.Bg; s.BorderSizePixel = 0; s.ZIndex = 300
+    s.Parent = State.UI.Gui
+    addCorner(s, UDim.new(0, 16)); addShadow(s, 0.3)
+
+    local t = Instance.new("TextLabel")
+    t.Size = UDim2.new(1, 0, 0, 40); t.Position = UDim2.new(0, 0, 0, 10)
+    t.BackgroundTransparency = 1; t.Text = "🌐 Info do Servidor"
+    t.TextColor3 = C.Text; t.Font = F.Title; t.TextSize = 16; t.Parent = s
+
+    local close = Instance.new("TextButton")
+    close.Size = UDim2.new(0, 30, 0, 30); close.Position = UDim2.new(1, -40, 0, 15)
+    close.BackgroundColor3 = C.PanelLight; close.Text = "✕"
+    close.TextColor3 = C.TextDim; close.TextSize = 14
+    close.BorderSizePixel = 0; close.Parent = s
+    addCorner(close, UDim.new(0, 8))
+    close.MouseButton1Click:Connect(function() s:Destroy() end)
+
+    local ping = 0
+    pcall(function() ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()) end)
+
+    local uptime = tick() - sessionStart
+    local hh = math.floor(uptime / 3600)
+    local mm = math.floor((uptime % 3600) / 60)
+    local ss = math.floor(uptime % 60)
+
+    local info = string.format(
+        "🆔 Job ID: %s\n👥 Players: %d\n📡 Ping: %dms\n⏱️ Uptime: %02d:%02d:%02d\n🎮 Jogo: %s\n📍 Place ID: %d",
+        game.JobId:sub(1, 12) .. "...",
+        #game.Players:GetPlayers(), ping, hh, mm, ss,
+        State.CurrentGame or "Desconhecido", game.PlaceId
+    )
+
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, -30, 1, -80); lbl.Position = UDim2.new(0, 15, 0, 60)
+    lbl.BackgroundTransparency = 1; lbl.Text = info
+    lbl.TextColor3 = C.Text; lbl.Font = F.Body; lbl.TextSize = 12
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.TextYAlignment = Enum.TextYAlignment.Top
+    lbl.TextWrapped = true
+    lbl.Parent = s
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 📊 PAINEL DE ESTATÍSTICAS
+--══════════════════════════════════════════════════════════════════
+local function showStats()
+    if not State.UI.Gui then return end
+    local s = Instance.new("Frame")
+    s.Size = UDim2.new(0, 400, 0, 400)
+    s.Position = UDim2.new(0.5, -200, 0.5, -200)
+    s.BackgroundColor3 = C.Bg; s.BorderSizePixel = 0; s.ZIndex = 300
+    s.Parent = State.UI.Gui
+    addCorner(s, UDim.new(0, 16)); addShadow(s, 0.3)
+
+    local t = Instance.new("TextLabel")
+    t.Size = UDim2.new(1, 0, 0, 40); t.Position = UDim2.new(0, 0, 0, 10)
+    t.BackgroundTransparency = 1; t.Text = "📊 Estatísticas"
+    t.TextColor3 = C.Text; t.Font = F.Title; t.TextSize = 16; t.Parent = s
+
+    local close = Instance.new("TextButton")
+    close.Size = UDim2.new(0, 30, 0, 30); close.Position = UDim2.new(1, -40, 0, 15)
+    close.BackgroundColor3 = C.PanelLight; close.Text = "✕"
+    close.TextColor3 = C.TextDim; close.TextSize = 14
+    close.BorderSizePixel = 0; close.Parent = s
+    addCorner(close, UDim.new(0, 8))
+    close.MouseButton1Click:Connect(function() s:Destroy() end)
+
+    local totalScripts = 0
+    for _, cat in ipairs(CATEGORIES) do totalScripts = totalScripts + #cat.Scripts end
+
+    local favCount = 0
+    for _ in pairs(State.Favorites) do favCount = favCount + 1 end
+
+    local totalExec = 0
+    for _, c in pairs(State.ExecuteCounts) do totalExec = totalExec + c end
+
+    local uptime = tick() - sessionStart
+    local hh = math.floor(uptime / 3600)
+    local mm = math.floor((uptime % 3600) / 60)
+    local ss = math.floor(uptime % 60)
+
+    local stats = string.format(
+        "📦 Total de Scripts: %d\n📂 Categorias: %d\n⭐ Favoritos: %d\n📈 Total Execuções: %d\n📜 Histórico: %d itens\n⏱️ Sessão: %02d:%02d:%02d\n🎮 Jogo: %s\n👥 Players: %d",
+        totalScripts, #CATEGORIES, favCount, totalExec, #State.History,
+        hh, mm, ss, State.CurrentGame or "Desconhecido", #game.Players:GetPlayers()
+    )
+
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, -30, 1, -80); lbl.Position = UDim2.new(0, 15, 0, 60)
+    lbl.BackgroundTransparency = 1; lbl.Text = stats
+    lbl.TextColor3 = C.Text; lbl.Font = F.Body; lbl.TextSize = 13
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.TextYAlignment = Enum.TextYAlignment.Top
+    lbl.TextWrapped = true
+    lbl.Parent = s
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🔇 ANTI-AFK
+--══════════════════════════════════════════════════════════════════
+local antiAfkEnabled = false
+local function startAntiAfk()
+    if antiAfkEnabled then
+        showToast("🔇 Anti-AFK", "Já está ativo", C.TextDim)
+        return
+    end
+    antiAfkEnabled = true
+    showToast("🔇 Anti-AFK", "Ativado!", C.Success)
+    task.spawn(function()
+        game:GetService("Players").LocalPlayer.Idled:Connect(function()
+            local VirtualUser = game:GetService("VirtualUser")
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new())
+        end)
+    end)
+end
+
+--══════════════════════════════════════════════════════════════════
+-- ⚙️ CONFIGURAÇÕES
+--══════════════════════════════════════════════════════════════════
+local function showSettings()
+    if not State.UI.Gui then return end
+    local s = Instance.new("Frame")
+    s.Size = UDim2.new(0, 400, 0, 440)
+    s.Position = UDim2.new(0.5, -200, 0.5, -220)
+    s.BackgroundColor3 = C.Bg; s.BorderSizePixel = 0; s.ZIndex = 300
+    s.Parent = State.UI.Gui
+    addCorner(s, UDim.new(0, 16)); addShadow(s, 0.3)
+
+    local t = Instance.new("TextLabel")
+    t.Size = UDim2.new(1, 0, 0, 40); t.Position = UDim2.new(0, 0, 0, 10)
+    t.BackgroundTransparency = 1; t.Text = "⚙️ Configurações"
+    t.TextColor3 = C.Text; t.Font = F.Title; t.TextSize = 16; t.Parent = s
+
+    local close = Instance.new("TextButton")
+    close.Size = UDim2.new(0, 30, 0, 30); close.Position = UDim2.new(1, -40, 0, 15)
+    close.BackgroundColor3 = C.PanelLight; close.Text = "✕"
+    close.TextColor3 = C.TextDim; close.TextSize = 14
+    close.BorderSizePixel = 0; close.Parent = s
+    addCorner(close, UDim.new(0, 8))
+    close.MouseButton1Click:Connect(function() s:Destroy() end)
+
+    local content = Instance.new("Frame")
+    content.Size = UDim2.new(1, -30, 1, -80); content.Position = UDim2.new(0, 15, 0, 60)
+    content.BackgroundTransparency = 1; content.Parent = s
+    local cl = Instance.new("UIListLayout")
+    cl.Padding = UDim.new(0, 6); cl.Parent = content
+
+    local function makeBtn(text, col, cb)
+        local b = Instance.new("TextButton")
+        b.Size = UDim2.new(1, 0, 0, 36)
+        b.BackgroundColor3 = C.Panel; b.Text = text
+        b.TextColor3 = col; b.Font = F.Title; b.TextSize = 12
+        b.BorderSizePixel = 0; b.AutoButtonColor = false
+        b.Parent = content; addCorner(b, UDim.new(0, 8))
+        b.MouseButton1Click:Connect(cb)
+        return b
+    end
+
+    local somBtn
+    somBtn = makeBtn(State.SoundEnabled and "🔊 Sons: LIGADO" or "🔇 Sons: DESLIGADO", State.SoundEnabled and C.Success or C.Danger, function()
+        State.SoundEnabled = not State.SoundEnabled
+        somBtn.Text = State.SoundEnabled and "🔊 Sons: LIGADO" or "🔇 Sons: DESLIGADO"
+        somBtn.TextColor3 = State.SoundEnabled and C.Success or C.Danger
+        playSound(SND, 0.5, 1.1); saveData()
+    end)
+
+    local rgbBtn
+    rgbBtn = makeBtn(State.RGBMode and "🌈 RGB: LIGADO" or "🌑 RGB: DESLIGADO", State.RGBMode and C.Accent or C.TextDim, function()
+        State.RGBMode = not State.RGBMode
+        rgbBtn.Text = State.RGBMode and "🌈 RGB: LIGADO" or "🌑 RGB: DESLIGADO"
+        rgbBtn.TextColor3 = State.RGBMode and C.Accent or C.TextDim
+        if State.RGBMode then startRGB() end
+        playSound(SND, 0.5, 1.1); saveData()
+    end)
+
+    makeBtn("🎨 Trocar Tema", C.Accent, function()
+        s:Destroy()
+        showThemes()
+    end)
+
+    makeBtn("📋 Executar Fila (" .. #State.ExecQueue .. ")", C.Success, function()
+        runQueue()
+        s:Destroy()
+    end)
+
+    makeBtn("🗑️ Limpar Histórico", C.Danger, function()
+        State.History = {}; saveData()
+        showToast("🗑️", "Histórico limpo", C.Danger); playSound(SND, 0.5, 1.1)
+    end)
+
+    makeBtn("💔 Limpar Favoritos", C.Danger, function()
+        State.Favorites = {}; saveData()
+        State.UI.renderCategory(State.CurrentTab)
+        showToast("💔", "Favoritos limpos", C.Danger); playSound(SND, 0.5, 1.1)
+    end)
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🎨 MENU DE TEMAS
+--══════════════════════════════════════════════════════════════════
+local function showThemes()
+    if not State.UI.Gui then return end
+    local s = Instance.new("Frame")
+    s.Size = UDim2.new(0, 320, 0, 320)
+    s.Position = UDim2.new(0.5, -160, 0.5, -160)
+    s.BackgroundColor3 = C.Bg; s.BorderSizePixel = 0; s.ZIndex = 300
+    s.Parent = State.UI.Gui
+    addCorner(s, UDim.new(0, 16)); addShadow(s, 0.3)
+
+    local t = Instance.new("TextLabel")
+    t.Size = UDim2.new(1, 0, 0, 40); t.Position = UDim2.new(0, 0, 0, 10)
+    t.BackgroundTransparency = 1; t.Text = "🎨 Temas"
+    t.TextColor3 = C.Text; t.Font = F.Title; t.TextSize = 16; t.Parent = s
+
+    local close = Instance.new("TextButton")
+    close.Size = UDim2.new(0, 30, 0, 30); close.Position = UDim2.new(1, -40, 0, 15)
+    close.BackgroundColor3 = C.PanelLight; close.Text = "✕"
+    close.TextColor3 = C.TextDim; close.TextSize = 14
+    close.BorderSizePixel = 0; close.Parent = s
+    addCorner(close, UDim.new(0, 8))
+    close.MouseButton1Click:Connect(function() s:Destroy() end)
+
+    local content = Instance.new("Frame")
+    content.Size = UDim2.new(1, -30, 1, -80); content.Position = UDim2.new(0, 15, 0, 60)
+    content.BackgroundTransparency = 1; content.Parent = s
+    local cl = Instance.new("UIListLayout")
+    cl.Padding = UDim.new(0, 6); cl.Parent = content
+
+    for themeName, theme in pairs(THEMES) do
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, 0, 0, 36)
+        btn.BackgroundColor3 = theme.Panel
+        btn.Text = "● " .. themeName
+        btn.TextColor3 = theme.Primary
+        btn.Font = F.Title; btn.TextSize = 13
+        btn.BorderSizePixel = 0; btn.AutoButtonColor = false
+        btn.Parent = content; addCorner(btn, UDim.new(0, 8))
+        btn.MouseButton1Click:Connect(function()
+            applyTheme(themeName)
+            playSound(SND, 0.5, 1.2)
+            s:Destroy()
+        end)
+    end
+end
+
+--══════════════════════════════════════════════════════════════════
+-- ⭐ TOP 5 FAVORITOS
+--══════════════════════════════════════════════════════════════════
+local function showTopFavorites()
+    if not State.UI.Gui then return end
+    local r = Instance.new("Frame")
+    r.Size = UDim2.new(0, 420, 0, 400)
+    r.Position = UDim2.new(0.5, -210, 0.5, -200)
+    r.BackgroundColor3 = C.Bg; r.BorderSizePixel = 0; r.ZIndex = 300
+    r.Parent = State.UI.Gui
+    addCorner(r, UDim.new(0, 16)); addShadow(r, 0.3)
+
+    local t = Instance.new("TextLabel")
+    t.Size = UDim2.new(1, 0, 0, 40); t.Position = UDim2.new(0, 0, 0, 10)
+    t.BackgroundTransparency = 1; t.Text = "⭐ Top 5 Favoritos"
+    t.TextColor3 = C.Gold; t.Font = F.Title; t.TextSize = 16; t.Parent = r
+
+    local close = Instance.new("TextButton")
+    close.Size = UDim2.new(0, 30, 0, 30); close.Position = UDim2.new(1, -40, 0, 15)
+    close.BackgroundColor3 = C.PanelLight; close.Text = "✕"
+    close.TextColor3 = C.TextDim; close.TextSize = 14
+    close.BorderSizePixel = 0; close.Parent = r
+    addCorner(close, UDim.new(0, 8))
+    close.MouseButton1Click:Connect(function() r:Destroy() end)
+
+    local list = Instance.new("ScrollingFrame")
+    list.Size = UDim2.new(1, -30, 1, -80); list.Position = UDim2.new(0, 15, 0, 60)
+    list.BackgroundTransparency = 1; list.BorderSizePixel = 0
+    list.ScrollBarThickness = 4; list.ScrollBarImageColor3 = C.Primary
+    list.CanvasSize = UDim2.new(0, 0, 0, 0); list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    list.Parent = r
+    local l = Instance.new("UIListLayout")
+    l.Padding = UDim.new(0, 6); l.Parent = list
+
+    local all = {}
+    for _, cat in ipairs(CATEGORIES) do
+        for _, s in ipairs(cat.Scripts) do
+            if State.Favorites[s.Name] then
+                table.insert(all, { script = s, count = State.ExecuteCounts[s.Name] or 0 })
+            end
+        end
+    end
+    table.sort(all, function(a, b) return a.count > b.count end)
+
+    if #all == 0 then
+        local empty = Instance.new("TextLabel")
+        empty.Size = UDim2.new(1, 0, 0, 40)
+        empty.BackgroundTransparency = 1
+        empty.Text = "Nenhum favorito ainda"
+        empty.TextColor3 = C.TextDim; empty.Font = F.Body; empty.TextSize = 12
+        empty.Parent = list
+        return
+    end
+
+    for i, entry in ipairs(all) do
+        if i > 5 then break end
+        local row = Instance.new("Frame")
+        row.Size = UDim2.new(1, -6, 0, 55)
+        row.BackgroundColor3 = C.Panel; row.BorderSizePixel = 0
+        row.Parent = list; addCorner(row, UDim.new(0, 8))
+
+        local rank = Instance.new("TextLabel")
+        rank.Size = UDim2.new(0, 40, 1, 0); rank.Position = UDim2.new(0, 8, 0, 0)
+        rank.BackgroundTransparency = 1; rank.Text = "#" .. i
+        rank.TextColor3 = C.Gold; rank.Font = F.Title; rank.TextSize = 18
+        rank.Parent = row
+
+        local name = Instance.new("TextLabel")
+        name.Size = UDim2.new(1, -200, 0, 20); name.Position = UDim2.new(0, 55, 0, 8)
+        name.BackgroundTransparency = 1; name.Text = entry.script.Name
+        name.TextColor3 = C.Text; name.Font = F.Title; name.TextSize = 13
+        name.TextXAlignment = Enum.TextXAlignment.Left; name.Parent = row
+
+        local count = Instance.new("TextLabel")
+        count.Size = UDim2.new(1, -200, 0, 16); count.Position = UDim2.new(0, 55, 0, 28)
+        count.BackgroundTransparency = 1
+        count.Text = "📈 " .. entry.count .. " execuções"
+        count.TextColor3 = C.Success; count.Font = F.Body; count.TextSize = 11
+        count.TextXAlignment = Enum.TextXAlignment.Left; count.Parent = row
+
+        local runBtn = Instance.new("TextButton")
+        runBtn.Size = UDim2.new(0, 70, 0, 30); runBtn.Position = UDim2.new(1, -80, 0.5, -15)
+        runBtn.BackgroundColor3 = C.Primary; runBtn.Text = "EXEC"
+        runBtn.TextColor3 = Color3.fromRGB(30, 20, 10); runBtn.Font = F.Title
+        runBtn.TextSize = 11; runBtn.BorderSizePixel = 0; runBtn.AutoButtonColor = false
+        runBtn.Parent = row; addCorner(runBtn, UDim.new(0, 6))
+        runBtn.MouseButton1Click:Connect(function()
+            pcall(function()
+                local src = game:HttpGet(entry.script.Url)
+                local fn = loadstring(src)
+                if fn then fn() end
+                State.ExecuteCounts[entry.script.Name] = (State.ExecuteCounts[entry.script.Name] or 0) + 1
+                playSound(SND, 0.5, 1.2)
+            end)
+        end)
+    end
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 📋 FILA DE EXECUÇÃO
+--══════════════════════════════════════════════════════════════════
+local function addToQueue(scriptName)
+    table.insert(State.ExecQueue, scriptName)
+    showToast("📋 Fila", scriptName .. " adicionado", C.Accent)
+end
+
+local function runQueue()
+    if #State.ExecQueue == 0 then
+        showToast("📋 Fila", "Vazia", C.TextDim)
+        return
+    end
+    showToast("📋 Fila", "Executando " .. #State.ExecQueue .. " scripts...", C.Accent)
+    task.spawn(function()
+        for _, scriptName in ipairs(State.ExecQueue) do
+            for _, cat in ipairs(CATEGORIES) do
+                for _, sc in ipairs(cat.Scripts) do
+                    if sc.Name == scriptName then
+                        pcall(function()
+                            local src = game:HttpGet(sc.Url)
+                            local fn = loadstring(src)
+                            if fn then fn() end
+                        end)
+                        break
+                    end
+                end
+            end
+            task.wait(2)
+        end
+        State.ExecQueue = {}
+        showToast("📋 Fila", "Concluída!", C.Success)
+    end)
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 💾 BACKUP / RESTORE
+--══════════════════════════════════════════════════════════════════
+local function backupConfig()
+    local data = { Favorites = State.Favorites, History = State.History, ExecuteCounts = State.ExecuteCounts, Filter = State.Filter, CurrentTheme = State.CurrentTheme }
+    local json = HttpService:JSONEncode(data)
+    local encoded = HttpService:Base64Encode(json)
+    if setclipboard then
+        setclipboard(encoded)
+        showToast("💾 Backup", "Copiado!", C.Success)
+    else
+        print("[BACKUP]", encoded)
+        showToast("💾 Backup", "Ver console", C.Accent)
+    end
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🎬 TRANSIÇÃO
+--══════════════════════════════════════════════════════════════════
+local function fadeTransition()
+    if not State.UI.Gui then return end
+    local fade = Instance.new("Frame")
+    fade.Size = UDim2.new(1, 0, 1, 0)
+    fade.BackgroundColor3 = C.Bg
+    fade.BackgroundTransparency = 1
+    fade.BorderSizePixel = 0
+    fade.ZIndex = 500
+    fade.Parent = State.UI.Gui
+    tween(fade, 0.15, { BackgroundTransparency = 0.3 })
+    task.wait(0.15)
+    tween(fade, 0.2, { BackgroundTransparency = 1 })
+    task.wait(0.2)
+    fade:Destroy()
+end
+
+print("[VEGAX HUB] Parte 2/3 carregada ✅")
+print("[VEGAX HUB] Peça a Parte 3/3 pra finalizar")
+--══════════════════════════════════════════════════════════════════
+-- 🎬 INTRO
+--══════════════════════════════════════════════════════════════════
+local function playIntro(gui)
+    playSound(SND, 0.6, 1)
+    local intro = Instance.new("Frame")
+    intro.Size = UDim2.new(1, 0, 1, 0)
+    intro.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    intro.BackgroundTransparency = 1
+    intro.BorderSizePixel = 0; intro.ZIndex = 100; intro.Parent = gui
+
+    local logoF = Instance.new("Frame")
+    logoF.Size = UDim2.new(0, 0, 0, 0)
+    logoF.Position = UDim2.new(0.5, 0, 0.5, -80)
+    logoF.AnchorPoint = Vector2.new(0.5, 0.5)
+    logoF.BackgroundTransparency = 1; logoF.ZIndex = 103; logoF.Parent = intro
+
+    local logoI = Instance.new("ImageLabel")
+    logoI.Size = UDim2.new(1, 0, 1, 0); logoI.BackgroundTransparency = 1
+    logoI.Image = LOGO_ID; logoI.ScaleType = Enum.ScaleType.Fit
+    logoI.ZIndex = 103; logoI.Parent = logoF
+
+    local nameL = Instance.new("TextLabel")
+    nameL.Size = UDim2.new(1, 0, 0, 50); nameL.Position = UDim2.new(0, 0, 0.5, 30)
+    nameL.BackgroundTransparency = 1; nameL.Text = HUB_NAME
+    nameL.TextColor3 = C.Text; nameL.Font = F.Title; nameL.TextSize = 36
+    nameL.TextStrokeColor3 = C.Primary; nameL.TextStrokeTransparency = 0.5
+    nameL.TextTransparency = 1; nameL.ZIndex = 104; nameL.Parent = intro
+
+    local subL = Instance.new("TextLabel")
+    subL.Size = UDim2.new(1, 0, 0, 22); subL.Position = UDim2.new(0, 0, 0.5, 75)
+    subL.BackgroundTransparency = 1; subL.Text = "STEAL AN EGG  •  BLOX FRUITS"
+    subL.TextColor3 = C.Primary; subL.Font = F.Body; subL.TextSize = 14
+    subL.TextTransparency = 1; subL.ZIndex = 104; subL.Parent = intro
+
+    tween(intro, 0.3, { BackgroundTransparency = 0 })
+    tween(logoF, 0.5, { Size = UDim2.new(0, 120, 0, 120) }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    task.wait(0.6)
+    tween(nameL, 0.4, { TextTransparency = 0 })
+    task.wait(0.3)
+    tween(subL, 0.4, { TextTransparency = 0 })
+    task.wait(0.8)
+    tween(logoF, 0.3, { Size = UDim2.new(0, 0, 0, 0) })
+    tween(nameL, 0.3, { TextTransparency = 1 })
+    tween(subL, 0.3, { TextTransparency = 1 })
+    tween(intro, 0.3, { BackgroundTransparency = 1 })
+    task.wait(0.4)
+    intro:Destroy()
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🎨 UI PRINCIPAL
+--══════════════════════════════════════════════════════════════════
+local function buildUI()
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "VH_" .. math.random(1, 999999)
+    gui.ResetOnSpawn = false; gui.IgnoreGuiInset = true
+    gui.DisplayOrder = 999; gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    gui.Parent = CoreGui
+    State.UI.Gui = gui
+
+    local main = Instance.new("Frame")
+    main.Name = "Main"
+    main.Size = UDim2.new(0, 660, 0, 400)
+    main.Position = UDim2.new(0.5, -330, 0.5, -200)
+    main.BackgroundColor3 = C.Bg; main.BorderSizePixel = 0
+    main.Active = true; main.Draggable = true; main.Visible = true
+    main.Parent = gui
+    addCorner(main, UDim.new(0, 18)); addShadow(main, 0.5)
+    State.UI.Main = main
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Thickness = 1.5; stroke.Color = C.Primary
+    stroke.Transparency = 0.4; stroke.Parent = main
+
+    -- HEADER
+    local header = Instance.new("Frame")
+    header.Size = UDim2.new(1, 0, 0, 52)
+    header.BackgroundColor3 = C.Panel; header.BorderSizePixel = 0
+    header.Parent = main; addCorner(header, UDim.new(0, 18))
+
+    local hFix = Instance.new("Frame")
+    hFix.Size = UDim2.new(1, 0, 0, 18); hFix.Position = UDim2.new(0, 0, 1, -18)
+    hFix.BackgroundColor3 = C.Panel; hFix.BorderSizePixel = 0; hFix.Parent = header
+
+    local logoFrame = Instance.new("Frame")
+    logoFrame.Size = UDim2.new(0, 38, 0, 38)
+    logoFrame.Position = UDim2.new(0, 12, 0, 7)
+    logoFrame.BackgroundTransparency = 1; logoFrame.Parent = header
+    createLogo(logoFrame, UDim2.new(1, 0, 1, 0))
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(0, 200, 0, 18); title.Position = UDim2.new(0, 58, 0, 8)
+    title.BackgroundTransparency = 1; title.Text = HUB_NAME .. " " .. VERSION
+    title.TextColor3 = C.Text; title.Font = F.Title; title.TextSize = 14
+    title.TextXAlignment = Enum.TextXAlignment.Left; title.Parent = header
+
+    local sub = Instance.new("TextLabel")
+    sub.Size = UDim2.new(0, 200, 0, 14); sub.Position = UDim2.new(0, 58, 0, 26)
+    sub.BackgroundTransparency = 1; sub.Text = "Steal an Egg + Blox Fruits"
+    sub.TextColor3 = C.TextDim; sub.Font = F.Body; sub.TextSize = 10
+    sub.TextXAlignment = Enum.TextXAlignment.Left; sub.Parent = header
+
+    -- FILTROS
+    local filterFrame = Instance.new("Frame")
+    filterFrame.Size = UDim2.new(0, 180, 0, 22)
+    filterFrame.Position = UDim2.new(0, 250, 0, 22)
+    filterFrame.BackgroundTransparency = 1; filterFrame.Parent = header
+    local fl = Instance.new("UIListLayout")
+    fl.FillDirection = Enum.FillDirection.Horizontal
+    fl.Padding = UDim.new(0, 4); fl.Parent = filterFrame
+
+    for _, fd in ipairs({
+        {Name="ALL", L="🌐", C=C.TextDim},
+        {Name="KEYLESS", L="✓", C=C.Success},
+        {Name="KEY", L="🔑", C=C.KeyPurple},
+        {Name="⭐", L="⭐", C=C.Gold},
+    }) do
+        local fb = Instance.new("TextButton")
+        fb.Size = UDim2.new(0, 30, 0, 22)
+        fb.BackgroundColor3 = C.PanelLight; fb.Text = fd.L; fb.TextColor3 = fd.C
+        fb.TextSize = 11; fb.Font = F.Body
+        fb.BorderSizePixel = 0; fb.AutoButtonColor = false
+        fb.Parent = filterFrame; addCorner(fb, UDim.new(0, 6))
+        fb.MouseButton1Click:Connect(function()
+            playSound(SND, 0.4, 1.2)
+            State.Filter = fd.Name
+            State.UI.renderCategory(State.CurrentTab)
+        end)
+    end
+
+    local function makeHdrBtn(txt, col, pos, cb)
+        local b = Instance.new("TextButton")
+        b.Size = UDim2.new(0, 32, 0, 32); b.Position = pos
+        b.BackgroundColor3 = C.PanelLight; b.Text = txt; b.TextColor3 = col
+        b.TextSize = 14; b.Font = F.Body
+        b.BorderSizePixel = 0; b.AutoButtonColor = false
+        b.Parent = header; addCorner(b, UDim.new(0, 8))
+        b.MouseButton1Click:Connect(cb)
+        return b
+    end
+
+    makeHdrBtn("🎨", C.Accent, UDim2.new(1, -368, 0, 10), function() playSound(SND,0.5,1.1); showThemes() end)
+    makeHdrBtn("🎯", C.Success, UDim2.new(1, -332, 0, 10), function() playSound(SND,0.5,1.1); showRadar() end)
+    makeHdrBtn("⚙️", C.TextDim, UDim2.new(1, -296, 0, 10), function() playSound(SND,0.5,1.1); showSettings() end)
+    makeHdrBtn("📸", C.Accent, UDim2.new(1, -260, 0, 10), function()
+        playSound(SND, 0.5, 1.1)
+        local info = string.format("📸 %s %s\nServidor: %s\nPlayers: %d\nFavoritos: %d",
+            HUB_NAME, VERSION, game.JobId:sub(1,8), #game.Players:GetPlayers(),
+            (function() local c=0 for _ in pairs(State.Favorites) do c=c+1 end return c end)())
+        if setclipboard then setclipboard(info); showToast("📸", "Copiado!", C.Accent)
+        else print(info); showToast("📸", "Ver console", C.Accent) end
+    end)
+    makeHdrBtn("📜", C.Accent, UDim2.new(1, -224, 0, 10), function() playSound(SND,0.5,1.1); showHistory() end)
+    makeHdrBtn("🔄", C.TextDim, UDim2.new(1, -188, 0, 10), function()
+        playSound(SND, 0.5, 1.1)
+        State.AutoHop = not State.AutoHop
+        showToast("🔄 Auto Hop", State.AutoHop and "Ativado" or "Desativado", State.AutoHop and C.Success or C.TextDim)
+    end)
+    makeHdrBtn("🌐", C.Accent, UDim2.new(1, -152, 0, 10), function() playSound(SND,0.5,1.1); serverHop(false) end)
+    makeHdrBtn("✕", C.TextDim, UDim2.new(1, -44, 0, 10), function()
+        playSound(SND, 0.4, 0.9)
+        tween(main, 0.25, { Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0) }, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
+        task.wait(0.25); main.Visible = false
+    end)
+
+    -- BUSCA
+    local searchFrame = Instance.new("Frame")
+    searchFrame.Size = UDim2.new(0, 200, 0, 30); searchFrame.Position = UDim2.new(0, 15, 0, 62)
+    searchFrame.BackgroundColor3 = C.Panel; searchFrame.BorderSizePixel = 0
+    searchFrame.Parent = main; addCorner(searchFrame, UDim.new(0, 10))
+
+    local searchBox = Instance.new("TextBox")
+    searchBox.Size = UDim2.new(1, -20, 1, 0); searchBox.Position = UDim2.new(0, 10, 0, 0)
+    searchBox.BackgroundTransparency = 1; searchBox.PlaceholderText = "🔍 Buscar script..."
+    searchBox.PlaceholderColor3 = C.TextDim; searchBox.Text = ""
+    searchBox.TextColor3 = C.Text; searchBox.Font = F.Body; searchBox.TextSize = 12
+    searchBox.ClearTextOnFocus = false; searchBox.TextXAlignment = Enum.TextXAlignment.Left
+    searchBox.Parent = searchFrame; State.UI.Search = searchBox
+
+    -- TABS
+    local tabBar = Instance.new("ScrollingFrame")
+    tabBar.Size = UDim2.new(1, -245, 0, 30); tabBar.Position = UDim2.new(0, 230, 0, 62)
+    tabBar.BackgroundTransparency = 1; tabBar.BorderSizePixel = 0
+    tabBar.ScrollBarThickness = 0; tabBar.ScrollingDirection = Enum.ScrollingDirection.X
+    tabBar.CanvasSize = UDim2.new(0, 0, 0, 0); tabBar.AutomaticCanvasSize = Enum.AutomaticSize.X
+    tabBar.Parent = main; State.UI.TabBar = tabBar
+
+    local tLayout = Instance.new("UIListLayout")
+    tLayout.FillDirection = Enum.FillDirection.Horizontal
+    tLayout.Padding = UDim.new(0, 6); tLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    tLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    tLayout.Parent = tabBar
+
+    -- LISTA
+    local listFrame = Instance.new("ScrollingFrame")
+    listFrame.Size = UDim2.new(1, -30, 1, -235); listFrame.Position = UDim2.new(0, 15, 0, 100)
+    listFrame.BackgroundTransparency = 1; listFrame.BorderSizePixel = 0
+    listFrame.ScrollBarThickness = 4; listFrame.ScrollBarImageColor3 = C.Primary
+    listFrame.CanvasSize = UDim2.new(0, 0, 0, 0); listFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    listFrame.Parent = main; State.UI.List = listFrame
+
+    local layout = Instance.new("UIListLayout")
+    layout.Padding = UDim.new(0, 8); layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Parent = listFrame
+
+    -- FOOTER
+    local footer = Instance.new("Frame")
+    footer.Size = UDim2.new(1, -30, 0, 55); footer.Position = UDim2.new(0, 15, 1, -65)
+    footer.BackgroundColor3 = C.Panel; footer.BorderSizePixel = 0
+    footer.Parent = main; addCorner(footer, UDim.new(0, 10))
+
+    local dot = Instance.new("Frame")
+    dot.Size = UDim2.new(0, 10, 0, 10); dot.Position = UDim2.new(0, 15, 0, 12)
+    dot.BackgroundColor3 = C.Success; dot.BorderSizePixel = 0
+    dot.Parent = footer; addCorner(dot, UDim.new(1, 0))
+
+    local statusText = Instance.new("TextLabel")
+    statusText.Size = UDim2.new(0.6, 0, 0, 16); statusText.Position = UDim2.new(0, 35, 0, 8)
+    statusText.BackgroundTransparency = 1; statusText.Text = "Pronto • " .. HUB_NAME
+    statusText.TextColor3 = C.TextDim; statusText.Font = F.Body; statusText.TextSize = 11
+    statusText.TextXAlignment = Enum.TextXAlignment.Left; statusText.Parent = footer
+    State.UI.Status = statusText
+
+    local clockLabel = Instance.new("TextLabel")
+    clockLabel.Size = UDim2.new(0.4, -20, 0, 16); clockLabel.Position = UDim2.new(0.6, 0, 0, 8)
+    clockLabel.BackgroundTransparency = 1; clockLabel.Text = "🕐 --:--:--"
+    clockLabel.TextColor3 = C.Accent; clockLabel.Font = F.Title; clockLabel.TextSize = 11
+    clockLabel.TextXAlignment = Enum.TextXAlignment.Right; clockLabel.Parent = footer
+    startClock(clockLabel)
+
+    local statsLabel = Instance.new("TextLabel")
+    statsLabel.Size = UDim2.new(1, -30, 0, 16); statsLabel.Position = UDim2.new(0, 15, 0, 28)
+    statsLabel.BackgroundTransparency = 1; statsLabel.Text = "FPS: -- • Ping: --ms"
+    statsLabel.TextColor3 = C.TextDim; statsLabel.Font = F.Body; statsLabel.TextSize = 10
+    statsLabel.TextXAlignment = Enum.TextXAlignment.Left; statsLabel.Parent = footer
+    State.UI.StatsLabel = statsLabel
+
+    return gui
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🎯 ABA
+--══════════════════════════════════════════════════════════════════
+local function createTabButton(cat, index)
+    local btn = Instance.new("TextButton")
+    btn.Name = "Tab" .. index
+    btn.Size = UDim2.new(0, 105, 1, 0)
+    btn.BackgroundColor3 = C.Panel
+    btn.Text = (cat.Icon or "") .. " " .. (cat.Name or "")
+    btn.TextColor3 = C.TextDim; btn.Font = F.Title; btn.TextSize = 10
+    btn.BorderSizePixel = 0; btn.AutoButtonColor = false
+    btn.LayoutOrder = index; btn.Parent = State.UI.TabBar
+    addCorner(btn, UDim.new(0, 8))
+    btn.MouseButton1Click:Connect(function()
+        playSound(SND, 0.35, 1.2)
+        State.CurrentTab = index
+        State.UI.renderCategory(index)
+    end)
+    return btn
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🎴 CARD
+--══════════════════════════════════════════════════════════════════
+local function createCard(s, order)
+    local card = Instance.new("Frame")
+    card.Name = s.Name; card.Size = UDim2.new(1, -6, 0, 60)
+    card.BackgroundColor3 = C.Panel; card.BorderSizePixel = 0
+    card.LayoutOrder = order; card.Parent = State.UI.List
+    addCorner(card, UDim.new(0, 12))
+
+    local strip = Instance.new("Frame")
+    strip.Size = UDim2.new(0, 4, 0, 36); strip.Position = UDim2.new(0, 0, 0.5, -18)
+    strip.BackgroundColor3 = s.Color or C.Primary; strip.BorderSizePixel = 0
+    strip.Parent = card; addCorner(strip, UDim.new(1, 0))
+
+    local name = Instance.new("TextLabel")
+    name.Size = UDim2.new(1, -200, 0, 16); name.Position = UDim2.new(0, 16, 0, 8)
+    name.BackgroundTransparency = 1; name.Text = s.Name
+    name.TextColor3 = C.Text; name.Font = F.Title; name.TextSize = 14
+    name.TextXAlignment = Enum.TextXAlignment.Left; name.Parent = card
+
+    local desc = Instance.new("TextLabel")
+    desc.Size = UDim2.new(1, -200, 0, 14); desc.Position = UDim2.new(0, 16, 0, 24)
+    desc.BackgroundTransparency = 1; desc.Text = s.Desc
+    desc.TextColor3 = C.TextDim; desc.Font = F.Body; desc.TextSize = 10
+    desc.TextXAlignment = Enum.TextXAlignment.Left
+    desc.TextTruncate = Enum.TextTruncate.AtEnd; desc.Parent = card
+
+    local tagText = s.Key and "🔑 KEY" or "✓ KEYLESS"
+    local tagColor = s.Key and C.KeyPurple or C.Success
+    local tag = Instance.new("TextLabel")
+    tag.Size = UDim2.new(0, s.Key and 55 or 65, 0, 13); tag.Position = UDim2.new(0, 16, 1, -16)
+    tag.BackgroundColor3 = s.Key and Color3.fromRGB(45, 30, 65) or C.PanelLight
+    tag.Text = tagText; tag.TextColor3 = tagColor
+    tag.Font = F.Title; tag.TextSize = 8; tag.BorderSizePixel = 0
+    tag.Parent = card; addCorner(tag, UDim.new(0, 4))
+
+    -- Favorito
+    local favBtn = Instance.new("TextButton")
+    favBtn.Size = UDim2.new(0, 26, 0, 26); favBtn.Position = UDim2.new(1, -160, 0.5, -13)
+    favBtn.BackgroundColor3 = C.PanelLight
+    favBtn.Text = State.Favorites[s.Name] and "⭐" or "☆"
+    favBtn.TextColor3 = State.Favorites[s.Name] and C.Gold or C.TextDim
+    favBtn.TextSize = 14; favBtn.Font = F.Body
+    favBtn.BorderSizePixel = 0; favBtn.AutoButtonColor = false
+    favBtn.Parent = card; addCorner(favBtn, UDim.new(0, 8))
+    favBtn.MouseButton1Click:Connect(function()
+        State.Favorites[s.Name] = not State.Favorites[s.Name]
+        if not State.Favorites[s.Name] then State.Favorites[s.Name] = nil end
+        favBtn.Text = State.Favorites[s.Name] and "⭐" or "☆"
+        favBtn.TextColor3 = State.Favorites[s.Name] and C.Gold or C.TextDim
+        playSound(SND, 0.4, State.Favorites[s.Name] and 1.3 or 0.9)
+        saveData()
+    end)
+
+    -- Fila
+    local queueBtn = Instance.new("TextButton")
+    queueBtn.Size = UDim2.new(0, 22, 0, 22); queueBtn.Position = UDim2.new(1, -130, 0.5, -11)
+    queueBtn.BackgroundColor3 = C.PanelLight
+    queueBtn.Text = "📋"; queueBtn.TextColor3 = C.Accent
+    queueBtn.TextSize = 11; queueBtn.Font = F.Body
+    queueBtn.BorderSizePixel = 0; queueBtn.AutoButtonColor = false
+    queueBtn.Parent = card; addCorner(queueBtn, UDim.new(0, 6))
+    queueBtn.MouseButton1Click:Connect(function()
+        playSound(SND, 0.5, 1.1)
+        addToQueue(s.Name)
+    end)
+
+    -- Exec
+    local execBtn = Instance.new("TextButton")
+    execBtn.Size = UDim2.new(0, 85, 0, 30); execBtn.Position = UDim2.new(1, -95, 0.5, -15)
+    execBtn.BackgroundColor3 = C.Primary
+    execBtn.Text = s.Url == "RANDOM" and "🎲" or "EXEC"
+    execBtn.TextColor3 = Color3.fromRGB(30, 20, 10)
+    execBtn.Font = F.Title; execBtn.TextSize = 12
+    execBtn.BorderSizePixel = 0; execBtn.AutoButtonColor = false
+    execBtn.Parent = card; addCorner(execBtn, UDim.new(0, 8))
+
+    execBtn.MouseButton1Click:Connect(function()
+        if State.Loading then return end
+        State.Loading = true
+        playSound(SND, 0.6, 1.0)
+
+        execBtn.Text = "..."
+        tween(execBtn, 0.15, { BackgroundColor3 = C.Accent })
+        State.UI.Status.Text = "Executando " .. s.Name .. "..."
+        State.UI.Status.TextColor3 = C.Accent
+
+        local targetUrl = s.Url
+        local targetName = s.Name
+
+        if s.Url == "RANDOM" then
+            local all = {}
+            for _, cat in ipairs(CATEGORIES) do
+                for _, sc in ipairs(cat.Scripts) do
+                    if sc.Url ~= "RANDOM" then table.insert(all, sc) end
+                end
+            end
+            if #all == 0 then
+                showToast("✕ Erro", "Sem scripts", C.Danger)
+                State.Loading = false; execBtn.Text = "🎲"
+                tween(execBtn, 0.2, { BackgroundColor3 = C.Primary }); return
+            end
+            local pick = all[math.random(1, #all)]
+            targetUrl = pick.Url; targetName = pick.Name
+            showToast("🎲 Random", pick.Name, C.Gold)
+        end
+
+        local ok, err = pcall(function()
+            local src = State.Cache[targetUrl]
+            if not src then
+                src = game:HttpGet(targetUrl)
+                State.Cache[targetUrl] = src
+            end
+            local fn = loadstring(src)
+            if fn then fn() else error("Falha") end
+        end)
+
+        task.wait(0.3)
+
+        if ok then
+            execBtn.Text = "✓ OK"
+            tween(execBtn, 0.2, { BackgroundColor3 = C.Success })
+            State.UI.Status.Text = targetName .. " executado!"
+            State.UI.Status.TextColor3 = C.Success
+            playSound(SND, 0.5, 1.3)
+            addHistory(targetName)
+            State.ExecuteCounts[targetName] = (State.ExecuteCounts[targetName] or 0) + 1
+            saveData()
+            showToast("✓ Sucesso", targetName .. " executado!", C.Success)
+        else
+            execBtn.Text = "✕"
+            tween(execBtn, 0.2, { BackgroundColor3 = C.Danger })
+            State.UI.Status.Text = "Erro: " .. tostring(err):sub(1, 40)
+            State.UI.Status.TextColor3 = C.Danger
+            playSound(SND, 0.5, 0.7)
+            showToast("✕ Erro", tostring(err):sub(1, 40), C.Danger)
+        end
+
+        task.wait(1.5)
+        execBtn.Text = s.Url == "RANDOM" and "🎲" or "EXEC"
+        tween(execBtn, 0.2, { BackgroundColor3 = C.Primary })
+        State.Loading = false
+    end)
+
+    card.MouseEnter:Connect(function() tween(card, 0.2, { BackgroundColor3 = C.PanelLight }) end)
+    card.MouseLeave:Connect(function() tween(card, 0.2, { BackgroundColor3 = C.Panel }) end)
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🎨 RENDER
+--══════════════════════════════════════════════════════════════════
+function State.UI.renderCategory(index)
+    for _, tab in ipairs(State.UI.TabBar:GetChildren()) do
+        if tab:IsA("TextButton") then
+            local idx = tonumber(tab.Name:match("%d+"))
+            if idx == index then
+                tween(tab, 0.2, { BackgroundColor3 = C.Primary, TextColor3 = Color3.fromRGB(30, 20, 10) })
+            else
+                tween(tab, 0.2, { BackgroundColor3 = C.Panel, TextColor3 = C.TextDim })
+            end
+        end
+    end
+    for _, child in ipairs(State.UI.List:GetChildren()) do
+        if child:IsA("Frame") then child:Destroy() end
+    end
+    local cat = CATEGORIES[index]
+    if not cat then return end
+    local filtered = {}
+    for _, s in ipairs(cat.Scripts) do
+        local pass = false
+        if State.Filter == "ALL" then pass = true
+        elseif State.Filter == "KEYLESS" then pass = not s.Key
+        elseif State.Filter == "KEY" then pass = s.Key
+        elseif State.Filter == "⭐" then pass = State.Favorites[s.Name] end
+        if pass then table.insert(filtered, s) end
+    end
+    for i, s in ipairs(filtered) do createCard(s, i) end
+    State.UI.Search.Text = ""
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🔘 BOTÃO FLUTUANTE
+--══════════════════════════════════════════════════════════════════
+local function createFloatingButton(gui)
+    local wrapper = Instance.new("Frame")
+    wrapper.Size = UDim2.new(0, 80, 0, 80); wrapper.Position = UDim2.new(0, 10, 0.5, -40)
+    wrapper.BackgroundTransparency = 1; wrapper.ZIndex = 49
+    wrapper.Active = true; wrapper.Parent = gui
+
+    local glow = Instance.new("Frame")
+    glow.Size = UDim2.new(0, 60, 0, 60); glow.Position = UDim2.new(0.5, -30, 0.5, -30)
+    glow.BackgroundColor3 = C.Primary; glow.BackgroundTransparency = 0.7
+    glow.BorderSizePixel = 0; glow.ZIndex = 49; glow.Parent = wrapper
+    addCorner(glow, UDim.new(1, 0))
+
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 60, 0, 60); btn.Position = UDim2.new(0.5, -30, 0.5, -30)
+    btn.BackgroundColor3 = Color3.fromRGB(10, 6, 20); btn.Text = ""
+    btn.BorderSizePixel = 0; btn.AutoButtonColor = false
+    btn.ZIndex = 51; btn.Active = true; btn.Parent = wrapper
+    addCorner(btn, UDim.new(1, 0))
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Thickness = 2; stroke.Color = C.Primary
+    stroke.Transparency = 0.2; stroke.Parent = btn
+
+    local logoHolder = Instance.new("Frame")
+    logoHolder.Size = UDim2.new(1, -12, 1, -12); logoHolder.Position = UDim2.new(0, 6, 0, 6)
+    logoHolder.BackgroundTransparency = 1; logoHolder.ZIndex = 52; logoHolder.Parent = btn
+
+    local logo = Instance.new("ImageLabel")
+    logo.Size = UDim2.new(1, 0, 1, 0); logo.BackgroundTransparency = 1
+    logo.Image = LOGO_ID; logo.ScaleType = Enum.ScaleType.Fit
+    logo.ZIndex = 52; logo.Parent = logoHolder
+
+    task.spawn(function()
+        while wrapper.Parent do
+            tween(glow, 1.2, { BackgroundTransparency = 0.85 })
+            task.wait(1.2)
+            tween(glow, 1.2, { BackgroundTransparency = 0.5 })
+            task.wait(1.2)
+        end
+    end)
+
+    local dragging, dragStart, startPos, moved = false, nil, nil, false
+
+    local function beginDrag(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true; moved = false
+            dragStart = input.Position; startPos = wrapper.Position
+            local conn
+            conn = input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                    if conn then conn:Disconnect() end
+                end
+            end)
+        end
+    end
+
+    wrapper.InputBegan:Connect(beginDrag)
+    btn.InputBegan:Connect(beginDrag)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            if delta.Magnitude > 10 then moved = true end
+            wrapper.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    btn.MouseButton1Click:Connect(function()
+        if moved then return end
+        playSound(SND, 0.5, 1.1)
+        local main = State.UI.Main
+        if main.Visible then
+            tween(main, 0.25, { Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0) }, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
+            task.wait(0.25); main.Visible = false
+        else
+            main.Visible = true
+            main.Size = UDim2.new(0, 0, 0, 0); main.Position = UDim2.new(0.5, 0, 0.5, 0)
+            tween(main, 0.35, { Size = UDim2.new(0, 660, 0, 400), Position = UDim2.new(0.5, -330, 0.5, -200) })
+        end
+    end)
+end
+
+--══════════════════════════════════════════════════════════════════
+-- ✨ PARTÍCULAS
+--══════════════════════════════════════════════════════════════════
+local function startParticles(main, gui)
+    task.spawn(function()
+        while main and main.Parent do
+            if main.Visible then
+                local pos = main.AbsolutePosition
+                local size = main.AbsoluteSize
+                local side = math.random(1, 4)
+                local ox, oy
+                if side == 1 then ox, oy = pos.X + math.random(0, size.X), pos.Y
+                elseif side == 2 then ox, oy = pos.X + math.random(0, size.X), pos.Y + size.Y
+                elseif side == 3 then ox, oy = pos.X, pos.Y + math.random(0, size.Y)
+                else ox, oy = pos.X + size.X, pos.Y + math.random(0, size.Y) end
+
+                local p = Instance.new("Frame")
+                p.Size = UDim2.new(0, 6, 0, 6); p.Position = UDim2.new(0, ox, 0, oy)
+                p.AnchorPoint = Vector2.new(0.5, 0.5); p.BackgroundColor3 = C.Primary
+                p.BorderSizePixel = 0; p.ZIndex = 8; p.Parent = gui
+                addCorner(p, UDim.new(1, 0))
+
+                local angle = math.random() * math.pi * 2
+                local dist = math.random(60, 140)
+
+                tween(p, 1.8, {
+                    Position = UDim2.new(0, ox + math.cos(angle) * dist, 0, oy + math.sin(angle) * dist),
+                    Size = UDim2.new(0, 2, 0, 2), BackgroundTransparency = 1,
+                }, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+                task.delay(2, function() if p then p:Destroy() end end)
+            end
+            task.wait(0.2)
+        end
+    end)
+end
+
+--══════════════════════════════════════════════════════════════════
+-- 🚀 INIT
+--══════════════════════════════════════════════════════════════════
+local function init()
+    buildUI()
+    createFloatingButton(State.UI.Gui)
+
+    for i, cat in ipairs(CATEGORIES) do
+        createTabButton(cat, i)
+    end
+    State.UI.renderCategory(1)
+
+    State.UI.Search:GetPropertyChangedSignal("Text"):Connect(function()
+        local q = State.UI.Search.Text:lower()
+        for _, card in ipairs(State.UI.List:GetChildren()) do
+            if card:IsA("Frame") then
+                card.Visible = q == "" or card.Name:lower():find(q, 1, true)
+            end
+        end
+    end)
+
+    startParticles(State.UI.Main, State.UI.Gui)
+    startStats()
+
+    UserInputService.InputBegan:Connect(function(input, processed)
+        if processed then return end
+        local k = input.KeyCode
+        if k == Enum.KeyCode.K then
+            playSound(SND, 0.4, 1.0)
+            local main = State.UI.Main
+            if main.Visible then
+                tween(main, 0.25, { Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0) }, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
+                task.wait(0.25); main.Visible = false
+            else
+                main.Visible = true; main.Size = UDim2.new(0, 0, 0, 0)
+                main.Position = UDim2.new(0.5, 0, 0.5, 0)
+                tween(main, 0.35, { Size = UDim2.new(0, 660, 0, 400), Position = UDim2.new(0.5, -330, 0.5, -200) })
+            end
+        elseif k == Enum.KeyCode.R then
+            playSound(SND, 0.5, 1.3)
+            State.RGBMode = not State.RGBMode
+            if State.RGBMode then startRGB() end
+        elseif k == Enum.KeyCode.H then
+            playSound(SND, 0.5, 1.1); showHistory()
+        elseif k == Enum.KeyCode.F then
+            playSound(SND, 0.5, 1.1)
+            State.Filter = State.Filter == "⭐" and "ALL" or "⭐"
+            State.UI.renderCategory(State.CurrentTab)
+        elseif k == Enum.KeyCode.G then
+            playSound(SND, 0.5, 1.1); showSettings()
+        elseif k == Enum.KeyCode.T then
+            playSound(SND, 0.5, 1.1); showThemes()
+        elseif k == Enum.KeyCode.P then
+            playSound(SND, 0.5, 1.1); showRadar()
+        elseif k == Enum.KeyCode.I then
+            playSound(SND, 0.5, 1.1); showServerInfo()
+        elseif k == Enum.KeyCode.A then
+            playSound(SND, 0.5, 1.1); startAntiAfk()
+        elseif k == Enum.KeyCode.Y then
+            playSound(SND, 0.5, 1.1); showTopFavorites()
+        elseif k == Enum.KeyCode.B then
+            playSound(SND, 0.5, 1.1); backupConfig()
+        elseif k == Enum.KeyCode.L then
+            playSound(SND, 0.5, 1.1)
+            showToast("🎮 Latência", "Testando...", C.Accent)
+            task.spawn(function()
+                local min, max, sum = 9999, 0, 0
+                for i = 1, 5 do
+                    local s = tick()
+                    pcall(function() game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() end)
+                    local e = math.floor((tick() - s) * 1000)
+                    if e < min then min = e end
+                    if e > max then max = e end
+                    sum = sum + e
+                    task.wait(0.3)
+                end
+                showToast("🎮 Latência", "Min: " .. min .. "ms • Max: " .. max .. "ms • Médio: " .. math.floor(sum/5) .. "ms", C.Success)
+            end)
+        end
+    end)
+
+    task.spawn(function()
+        while true do task.wait(10); saveData() end
+    end)
+
+    playIntro(State.UI.Gui)
+
+    task.wait(2.5)
+    showToast("👋 Bem-vindo!", HUB_NAME .. " " .. VERSION .. " carregado!", C.Primary)
+    print("[" .. HUB_NAME .. "] " .. VERSION .. " carregado ✅")
+end
+
+init()
