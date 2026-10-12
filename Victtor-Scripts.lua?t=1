@@ -2,7 +2,7 @@
     ⚡🌌👑 VICTTOR HUB — v2.0 HYPER MEGA BRABO EDITION 👑🌌⚡
     Steal An Egg + Blox Fruits | 50+ Hubs
     ⭐ Favoritos • 🕐 Histórico • ⚙ Config • 🎨 6 Temas
-    🔔 Notificações • 📋 Copiar • 🔍 Filtro Keyless • ⚡ Turbo Mode
+    🔔 Notificações • 📋 Copiar • 🔍 Filtro Keyless • 🕒 Horário • 🔄 Transições
 ]]
 
 local Players = game:GetService("Players")
@@ -12,18 +12,6 @@ local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 local SoundService = game:GetService("SoundService")
 local Debris = game:GetService("Debris")
-
-local function playSound(id, vol)
-    if not Config or not Config.soundEnabled then return end
-    pcall(function()
-        local s = Instance.new("Sound")
-        s.SoundId = "rbxassetid://" .. id
-        s.Volume = vol or 0.3
-        s.Parent = SoundService
-        s:Play()
-        Debris:AddItem(s, 5)
-    end)
-end
 
 local COLORS = {
     bg          = Color3.fromRGB(8, 4, 18),
@@ -95,6 +83,18 @@ local function saveConfig()
     end)
 end
 
+local function playSound(id, vol)
+    if not Config.soundEnabled then return end
+    pcall(function()
+        local s = Instance.new("Sound")
+        s.SoundId = "rbxassetid://" .. id
+        s.Volume = vol or 0.3
+        s.Parent = SoundService
+        s:Play()
+        Debris:AddItem(s, 5)
+    end)
+end
+
 local THEMES = {
     { name = "Galáctico",  accent = Color3.fromRGB(170, 105, 255), gold = Color3.fromRGB(255, 220, 100) },
     { name = "Vermelho",   accent = Color3.fromRGB(255, 80, 90),   gold = Color3.fromRGB(255, 180, 100) },
@@ -119,7 +119,7 @@ end
 applyTheme(Config.themeIndex)
 
 -- ==========================================
--- FUNDO HIPER GALÁCTICO
+-- FUNDO
 -- ==========================================
 local GalaxyGui = Instance.new("ScreenGui")
 GalaxyGui.Name = "HyperBackground"
@@ -150,50 +150,8 @@ for i = 1, 90 do
     end)
 end
 
-task.spawn(function()
-    while GalaxyGui.Parent do
-        task.wait(math.random(3, 8))
-        local Shooting = Instance.new("Frame")
-        Shooting.Size = UDim2.new(0, 80, 0, 2)
-        Shooting.Position = UDim2.new(math.random(0, 80) / 100, 0, math.random(0, 40) / 100, 0)
-        Shooting.Rotation = 35
-        Shooting.BackgroundColor3 = COLORS.goldBright
-        Shooting.BorderSizePixel = 0
-        Shooting.ZIndex = 0
-        Shooting.Parent = GalaxyGui
-        corner(Shooting, UDim.new(1, 0))
-
-        TweenService:Create(Shooting, TweenInfo.new(1.5, Enum.EasingStyle.Quad), {
-            Position = UDim2.new(Shooting.Position.X.Scale + 0.5, 0, Shooting.Position.Y.Scale + 0.35, 0),
-            BackgroundTransparency = 1
-        }):Play()
-        Debris:AddItem(Shooting, 1.6)
-    end
-end)
-
-task.spawn(function()
-    while GalaxyGui.Parent do
-        task.wait(math.random(5, 12))
-        local Beam = Instance.new("Frame")
-        Beam.Size = UDim2.new(0, 2, 0, 350)
-        Beam.Position = UDim2.new(math.random(0, 100) / 100, 0, -0.4, 0)
-        Beam.BackgroundColor3 = COLORS.goldBright
-        Beam.BackgroundTransparency = 0.4
-        Beam.BorderSizePixel = 0
-        Beam.ZIndex = 1
-        Beam.Parent = GalaxyGui
-        corner(Beam, UDim.new(1, 0))
-
-        TweenService:Create(Beam, TweenInfo.new(2.2, Enum.EasingStyle.Quad), {
-            Position = UDim2.new(Beam.Position.X.Scale, 0, 1.4, 0),
-            BackgroundTransparency = 1
-        }):Play()
-        Debris:AddItem(Beam, 2.3)
-    end
-end)
-
 -- ==========================================
--- INTRO HYPER MEGA
+-- INTRO
 -- ==========================================
 local function createIntro()
     local IntroGui = Instance.new("ScreenGui")
@@ -211,32 +169,6 @@ local function createIntro()
     BG.Parent = IntroGui
     TweenService:Create(BG, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
 
-    local Nebula = Instance.new("Frame")
-    Nebula.Size = UDim2.new(1, 0, 1, 0)
-    Nebula.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    Nebula.BorderSizePixel = 0
-    Nebula.ZIndex = 1
-    Nebula.Parent = IntroGui
-
-    local NG = Instance.new("UIGradient")
-    NG.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
-        ColorSequenceKeypoint.new(0.25, COLORS.accentDark),
-        ColorSequenceKeypoint.new(0.5, COLORS.goldDark),
-        ColorSequenceKeypoint.new(0.75, COLORS.accentDark),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
-    })
-    NG.Rotation = 45
-    NG.Parent = Nebula
-
-    task.spawn(function()
-        while Nebula.Parent do
-            NG.Rotation = 45
-            TweenService:Create(NG, TweenInfo.new(9, Enum.EasingStyle.Linear), {Rotation = 405}):Play()
-            task.wait(9)
-        end
-    end)
-
     local Flash1 = Instance.new("Frame")
     Flash1.Size = UDim2.new(1, 0, 1, 0)
     Flash1.BackgroundColor3 = COLORS.goldBright
@@ -246,81 +178,22 @@ local function createIntro()
     TweenService:Create(Flash1, TweenInfo.new(0.35), {BackgroundTransparency = 1}):Play()
     Debris:AddItem(Flash1, 0.4)
 
-    for i = 1, 5 do
-        local sz = 110 + (i * 25)
-        local ring = Instance.new("Frame")
-        ring.Size = UDim2.new(0, sz, 0, sz)
-        ring.AnchorPoint = Vector2.new(0.5, 0.5)
-        ring.Position = UDim2.new(0.5, 0, 0.33, 0)
-        ring.BackgroundTransparency = 1
-        ring.ZIndex = 6 - i
-        ring.Parent = IntroGui
-        corner(ring, UDim.new(1, 0))
-        local colors = {COLORS.gold, COLORS.accent, COLORS.pink, COLORS.cyan, COLORS.purple}
-        local rs = stroke(ring, colors[i], 2, 0.2)
-
-        task.spawn(function()
-            for _ = 1, 4 do
-                ring.Size = UDim2.new(0, sz, 0, sz)
-                rs.Transparency = 0.2
-                TweenService:Create(ring, TweenInfo.new(1.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                    Size = UDim2.new(0, sz + 200, 0, sz + 200)
-                }):Play()
-                TweenService:Create(rs, TweenInfo.new(1.6), {Transparency = 1}):Play()
-                task.wait(0.5)
-            end
-        end)
-    end
-
-    local LogoGlow = Instance.new("Frame")
-    LogoGlow.Size = UDim2.new(0, 160, 0, 160)
-    LogoGlow.AnchorPoint = Vector2.new(0.5, 0.5)
-    LogoGlow.Position = UDim2.new(0.5, 0, 0.33, 0)
-    LogoGlow.BackgroundColor3 = COLORS.accent
-    LogoGlow.BackgroundTransparency = 0.65
-    LogoGlow.BorderSizePixel = 0
-    LogoGlow.ZIndex = 3
-    LogoGlow.Parent = IntroGui
-    corner(LogoGlow, 40)
-
-    local LogoShadow = Instance.new("Frame")
-    LogoShadow.Size = UDim2.new(0, 120, 0, 120)
-    LogoShadow.AnchorPoint = Vector2.new(0.5, 0.5)
-    LogoShadow.Position = UDim2.new(0.5, 0, 0.33, 7)
-    LogoShadow.BackgroundColor3 = COLORS.accentDark
-    LogoShadow.BackgroundTransparency = 0.25
-    LogoShadow.BorderSizePixel = 0
-    LogoShadow.ZIndex = 4
-    LogoShadow.Parent = IntroGui
-    corner(LogoShadow, 28)
-
     local Logo = Instance.new("TextLabel")
     Logo.Size = UDim2.new(0, 110, 0, 110)
     Logo.AnchorPoint = Vector2.new(0.5, 0.5)
-    Logo.Position = UDim2.new(0.5, 0, 0.33, 0)
+    Logo.Position = UDim2.new(0.5, 0, 0.35, 0)
     Logo.BackgroundColor3 = COLORS.accent
     Logo.Text = "🌌"
     Logo.TextSize = 58
     Logo.Font = Enum.Font.GothamBlack
     Logo.BorderSizePixel = 0
-    Logo.TextTransparency = 1
-    Logo.BackgroundTransparency = 1
     Logo.ZIndex = 6
     Logo.Parent = IntroGui
     corner(Logo, 26)
 
-    local LGrad = Instance.new("UIGradient")
-    LGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, COLORS.goldBright),
-        ColorSequenceKeypoint.new(0.5, COLORS.accentHover),
-        ColorSequenceKeypoint.new(1, COLORS.accentDark)
-    })
-    LGrad.Rotation = 45
-    LGrad.Parent = Logo
-
     local Title = Instance.new("TextLabel")
     Title.Size = UDim2.new(1, 0, 0, 60)
-    Title.Position = UDim2.new(0, 0, 0.49, 0)
+    Title.Position = UDim2.new(0, 0, 0.5, 0)
     Title.BackgroundTransparency = 1
     Title.Text = "VICTTOR HUB"
     Title.TextColor3 = COLORS.text
@@ -328,139 +201,23 @@ local function createIntro()
     Title.TextStrokeColor3 = COLORS.goldDark
     Title.Font = Enum.Font.GothamBlack
     Title.TextSize = 48
-    Title.TextTransparency = 1
     Title.ZIndex = 6
     Title.Parent = IntroGui
 
     local Sub = Instance.new("TextLabel")
     Sub.Size = UDim2.new(1, 0, 0, 26)
-    Sub.Position = UDim2.new(0, 0, 0.575, 0)
+    Sub.Position = UDim2.new(0, 0, 0.585, 0)
     Sub.BackgroundTransparency = 1
     Sub.Text = "Steal An Egg  •  Blox Fruits"
     Sub.TextColor3 = COLORS.subtext
     Sub.Font = Enum.Font.GothamSemibold
     Sub.TextSize = 16
-    Sub.TextTransparency = 1
     Sub.ZIndex = 6
     Sub.Parent = IntroGui
 
-    local Tag = Instance.new("TextLabel")
-    Tag.Size = UDim2.new(1, 0, 0, 22)
-    Tag.Position = UDim2.new(0, 0, 0.625, 0)
-    Tag.BackgroundTransparency = 1
-    Tag.Text = "✦  v2.0  H Y P E R   M E G A   B R A B O  ✦"
-    Tag.TextColor3 = COLORS.pink
-    Tag.Font = Enum.Font.GothamBlack
-    Tag.TextSize = 13
-    Tag.TextTransparency = 1
-    Tag.ZIndex = 6
-    Tag.Parent = IntroGui
-
-    local LoadBarBG = Instance.new("Frame")
-    LoadBarBG.Size = UDim2.new(0.5, 0, 0, 9)
-    LoadBarBG.AnchorPoint = Vector2.new(0.5, 0.5)
-    LoadBarBG.Position = UDim2.new(0.5, 0, 0.71, 0)
-    LoadBarBG.BackgroundColor3 = Color3.fromRGB(35, 25, 55)
-    LoadBarBG.BorderSizePixel = 0
-    LoadBarBG.ZIndex = 5
-    LoadBarBG.Parent = IntroGui
-    corner(LoadBarBG, UDim.new(1, 0))
-
-    local LoadBar = Instance.new("Frame")
-    LoadBar.Size = UDim2.new(0, 0, 1, 0)
-    LoadBar.BackgroundColor3 = COLORS.gold
-    LoadBar.BorderSizePixel = 0
-    LoadBar.ZIndex = 5
-    LoadBar.Parent = LoadBarBG
-    corner(LoadBar, UDim.new(1, 0))
-
-    local LBGrad = Instance.new("UIGradient")
-    LBGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, COLORS.accent),
-        ColorSequenceKeypoint.new(0.5, COLORS.goldBright),
-        ColorSequenceKeypoint.new(1, COLORS.accent)
-    })
-    LBGrad.Parent = LoadBar
-
-    local loop = true
-    task.spawn(function()
-        while loop do
-            task.wait(0.02)
-            for _ = 1, 4 do
-                local p = Instance.new("Frame")
-                local sz = math.random(3, 9)
-                p.Size = UDim2.new(0, sz, 0, sz)
-                p.Position = UDim2.new(math.random(0, 100) / 100, 0, 1.05, 0)
-                local colors = {COLORS.accent, COLORS.gold, COLORS.pink, COLORS.cyan, COLORS.star, COLORS.purple}
-                p.BackgroundColor3 = colors[math.random(1, #colors)]
-                p.BorderSizePixel = 0
-                p.ZIndex = 7
-                p.Parent = IntroGui
-                corner(p, UDim.new(1, 0))
-                TweenService:Create(p, TweenInfo.new(math.random(10, 18) / 10, Enum.EasingStyle.Quad), {
-                    Position = UDim2.new(p.Position.X.Scale + math.random(-40, 40) / 100, 0, -0.1, 0),
-                    BackgroundTransparency = 1,
-                    Size = UDim2.new(0, 1, 0, 1)
-                }):Play()
-                Debris:AddItem(p, 2)
-            end
-        end
-    end)
-
-    TweenService:Create(LogoGlow, TweenInfo.new(0.5, Enum.EasingStyle.Back), {BackgroundTransparency = 0.3, Size = UDim2.new(0, 210, 0, 210)}):Play()
-    TweenService:Create(Logo, TweenInfo.new(0.5, Enum.EasingStyle.Back), {TextTransparency = 0, BackgroundTransparency = 0}):Play()
-    TweenService:Create(LogoShadow, TweenInfo.new(0.5, Enum.EasingStyle.Back), {BackgroundTransparency = 0.05, Size = UDim2.new(0, 145, 0, 145)}):Play()
-    task.wait(0.35)
-    TweenService:Create(Title, TweenInfo.new(0.5, Enum.EasingStyle.Back), {TextTransparency = 0}):Play()
-    task.wait(0.2)
-    TweenService:Create(Sub, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
-    task.wait(0.15)
-    TweenService:Create(Tag, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
-    TweenService:Create(LoadBar, TweenInfo.new(2.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)}):Play()
-
-    task.wait(3)
-    loop = false
-
-    local Flash2 = Instance.new("Frame")
-    Flash2.Size = UDim2.new(1, 0, 1, 0)
-    Flash2.BackgroundColor3 = COLORS.goldBright
-    Flash2.BorderSizePixel = 0
-    Flash2.ZIndex = 40
-    Flash2.Parent = IntroGui
-    TweenService:Create(Flash2, TweenInfo.new(0.6), {BackgroundTransparency = 1}):Play()
-    Debris:AddItem(Flash2, 0.65)
-
-    for i = 1, 64 do
-        local Spike = Instance.new("Frame")
-        local angle = (i / 64) * math.pi * 2
-        Spike.Size = UDim2.new(0, 2, 0, 260)
-        Spike.AnchorPoint = Vector2.new(0.5, 0.5)
-        Spike.Position = UDim2.new(0.5, 0, 0.33, 0)
-        Spike.Rotation = math.deg(angle)
-        local c = i % 4 == 0 and COLORS.goldBright or (i % 4 == 1 and COLORS.white or (i % 4 == 2 and COLORS.pink or COLORS.accentHover))
-        Spike.BackgroundColor3 = c
-        Spike.BorderSizePixel = 0
-        Spike.ZIndex = 35
-        Spike.Parent = IntroGui
-        TweenService:Create(Spike, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Size = UDim2.new(0, 0, 0, 640),
-            BackgroundTransparency = 1
-        }):Play()
-        Debris:AddItem(Spike, 0.7)
-    end
-
-    task.wait(0.3)
-    TweenService:Create(Title, TweenInfo.new(0.3), {TextTransparency = 1, Position = UDim2.new(0, 0, 0.44, 0)}):Play()
-    TweenService:Create(Sub, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
-    TweenService:Create(Tag, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
-    TweenService:Create(Logo, TweenInfo.new(0.3), {TextTransparency = 1, BackgroundTransparency = 1}):Play()
-    TweenService:Create(LogoShadow, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(LogoGlow, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(LoadBarBG, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(LoadBar, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    task.wait(2.2)
     TweenService:Create(BG, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-
-    task.wait(0.7)
+    task.wait(0.6)
     IntroGui:Destroy()
 end
 
@@ -490,17 +247,6 @@ corner(OpenBtn, UDim.new(1, 0))
 stroke(OpenBtn, COLORS.gold, 2)
 
 local WIN_W, WIN_H = 680, 370
-
-local MainShadow = Instance.new("Frame")
-MainShadow.Size = UDim2.new(0, WIN_W + 24, 0, WIN_H + 24)
-MainShadow.Position = UDim2.new(0.5, -WIN_W/2 - 12, 0.5, -WIN_H/2 + 10)
-MainShadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-MainShadow.BackgroundTransparency = 0.55
-MainShadow.BorderSizePixel = 0
-MainShadow.Visible = false
-MainShadow.ZIndex = 0
-MainShadow.Parent = ScreenGui
-corner(MainShadow, 24)
 
 local Main = Instance.new("Frame")
 Main.Size = UDim2.new(0, WIN_W, 0, WIN_H)
@@ -584,6 +330,26 @@ HSub.TextXAlignment = Enum.TextXAlignment.Left
 HSub.ZIndex = 3
 HSub.Parent = Header
 
+-- Contador de players no header
+local PlayerCounter = Instance.new("TextLabel")
+PlayerCounter.Size = UDim2.new(0, 130, 0, 16)
+PlayerCounter.Position = UDim2.new(0, 260, 0, 33)
+PlayerCounter.BackgroundTransparency = 1
+PlayerCounter.Text = "👥 Online: 0"
+PlayerCounter.TextColor3 = COLORS.cyan
+PlayerCounter.Font = Enum.Font.GothamBold
+PlayerCounter.TextSize = 10
+PlayerCounter.TextXAlignment = Enum.TextXAlignment.Left
+PlayerCounter.ZIndex = 3
+PlayerCounter.Parent = Header
+
+task.spawn(function()
+    while PlayerCounter.Parent do
+        PlayerCounter.Text = "👥 Online: " .. #Players:GetPlayers()
+        task.wait(2)
+    end
+end)
+
 local CloseBtn = Instance.new("TextButton")
 CloseBtn.Size = UDim2.new(0, 30, 0, 30)
 CloseBtn.Position = UDim2.new(1, -46, 0, 16)
@@ -641,14 +407,6 @@ SearchBox.ClearTextOnFocus = false
 SearchBox.ZIndex = 3
 SearchBox.Parent = SearchHolder
 
-SearchBox.Focused:Connect(function()
-    TweenService:Create(SearchStroke, TweenInfo.new(0.15), {Color = COLORS.gold, Thickness = 1.5}):Play()
-end)
-SearchBox.FocusLost:Connect(function()
-    TweenService:Create(SearchStroke, TweenInfo.new(0.15), {Color = COLORS.stroke, Thickness = 1}):Play()
-end)
-
--- Pills
 local PillsScroll = Instance.new("ScrollingFrame")
 PillsScroll.Size = UDim2.new(0.52, -8, 1, 0)
 PillsScroll.Position = UDim2.new(0.32, 8, 0, 0)
@@ -683,14 +441,6 @@ KeylessFilter.AutoButtonColor = false
 KeylessFilter.Parent = TopBar
 corner(KeylessFilter, 10)
 local KFStroke = stroke(KeylessFilter, COLORS.stroke, 1)
-
-KeylessFilter.MouseButton1Click:Connect(function()
-    onlyKeyless = not onlyKeyless
-    KeylessFilter.BackgroundColor3 = onlyKeyless and COLORS.green or COLORS.card
-    KeylessFilter.TextColor3 = onlyKeyless and Color3.fromRGB(255, 255, 255) or COLORS.subtext
-    KFStroke.Color = onlyKeyless and COLORS.green or COLORS.stroke
-    refreshCards()
-end)
 
 -- Cards Area
 local CardsScroll = Instance.new("ScrollingFrame")
@@ -736,7 +486,7 @@ StatusDot.Parent = StatusBar
 corner(StatusDot, UDim.new(1, 0))
 
 local StatusText = Instance.new("TextLabel")
-StatusText.Size = UDim2.new(0, 400, 1, 0)
+StatusText.Size = UDim2.new(0, 320, 1, 0)
 StatusText.Position = UDim2.new(0, 30, 0, 0)
 StatusText.BackgroundTransparency = 1
 StatusText.Text = "Pronto  •  VICTTOR HUB v2.0"
@@ -746,6 +496,27 @@ StatusText.TextSize = 11
 StatusText.TextXAlignment = Enum.TextXAlignment.Left
 StatusText.ZIndex = 4
 StatusText.Parent = StatusBar
+
+-- RELÓGIO EM TEMPO REAL
+local ClockLabel = Instance.new("TextLabel")
+ClockLabel.Size = UDim2.new(0, 100, 1, 0)
+ClockLabel.Position = UDim2.new(1, -110, 0, 0)
+ClockLabel.BackgroundTransparency = 1
+ClockLabel.Text = "🕒 00:00:00"
+ClockLabel.TextColor3 = COLORS.cyan
+ClockLabel.Font = Enum.Font.GothamBold
+ClockLabel.TextSize = 11
+ClockLabel.TextXAlignment = Enum.TextXAlignment.Right
+ClockLabel.ZIndex = 4
+ClockLabel.Parent = StatusBar
+
+task.spawn(function()
+    while ClockLabel.Parent do
+        local t = os.date("*t", os.time())
+        ClockLabel.Text = string.format("🕒 %02d:%02d:%02d", t.hour, t.min, t.sec)
+        task.wait(1)
+    end
+end)
 
 -- Result Count
 local ResultCount = Instance.new("TextLabel")
@@ -821,10 +592,9 @@ local function showNotification(title, message, color, duration)
 end
 
 -- ==========================================
--- DATABASE DE SCRIPTS
+-- DATABASE
 -- ==========================================
 local SCRIPTS = {
-    -- EGG • DESTAQUES
     { name = "Chilli Hub", cat = "Egg • Destaques", desc = "Auto Steal • Target Areas", keyless = true, tag = "POPULAR",
       load = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"))() end },
     { name = "Ouroboros Hub", cat = "Egg • Destaques", desc = "Auto Steal • Auto Hatch", keyless = true, tag = "NOVO",
@@ -842,7 +612,6 @@ local SCRIPTS = {
     { name = "Snowy Hub", cat = "Egg • Destaques", desc = "Fly • Noclip", keyless = false, tag = "KEY",
       load = function() loadstring(game:HttpGet("https://flowauth.net/v1/ui/a87f00d9adf63658655fcd02ab86a4ef.lua"))() end },
 
-    -- EGG • AUTO FARM
     { name = "Toolbox Hub", cat = "Egg • Auto Farm", desc = "Teleports • Anti Ragdoll", keyless = true, tag = "KEYLESS",
       load = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Abdullahking20/loader-lua/main/loader"))() end },
     { name = "Lunar X Jump", cat = "Egg • Auto Farm", desc = "Instant Steal", keyless = true, tag = "FAST",
@@ -856,7 +625,6 @@ local SCRIPTS = {
     { name = "Ronix Hub", cat = "Egg • Auto Farm", desc = "Loop Steal • DNA Steal", keyless = false, tag = "KEY",
       load = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/fda9babd071d6b536a745774b6bc681c.lua"))() end },
 
-    -- EGG • KEYLESS
     { name = "Fly Script", cat = "Egg • Keyless", desc = "Fly • Speed", keyless = true, tag = "KEYLESS",
       load = function() loadstring(game:HttpGet("https://pastefy.app/kQ2m1nSa/raw"))() end },
     { name = "Oxide Hub", cat = "Egg • Keyless", desc = "Anti AC • Open Source", keyless = true, tag = "KEYLESS",
@@ -868,7 +636,6 @@ local SCRIPTS = {
     { name = "Genesis Hub", cat = "Egg • Keyless", desc = "Auto-Steal simples", keyless = true, tag = "KEYLESS",
       load = function() loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/5946add9ab91f1e04cb005346a8b1968.lua"))() end },
 
-    -- FRUIT • DESTAQUES
     { name = "Redz Hub", cat = "Fruit • Destaques", desc = "Auto Farm • Mastery", keyless = true, tag = "TOP",
       load = function()
         local Settings = { JoinTeam = "Pirates"; Translator = true }
@@ -890,7 +657,6 @@ local SCRIPTS = {
     { name = "Cokka Hub", cat = "Fruit • Destaques", desc = "Auto Farm W1/W2/W3", keyless = false, tag = "XENO",
       load = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ShowScript79/cokkahub/refs/heads/main/cokkahub"))() end },
 
-    -- FRUIT • AUTO FARM
     { name = "Speed Hub X", cat = "Fruit • Auto Farm", desc = "Auto Level • Chest", keyless = true, tag = "KEYLESS",
       load = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua"))() end },
     { name = "Dragon Hub", cat = "Fruit • Auto Farm", desc = "Fastest Auto Level", keyless = true, tag = "KEYLESS",
@@ -903,7 +669,6 @@ local SCRIPTS = {
     { name = "Xero Kaitun", cat = "Fruit • Auto Farm", desc = "Auto Max • Godhuman", keyless = true, tag = "FAST",
       load = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/verudous/Xero-Hub/refs/heads/main/kaitun.lua"))() end },
 
-    -- FRUIT • PVP
     { name = "Hermanos PVP", cat = "Fruit • PVP", desc = "Silent Aim • ESP", keyless = true, tag = "PVP",
       load = function()
         getgenv().script_mode = "PVP"
@@ -912,7 +677,6 @@ local SCRIPTS = {
     { name = "VXEZE Bounty", cat = "Fruit • PVP", desc = "Auto Bounty Hunt V2", keyless = true, tag = "PVP",
       load = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubAutoBounty"))() end },
 
-    -- FRUIT • KEYLESS
     { name = "BF Keyless", cat = "Fruit • Keyless", desc = "Hub sem key", keyless = true, tag = "KEYLESS",
       load = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/MeoLazy/Script/refs/heads/main/V1.lua"))() end },
     { name = "Void Fruit Farmer", cat = "Fruit • Keyless", desc = "Fruit Grabber • ESP", keyless = true, tag = "KEYLESS",
@@ -991,7 +755,7 @@ local function clearCards()
 end
 
 -- ==========================================
--- CRIAR CARD NORMAL
+-- CARD
 -- ==========================================
 local function createCard(script)
     local Card = Instance.new("Frame")
@@ -1038,7 +802,6 @@ local function createCard(script)
     Desc.ZIndex = 4
     Desc.Parent = Card
 
-    -- Botão Favorito
     local FavBtn = Instance.new("TextButton")
     FavBtn.Size = UDim2.new(0, 22, 0, 22)
     FavBtn.Position = UDim2.new(1, -108, 0, 8)
@@ -1056,10 +819,8 @@ local function createCard(script)
         local isFav = toggleFavorite(script.name)
         FavBtn.Text = isFav and "⭐" or "☆"
         FavBtn.TextColor3 = isFav and COLORS.gold or COLORS.subtext
-        if activeCategory == "⭐ Favoritos" then refreshCards() end
     end)
 
-    -- Botão Copiar
     local CopyBtn = Instance.new("TextButton")
     CopyBtn.Size = UDim2.new(0, 22, 0, 22)
     CopyBtn.Position = UDim2.new(1, -84, 0, 8)
@@ -1139,6 +900,7 @@ local function createCard(script)
     end)
 
     Exec.MouseButton1Click:Connect(function()
+        playSound("6042053626", 0.4)
         Exec.Text = "OK!"
         StatusText.Text = "Executando: " .. script.name
         StatusText.TextColor3 = COLORS.orange
@@ -1165,11 +927,11 @@ local function createCard(script)
 end
 
 -- ==========================================
--- CARD DE CONFIGURAÇÕES
+-- CARD DE CONFIG
 -- ==========================================
 local function createConfigCard()
     local ConfigFrame = Instance.new("Frame")
-    ConfigFrame.Size = UDim2.new(1, -4, 0, 300)
+    ConfigFrame.Size = UDim2.new(1, -4, 0, 280)
     ConfigFrame.BackgroundColor3 = COLORS.card
     ConfigFrame.BorderSizePixel = 0
     ConfigFrame.Parent = CardsScroll
@@ -1296,17 +1058,6 @@ local function createConfigCard()
         saveConfig()
         showNotification("🗑 Limpo", "Favoritos e histórico apagados", COLORS.red, 2)
     end)
-
-    local Info = Instance.new("TextLabel")
-    Info.Size = UDim2.new(1, -20, 0, 40)
-    Info.Position = UDim2.new(0, 10, 0, 256)
-    Info.BackgroundTransparency = 1
-    Info.Text = "VICTTOR HUB v2.0 • Configs salvam automaticamente"
-    Info.TextColor3 = COLORS.subtext
-    Info.Font = Enum.Font.GothamSemibold
-    Info.TextSize = 9
-    Info.TextXAlignment = Enum.TextXAlignment.Center
-    Info.Parent = ConfigFrame
 end
 
 -- ==========================================
@@ -1402,22 +1153,60 @@ local function refreshCards()
     ResultCount.Text = count .. " script(s) em " .. activeCategory
 end
 
+-- ==========================================
+-- TRANSIÇÃO ENTRE ABAS
+-- ==========================================
 local function setActivePill(catName)
+    if activeCategory == catName then return end
     activeCategory = catName
+
+    -- Slide out dos cards antigos
+    for _, c in pairs(Cards) do
+        TweenService:Create(c, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {
+            BackgroundTransparency = 1,
+            Position = UDim2.new(c.Position.X.Scale - 0.05, 0, c.Position.Y.Scale, 0)
+        }):Play()
+    end
+
+    -- Atualiza as pills
     for name, data in pairs(Pills) do
         local p = data.button
         if name == catName then
-            p.BackgroundColor3 = COLORS.accent
-            data.stroke.Color = COLORS.goldBright
+            TweenService:Create(p, TweenInfo.new(0.2), {BackgroundColor3 = COLORS.accent}):Play()
+            TweenService:Create(data.stroke, TweenInfo.new(0.2), {Color = COLORS.goldBright}):Play()
             p.TextColor3 = Color3.fromRGB(255, 255, 255)
         else
-            p.BackgroundColor3 = COLORS.card
-            data.stroke.Color = COLORS.stroke
+            TweenService:Create(p, TweenInfo.new(0.2), {BackgroundColor3 = COLORS.card}):Play()
+            TweenService:Create(data.stroke, TweenInfo.new(0.2), {Color = COLORS.stroke}):Play()
             p.TextColor3 = COLORS.subtext
         end
     end
+
+    -- Aguarda e atualiza com slide in
+    task.wait(0.1)
     refreshCards()
+
+    for _, c in pairs(Cards) do
+        c.BackgroundTransparency = 1
+        c.Position = UDim2.new(0.05, 0, c.Position.Y.Scale, 0)
+        TweenService:Create(c, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            BackgroundTransparency = 0,
+            Position = UDim2.new(0, 0, c.Position.Y.Scale, 0)
+        }):Play()
+        task.wait(0.02)
+    end
 end
+
+-- ==========================================
+-- BOTÃO KEYLESS (agora depois do refreshCards)
+-- ==========================================
+KeylessFilter.MouseButton1Click:Connect(function()
+    onlyKeyless = not onlyKeyless
+    KeylessFilter.BackgroundColor3 = onlyKeyless and COLORS.green or COLORS.card
+    KeylessFilter.TextColor3 = onlyKeyless and Color3.fromRGB(255, 255, 255) or COLORS.subtext
+    KFStroke.Color = onlyKeyless and COLORS.green or COLORS.stroke
+    if refreshCards then refreshCards() end
+end)
 
 -- ==========================================
 -- CRIAR PILLS
@@ -1454,6 +1243,7 @@ for _, cat in ipairs(CATEGORIES) do
     Pills[cat.name] = { button = Pill, stroke = ps }
 
     Pill.MouseButton1Click:Connect(function()
+        playSound("6042053626", 0.3)
         setActivePill(cat.name)
     end)
 end
@@ -1476,7 +1266,6 @@ UserInputService.InputChanged:Connect(function(input)
     if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStart
         Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        MainShadow.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X - 12, startPos.Y.Scale, startPos.Y.Offset + delta.Y + 10)
     end
 end)
 UserInputService.InputEnded:Connect(function(input)
@@ -1486,33 +1275,14 @@ UserInputService.InputEnded:Connect(function(input)
 end)
 
 -- Abrir/Fechar
-local function openPanel()
-    Main.Visible = true
-    MainShadow.Visible = true
-    Main.Size = UDim2.new(0, 0, 0, 0)
-    Main.Position = UDim2.new(0.5, 0, 0.5, 0)
-    local tw = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-    TweenService:Create(Main, tw, {Size = UDim2.new(0, WIN_W, 0, WIN_H), Position = UDim2.new(0.5, -WIN_W/2, 0.5, -WIN_H/2)}):Play()
-    TweenService:Create(MainShadow, tw, {Size = UDim2.new(0, WIN_W + 24, 0, WIN_H + 24), Position = UDim2.new(0.5, -WIN_W/2 - 12, 0.5, -WIN_H/2 + 10)}):Play()
-end
-
-local function closePanel()
-    local tw = TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-    TweenService:Create(Main, tw, {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
-    TweenService:Create(MainShadow, tw, {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
-    task.delay(0.24, function()
-        Main.Visible = false
-        MainShadow.Visible = false
-    end)
-end
-
 OpenBtn.MouseButton1Click:Connect(function()
-    if Main.Visible then closePanel() else openPanel() end
+    Main.Visible = not Main.Visible
 end)
-CloseBtn.MouseButton1Click:Connect(closePanel)
+CloseBtn.MouseButton1Click:Connect(function()
+    Main.Visible = false
+end)
 
 setActivePill(CATEGORIES[2].name)
-task.wait(0.15)
-openPanel()
+Main.Visible = true
 
 print("[VICTTOR HUB v2.0] Carregado com sucesso!")
