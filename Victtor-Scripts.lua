@@ -1,17 +1,20 @@
 --[[
-    ⚡🌌👑 VICTTOR HUB — HYPER MEGA BRABO EDITION 👑🌌⚡
+    ⚡🌌👑 VICTTOR HUB — v2.0 HYPER MEGA BRABO EDITION 👑🌌⚡
     Steal An Egg + Blox Fruits | 50+ Hubs
-    Intro cinematográfica • Partículas • Horário global • Transições
+    ⭐ Favoritos • 🕐 Histórico • ⚙ Config • 🎨 6 Temas
+    🔔 Notificações • 📋 Copiar • 🔍 Filtro Keyless • ⚡ Turbo Mode
 ]]
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 local SoundService = game:GetService("SoundService")
 local Debris = game:GetService("Debris")
 
 local function playSound(id, vol)
+    if not Config or not Config.soundEnabled then return end
     pcall(function()
         local s = Instance.new("Sound")
         s.SoundId = "rbxassetid://" .. id
@@ -64,6 +67,56 @@ local function stroke(parent, color, thickness, transparency)
     s.Parent = parent
     return s
 end
+
+-- ==========================================
+-- CONFIG SALVA
+-- ==========================================
+local Config = {
+    favorites = {},
+    history = {},
+    soundEnabled = true,
+    animationsEnabled = true,
+    themeIndex = 1,
+    turboMode = false,
+}
+
+pcall(function()
+    if writefile and readfile and isfile and isfile("VicttorHub_Config.json") then
+        local data = HttpService:JSONDecode(readfile("VicttorHub_Config.json"))
+        for k, v in pairs(data) do Config[k] = v end
+    end
+end)
+
+local function saveConfig()
+    pcall(function()
+        if writefile then
+            writefile("VicttorHub_Config.json", HttpService:JSONEncode(Config))
+        end
+    end)
+end
+
+local THEMES = {
+    { name = "Galáctico",  accent = Color3.fromRGB(170, 105, 255), gold = Color3.fromRGB(255, 220, 100) },
+    { name = "Vermelho",   accent = Color3.fromRGB(255, 80, 90),   gold = Color3.fromRGB(255, 180, 100) },
+    { name = "Azul",       accent = Color3.fromRGB(80, 160, 255),  gold = Color3.fromRGB(130, 220, 255) },
+    { name = "Verde",      accent = Color3.fromRGB(80, 220, 130),  gold = Color3.fromRGB(180, 255, 200) },
+    { name = "Rosa",       accent = Color3.fromRGB(255, 100, 200), gold = Color3.fromRGB(255, 180, 220) },
+    { name = "Laranja",    accent = Color3.fromRGB(255, 140, 60),  gold = Color3.fromRGB(255, 220, 130) },
+}
+
+local function applyTheme(index)
+    if not THEMES[index] then index = 1 end
+    Config.themeIndex = index
+    local theme = THEMES[index]
+    COLORS.accent = theme.accent
+    COLORS.accentHover = theme.accent:Lerp(Color3.new(1,1,1), 0.2)
+    COLORS.accentDark = theme.accent:Lerp(Color3.new(0,0,0), 0.4)
+    COLORS.gold = theme.gold
+    COLORS.goldBright = theme.gold:Lerp(Color3.new(1,1,1), 0.3)
+    COLORS.goldDark = theme.gold:Lerp(Color3.new(0,0,0), 0.4)
+end
+
+applyTheme(Config.themeIndex)
 
 -- ==========================================
 -- FUNDO HIPER GALÁCTICO
@@ -295,7 +348,7 @@ local function createIntro()
     Tag.Size = UDim2.new(1, 0, 0, 22)
     Tag.Position = UDim2.new(0, 0, 0.625, 0)
     Tag.BackgroundTransparency = 1
-    Tag.Text = "✦  H Y P E R   M E G A   B R A B O  ✦"
+    Tag.Text = "✦  v2.0  H Y P E R   M E G A   B R A B O  ✦"
     Tag.TextColor3 = COLORS.pink
     Tag.Font = Enum.Font.GothamBlack
     Tag.TextSize = 13
@@ -329,26 +382,6 @@ local function createIntro()
     })
     LBGrad.Parent = LoadBar
 
-    local BarGlow = Instance.new("Frame")
-    BarGlow.Size = UDim2.new(0, 55, 0, 28)
-    BarGlow.AnchorPoint = Vector2.new(0.5, 0.5)
-    BarGlow.Position = UDim2.new(1, 0, 0.5, 0)
-    BarGlow.BackgroundColor3 = COLORS.goldBright
-    BarGlow.BackgroundTransparency = 0.25
-    BarGlow.BorderSizePixel = 0
-    BarGlow.ZIndex = 6
-    BarGlow.Parent = LoadBar
-    corner(BarGlow, UDim.new(1, 0))
-
-    task.spawn(function()
-        while BarGlow.Parent do
-            TweenService:Create(BarGlow, TweenInfo.new(0.4), {BackgroundTransparency = 0.6, Size = UDim2.new(0, 70, 0, 34)}):Play()
-            task.wait(0.4)
-            TweenService:Create(BarGlow, TweenInfo.new(0.4), {BackgroundTransparency = 0.25, Size = UDim2.new(0, 55, 0, 28)}):Play()
-            task.wait(0.4)
-        end
-    end)
-
     local loop = true
     task.spawn(function()
         while loop do
@@ -374,28 +407,6 @@ local function createIntro()
         end
     end)
 
-    task.spawn(function()
-        task.wait(0.4)
-        for _ = 1, 30 do
-            Logo.Position = UDim2.new(0.5, math.random(-10, 10), 0.33, math.random(-10, 10))
-            LogoShadow.Position = UDim2.new(0.5, math.random(-6, 6), 0.33, 7 + math.random(-6, 6))
-            task.wait(0.02)
-        end
-        Logo.Position = UDim2.new(0.5, 0, 0.33, 0)
-        LogoShadow.Position = UDim2.new(0.5, 0, 0.33, 7)
-    end)
-
-    task.spawn(function()
-        while loop do
-            task.wait(0.09)
-            if math.random(1, 3) == 1 then
-                Title.Position = UDim2.new(0, math.random(-4, 4), 0.49, math.random(-4, 4))
-                task.wait(0.04)
-                Title.Position = UDim2.new(0, 0, 0.49, 0)
-            end
-        end
-    end)
-
     TweenService:Create(LogoGlow, TweenInfo.new(0.5, Enum.EasingStyle.Back), {BackgroundTransparency = 0.3, Size = UDim2.new(0, 210, 0, 210)}):Play()
     TweenService:Create(Logo, TweenInfo.new(0.5, Enum.EasingStyle.Back), {TextTransparency = 0, BackgroundTransparency = 0}):Play()
     TweenService:Create(LogoShadow, TweenInfo.new(0.5, Enum.EasingStyle.Back), {BackgroundTransparency = 0.05, Size = UDim2.new(0, 145, 0, 145)}):Play()
@@ -407,30 +418,8 @@ local function createIntro()
     TweenService:Create(Tag, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
     TweenService:Create(LoadBar, TweenInfo.new(2.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)}):Play()
 
-    task.spawn(function()
-        while loop do
-            task.wait(0.35)
-            TweenService:Create(Title, TweenInfo.new(0.35), {TextColor3 = COLORS.goldBright, TextStrokeColor3 = COLORS.accent}):Play()
-            task.wait(0.35)
-            TweenService:Create(Title, TweenInfo.new(0.35), {TextColor3 = COLORS.text, TextStrokeColor3 = COLORS.goldDark}):Play()
-        end
-    end)
-
     task.wait(3)
     loop = false
-
-    local Shock = Instance.new("Frame")
-    Shock.Size = UDim2.new(0, 100, 0, 100)
-    Shock.AnchorPoint = Vector2.new(0.5, 0.5)
-    Shock.Position = UDim2.new(0.5, 0, 0.33, 0)
-    Shock.BackgroundTransparency = 1
-    Shock.ZIndex = 38
-    Shock.Parent = IntroGui
-    corner(Shock, UDim.new(1, 0))
-    local ShockS = stroke(Shock, COLORS.goldBright, 5, 0)
-    TweenService:Create(Shock, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 1200, 0, 1200)}):Play()
-    TweenService:Create(ShockS, TweenInfo.new(1), {Transparency = 1, Thickness = 0}):Play()
-    Debris:AddItem(Shock, 1.1)
 
     local Flash2 = Instance.new("Frame")
     Flash2.Size = UDim2.new(1, 0, 1, 0)
@@ -460,8 +449,7 @@ local function createIntro()
         Debris:AddItem(Spike, 0.7)
     end
 
-    playSound("5801257793", 0.85)
-
+    task.wait(0.3)
     TweenService:Create(Title, TweenInfo.new(0.3), {TextTransparency = 1, Position = UDim2.new(0, 0, 0.44, 0)}):Play()
     TweenService:Create(Sub, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
     TweenService:Create(Tag, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
@@ -499,28 +487,7 @@ OpenBtn.BorderSizePixel = 0
 OpenBtn.AutoButtonColor = false
 OpenBtn.Parent = ScreenGui
 corner(OpenBtn, UDim.new(1, 0))
-local OCS = stroke(OpenBtn, COLORS.gold, 2)
-
-local OpenGlow = Instance.new("Frame")
-OpenGlow.Size = UDim2.new(0, 76, 0, 76)
-OpenGlow.Position = UDim2.new(0, 11, 0.5, -38)
-OpenGlow.BackgroundColor3 = COLORS.gold
-OpenGlow.BackgroundTransparency = 0.8
-OpenGlow.BorderSizePixel = 0
-OpenGlow.ZIndex = 0
-OpenGlow.Parent = ScreenGui
-corner(OpenGlow, UDim.new(1, 0))
-
-task.spawn(function()
-    while OpenBtn.Parent do
-        TweenService:Create(OCS, TweenInfo.new(0.8), {Transparency = 0.3, Thickness = 3.5}):Play()
-        TweenService:Create(OpenGlow, TweenInfo.new(0.8), {BackgroundTransparency = 0.5, Size = UDim2.new(0, 90, 0, 90), Position = UDim2.new(0, 4, 0.5, -45)}):Play()
-        task.wait(0.8)
-        TweenService:Create(OCS, TweenInfo.new(0.8), {Transparency = 0, Thickness = 2}):Play()
-        TweenService:Create(OpenGlow, TweenInfo.new(0.8), {BackgroundTransparency = 0.8, Size = UDim2.new(0, 76, 0, 76), Position = UDim2.new(0, 11, 0.5, -38)}):Play()
-        task.wait(0.8)
-    end
-end)
+stroke(OpenBtn, COLORS.gold, 2)
 
 local WIN_W, WIN_H = 680, 370
 
@@ -535,27 +502,16 @@ MainShadow.ZIndex = 0
 MainShadow.Parent = ScreenGui
 corner(MainShadow, 24)
 
-local MainShadow2 = Instance.new("Frame")
-MainShadow2.Size = UDim2.new(0, WIN_W + 44, 0, WIN_H + 44)
-MainShadow2.Position = UDim2.new(0.5, -WIN_W/2 - 22, 0.5, -WIN_H/2 + 16)
-MainShadow2.BackgroundColor3 = COLORS.accent
-MainShadow2.BackgroundTransparency = 0.85
-MainShadow2.BorderSizePixel = 0
-MainShadow2.Visible = false
-MainShadow2.ZIndex = -1
-MainShadow2.Parent = ScreenGui
-corner(MainShadow2, 28)
-
 local Main = Instance.new("Frame")
 Main.Size = UDim2.new(0, WIN_W, 0, WIN_H)
 Main.Position = UDim2.new(0.5, -WIN_W/2, 0.5, -WIN_H/2)
 Main.BackgroundColor3 = COLORS.bg
 Main.BorderSizePixel = 0
 Main.Visible = false
-Main.ClipsDescendants = false
+Main.ClipsDescendants = true
 Main.Parent = ScreenGui
 corner(Main, 18)
-local MCS = stroke(Main, COLORS.goldDark, 1.8)
+stroke(Main, COLORS.goldDark, 1.8)
 
 local PanelBG = Instance.new("Frame")
 PanelBG.Size = UDim2.new(1, 0, 1, 0)
@@ -575,101 +531,7 @@ PBG.Color = ColorSequence.new({
 PBG.Rotation = 135
 PBG.Parent = PanelBG
 
-task.spawn(function()
-    while PanelBG.Parent do
-        PBG.Rotation = 135
-        TweenService:Create(PBG, TweenInfo.new(12, Enum.EasingStyle.Linear), {Rotation = 495}):Play()
-        task.wait(12)
-    end
-end)
-
-task.spawn(function()
-    local t = 0
-    while Main.Parent do
-        t = t + 0.01
-        if t > 1 then t = 0 end
-        MCS.Color = COLORS.gold:Lerp(COLORS.accentHover, t)
-        task.wait(0.05)
-    end
-end)
-
-task.spawn(function()
-    while Main.Parent do
-        if Main.Visible then
-            TweenService:Create(MCS, TweenInfo.new(1), {Thickness = 3}):Play()
-            task.wait(1)
-            TweenService:Create(MCS, TweenInfo.new(1), {Thickness = 1.8}):Play()
-            task.wait(1)
-        else
-            task.wait(0.5)
-        end
-    end
-end)
-
--- Partículas
-task.spawn(function()
-    while Main.Parent do
-        task.wait(0.04)
-        if Main.Visible then
-            local p = Instance.new("Frame")
-            local sz = math.random(3, 10)
-            p.Size = UDim2.new(0, sz, 0, sz)
-            p.Position = UDim2.new(math.random(0, 100) / 100, 0, 1, 0)
-            p.BackgroundColor3 = ({COLORS.gold, COLORS.accent, COLORS.pink, COLORS.cyan, COLORS.star, COLORS.purple})[math.random(1, 6)]
-            p.BorderSizePixel = 0
-            p.ZIndex = 100
-            p.Parent = Main.Parent
-            corner(p, UDim.new(1, 0))
-
-            TweenService:Create(p, TweenInfo.new(math.random(15, 25) / 10, Enum.EasingStyle.Quad), {
-                Position = UDim2.new(p.Position.X.Scale + math.random(-50, 50) / 100, 0, -0.1, 0),
-                BackgroundTransparency = 1,
-                Size = UDim2.new(0, 1, 0, 1)
-            }):Play()
-
-            task.delay(3, function()
-                if p and p.Parent then p:Destroy() end
-            end)
-        end
-    end
-end)
-
-task.spawn(function()
-    while Main.Parent do
-        task.wait(0.08)
-        if Main.Visible then
-            local p = Instance.new("Frame")
-            local sz = math.random(2, 8)
-            p.Size = UDim2.new(0, sz, 0, sz)
-            local fromLeft = math.random(1, 2) == 1
-            if fromLeft then
-                p.Position = UDim2.new(0, 0, math.random(0, 100) / 100, 0)
-            else
-                p.Position = UDim2.new(1, 0, math.random(0, 100) / 100, 0)
-            end
-            p.BackgroundColor3 = ({COLORS.gold, COLORS.accent, COLORS.pink, COLORS.cyan, COLORS.purple})[math.random(1, 5)]
-            p.BorderSizePixel = 0
-            p.ZIndex = 100
-            p.Parent = Main.Parent
-            corner(p, UDim.new(1, 0))
-
-            local targetX = fromLeft and (p.Position.X.Scale - 0.1) or (p.Position.X.Scale + 0.1)
-            TweenService:Create(p, TweenInfo.new(math.random(15, 25) / 10, Enum.EasingStyle.Quad), {
-                Position = UDim2.new(targetX, 0, p.Position.Y.Scale + math.random(-20, 20) / 100, 0),
-                BackgroundTransparency = 1,
-                Size = UDim2.new(0, 1, 0, 1)
-            }):Play()
-
-            task.delay(3, function()
-                if p and p.Parent then p:Destroy() end
-            end)
-        end
-    end
-end)
-
--- ==========================================
--- HEADER
--- ==========================================
+-- Header
 local Header = Instance.new("Frame")
 Header.Size = UDim2.new(1, 0, 0, 62)
 Header.BackgroundColor3 = COLORS.panel
@@ -686,83 +548,6 @@ HeaderFix.BorderSizePixel = 0
 HeaderFix.ZIndex = 2
 HeaderFix.Parent = Header
 
-local HGrad = Instance.new("UIGradient")
-HGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 12, 40)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(50, 30, 90)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 12, 40))
-})
-HGrad.Parent = Header
-
-task.spawn(function()
-    while Header.Parent do
-        HGrad.Rotation = 0
-        TweenService:Create(HGrad, TweenInfo.new(3), {Rotation = 180}):Play()
-        task.wait(3)
-    end
-end)
-
-local HeaderLine = Instance.new("Frame")
-HeaderLine.Size = UDim2.new(1, 0, 0, 1)
-HeaderLine.Position = UDim2.new(0, 0, 1, -1)
-HeaderLine.BackgroundColor3 = COLORS.gold
-HeaderLine.BorderSizePixel = 0
-HeaderLine.ZIndex = 3
-HeaderLine.Parent = Header
-
-local HLGrad = Instance.new("UIGradient")
-HLGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, COLORS.accent),
-    ColorSequenceKeypoint.new(0.5, COLORS.goldBright),
-    ColorSequenceKeypoint.new(1, COLORS.accent)
-})
-HLGrad.Parent = HeaderLine
-
-task.spawn(function()
-    while HeaderLine.Parent do
-        HLGrad.Offset = Vector2.new(0, 0)
-        TweenService:Create(HLGrad, TweenInfo.new(3), {Offset = Vector2.new(1, 0)}):Play()
-        task.wait(3)
-    end
-end)
-
-task.spawn(function()
-    while Header.Parent do
-        local glow = Instance.new("Frame")
-        glow.Size = UDim2.new(0, 80, 1, 0)
-        glow.Position = UDim2.new(-0.2, 0, 0, 0)
-        glow.BackgroundColor3 = COLORS.goldBright
-        glow.BackgroundTransparency = 0.7
-        glow.BorderSizePixel = 0
-        glow.ZIndex = 4
-        glow.Parent = Header
-
-        local gGrad = Instance.new("UIGradient")
-        gGrad.Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 1),
-            NumberSequenceKeypoint.new(0.5, 0),
-            NumberSequenceKeypoint.new(1, 1)
-        })
-        gGrad.Parent = glow
-
-        TweenService:Create(glow, TweenInfo.new(2.5, Enum.EasingStyle.Linear), {
-            Position = UDim2.new(1.2, 0, 0, 0)
-        }):Play()
-        Debris:AddItem(glow, 2.6)
-        task.wait(5)
-    end
-end)
-
-local HLogoShadow = Instance.new("Frame")
-HLogoShadow.Size = UDim2.new(0, 46, 0, 46)
-HLogoShadow.Position = UDim2.new(0, 18, 0, 12)
-HLogoShadow.BackgroundColor3 = COLORS.accentDark
-HLogoShadow.BackgroundTransparency = 0.4
-HLogoShadow.BorderSizePixel = 0
-HLogoShadow.ZIndex = 2
-HLogoShadow.Parent = Header
-corner(HLogoShadow, 13)
-
 local HLogo = Instance.new("TextLabel")
 HLogo.Size = UDim2.new(0, 42, 0, 42)
 HLogo.Position = UDim2.new(0, 16, 0, 10)
@@ -775,27 +560,14 @@ HLogo.ZIndex = 3
 HLogo.Parent = Header
 corner(HLogo, 11)
 
-local HLG2 = Instance.new("UIGradient")
-HLG2.Color = ColorSequence.new(COLORS.goldBright, COLORS.accentDark)
-HLG2.Rotation = 45
-HLG2.Parent = HLogo
-
-task.spawn(function()
-    while HLG2.Parent do
-        HLG2.Rotation = 0
-        TweenService:Create(HLG2, TweenInfo.new(3), {Rotation = 360}):Play()
-        task.wait(3)
-    end
-end)
-
 local HTitle = Instance.new("TextLabel")
 HTitle.Size = UDim2.new(0, 220, 0, 22)
 HTitle.Position = UDim2.new(0, 70, 0, 12)
 HTitle.BackgroundTransparency = 1
-HTitle.Text = "VICTTOR HUB"
+HTitle.Text = "VICTTOR HUB v2.0"
 HTitle.TextColor3 = COLORS.goldBright
 HTitle.Font = Enum.Font.GothamBlack
-HTitle.TextSize = 17
+HTitle.TextSize = 16
 HTitle.TextXAlignment = Enum.TextXAlignment.Left
 HTitle.ZIndex = 3
 HTitle.Parent = Header
@@ -812,25 +584,6 @@ HSub.TextXAlignment = Enum.TextXAlignment.Left
 HSub.ZIndex = 3
 HSub.Parent = Header
 
-local PlayerCounter = Instance.new("TextLabel")
-PlayerCounter.Size = UDim2.new(0, 120, 0, 16)
-PlayerCounter.Position = UDim2.new(0, 260, 0, 33)
-PlayerCounter.BackgroundTransparency = 1
-PlayerCounter.Text = "👥 Online: 0"
-PlayerCounter.TextColor3 = COLORS.cyan
-PlayerCounter.Font = Enum.Font.GothamBold
-PlayerCounter.TextSize = 10
-PlayerCounter.TextXAlignment = Enum.TextXAlignment.Left
-PlayerCounter.ZIndex = 3
-PlayerCounter.Parent = Header
-
-task.spawn(function()
-    while PlayerCounter.Parent do
-        PlayerCounter.Text = "👥 Online: " .. #Players:GetPlayers()
-        task.wait(2)
-    end
-end)
-
 local CloseBtn = Instance.new("TextButton")
 CloseBtn.Size = UDim2.new(0, 30, 0, 30)
 CloseBtn.Position = UDim2.new(1, -46, 0, 16)
@@ -845,9 +598,7 @@ CloseBtn.ZIndex = 3
 CloseBtn.Parent = Header
 corner(CloseBtn, 9)
 
--- ==========================================
--- SEARCH + PILLS
--- ==========================================
+-- TopBar
 local TopBar = Instance.new("Frame")
 TopBar.Size = UDim2.new(1, -24, 0, 42)
 TopBar.Position = UDim2.new(0, 12, 0, 72)
@@ -856,7 +607,7 @@ TopBar.ZIndex = 2
 TopBar.Parent = Main
 
 local SearchHolder = Instance.new("Frame")
-SearchHolder.Size = UDim2.new(0, 0.35, 1, 0)
+SearchHolder.Size = UDim2.new(0, 0.32, 1, 0)
 SearchHolder.BackgroundColor3 = COLORS.card
 SearchHolder.BorderSizePixel = 0
 SearchHolder.ZIndex = 2
@@ -865,7 +616,7 @@ corner(SearchHolder, 10)
 local SearchStroke = stroke(SearchHolder, COLORS.stroke, 1)
 
 local SearchIcon = Instance.new("TextLabel")
-SearchIcon.Size = UDim2.new(0, 28, 1, 0)
+SearchIcon.Size = UDim2.new(0, 26, 1, 0)
 SearchIcon.Position = UDim2.new(0, 4, 0, 0)
 SearchIcon.BackgroundTransparency = 1
 SearchIcon.Text = "🔍"
@@ -875,11 +626,11 @@ SearchIcon.ZIndex = 3
 SearchIcon.Parent = SearchHolder
 
 local SearchBox = Instance.new("TextBox")
-SearchBox.Size = UDim2.new(1, -40, 1, 0)
-SearchBox.Position = UDim2.new(0, 32, 0, 0)
+SearchBox.Size = UDim2.new(1, -36, 1, 0)
+SearchBox.Position = UDim2.new(0, 30, 0, 0)
 SearchBox.BackgroundTransparency = 1
 SearchBox.Text = ""
-SearchBox.PlaceholderText = "Buscar script..."
+SearchBox.PlaceholderText = "Buscar..."
 SearchBox.PlaceholderColor3 = COLORS.subtext
 SearchBox.TextColor3 = COLORS.text
 SearchBox.Font = Enum.Font.GothamSemibold
@@ -897,9 +648,10 @@ SearchBox.FocusLost:Connect(function()
     TweenService:Create(SearchStroke, TweenInfo.new(0.15), {Color = COLORS.stroke, Thickness = 1}):Play()
 end)
 
+-- Pills
 local PillsScroll = Instance.new("ScrollingFrame")
-PillsScroll.Size = UDim2.new(0.65, -8, 1, 0)
-PillsScroll.Position = UDim2.new(0.35, 8, 0, 0)
+PillsScroll.Size = UDim2.new(0.52, -8, 1, 0)
+PillsScroll.Position = UDim2.new(0.32, 8, 0, 0)
 PillsScroll.BackgroundTransparency = 1
 PillsScroll.BorderSizePixel = 0
 PillsScroll.ScrollBarThickness = 0
@@ -916,9 +668,31 @@ PillsLayout.SortOrder = Enum.SortOrder.LayoutOrder
 PillsLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 PillsLayout.Parent = PillsScroll
 
--- ==========================================
--- CARDS
--- ==========================================
+-- Botão Só Keyless
+local onlyKeyless = false
+local KeylessFilter = Instance.new("TextButton")
+KeylessFilter.Size = UDim2.new(0, 78, 1, 0)
+KeylessFilter.Position = UDim2.new(1, -86, 0, 0)
+KeylessFilter.BackgroundColor3 = COLORS.card
+KeylessFilter.Text = "🎁 Só Keyless"
+KeylessFilter.TextColor3 = COLORS.subtext
+KeylessFilter.Font = Enum.Font.GothamBold
+KeylessFilter.TextSize = 10
+KeylessFilter.BorderSizePixel = 0
+KeylessFilter.AutoButtonColor = false
+KeylessFilter.Parent = TopBar
+corner(KeylessFilter, 10)
+local KFStroke = stroke(KeylessFilter, COLORS.stroke, 1)
+
+KeylessFilter.MouseButton1Click:Connect(function()
+    onlyKeyless = not onlyKeyless
+    KeylessFilter.BackgroundColor3 = onlyKeyless and COLORS.green or COLORS.card
+    KeylessFilter.TextColor3 = onlyKeyless and Color3.fromRGB(255, 255, 255) or COLORS.subtext
+    KFStroke.Color = onlyKeyless and COLORS.green or COLORS.stroke
+    refreshCards()
+end)
+
+-- Cards Area
 local CardsScroll = Instance.new("ScrollingFrame")
 CardsScroll.Size = UDim2.new(1, -24, 1, -196)
 CardsScroll.Position = UDim2.new(0, 12, 0, 122)
@@ -926,7 +700,6 @@ CardsScroll.BackgroundTransparency = 1
 CardsScroll.BorderSizePixel = 0
 CardsScroll.ScrollBarThickness = 4
 CardsScroll.ScrollBarImageColor3 = COLORS.gold
-CardsScroll.ScrollBarImageTransparency = 0.3
 CardsScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 CardsScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 CardsScroll.ZIndex = 2
@@ -942,21 +715,7 @@ local CardsPad = Instance.new("UIPadding")
 CardsPad.PaddingRight = UDim.new(0, 8)
 CardsPad.Parent = CardsScroll
 
-local ResultCount = Instance.new("TextLabel")
-ResultCount.Size = UDim2.new(1, -24, 0, 18)
-ResultCount.Position = UDim2.new(0, 12, 0, 118)
-ResultCount.BackgroundTransparency = 1
-ResultCount.Text = ""
-ResultCount.TextColor3 = COLORS.subtext
-ResultCount.Font = Enum.Font.GothamSemibold
-ResultCount.TextSize = 10
-ResultCount.TextXAlignment = Enum.TextXAlignment.Left
-ResultCount.ZIndex = 3
-ResultCount.Parent = Main
-
--- ==========================================
--- STATUS BAR
--- ==========================================
+-- Status Bar
 local StatusBar = Instance.new("Frame")
 StatusBar.Size = UDim2.new(1, -24, 0, 40)
 StatusBar.Position = UDim2.new(0, 12, 1, -52)
@@ -967,16 +726,6 @@ StatusBar.Parent = Main
 corner(StatusBar, 11)
 stroke(StatusBar, COLORS.stroke, 1)
 
-local StatusDotGlow = Instance.new("Frame")
-StatusDotGlow.Size = UDim2.new(0, 16, 0, 16)
-StatusDotGlow.Position = UDim2.new(0, 10, 0.5, -8)
-StatusDotGlow.BackgroundColor3 = COLORS.green
-StatusDotGlow.BackgroundTransparency = 0.7
-StatusDotGlow.BorderSizePixel = 0
-StatusDotGlow.ZIndex = 4
-StatusDotGlow.Parent = StatusBar
-corner(StatusDotGlow, UDim.new(1, 0))
-
 local StatusDot = Instance.new("Frame")
 StatusDot.Size = UDim2.new(0, 9, 0, 9)
 StatusDot.Position = UDim2.new(0, 14, 0.5, -4.5)
@@ -986,20 +735,11 @@ StatusDot.ZIndex = 5
 StatusDot.Parent = StatusBar
 corner(StatusDot, UDim.new(1, 0))
 
-task.spawn(function()
-    while StatusDot.Parent do
-        TweenService:Create(StatusDotGlow, TweenInfo.new(1), {BackgroundTransparency = 0.3, Size = UDim2.new(0, 20, 0, 20), Position = UDim2.new(0, 8, 0.5, -10)}):Play()
-        task.wait(1)
-        TweenService:Create(StatusDotGlow, TweenInfo.new(1), {BackgroundTransparency = 0.7, Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 10, 0.5, -8)}):Play()
-        task.wait(1)
-    end
-end)
-
 local StatusText = Instance.new("TextLabel")
-StatusText.Size = UDim2.new(0, 260, 1, 0)
-StatusText.Position = UDim2.new(0, 34, 0, 0)
+StatusText.Size = UDim2.new(0, 400, 1, 0)
+StatusText.Position = UDim2.new(0, 30, 0, 0)
 StatusText.BackgroundTransparency = 1
-StatusText.Text = "Pronto  •  VICTTOR HUB"
+StatusText.Text = "Pronto  •  VICTTOR HUB v2.0"
 StatusText.TextColor3 = COLORS.goldBright
 StatusText.Font = Enum.Font.GothamSemibold
 StatusText.TextSize = 11
@@ -1007,72 +747,81 @@ StatusText.TextXAlignment = Enum.TextXAlignment.Left
 StatusText.ZIndex = 4
 StatusText.Parent = StatusBar
 
-local function makeStatChip(parent, xoffset, icon, label)
-    local Chip = Instance.new("Frame")
-    Chip.Size = UDim2.new(0, 84, 0, 24)
-    Chip.Position = UDim2.new(1, xoffset, 0.5, -12)
-    Chip.BackgroundColor3 = COLORS.panelLight
-    Chip.BorderSizePixel = 0
-    Chip.ZIndex = 4
-    Chip.Parent = parent
-    corner(Chip, 6)
-
-    local I = Instance.new("TextLabel")
-    I.Size = UDim2.new(0, 18, 1, 0)
-    I.Position = UDim2.new(0, 5, 0, 0)
-    I.BackgroundTransparency = 1
-    I.Text = icon
-    I.TextSize = 10
-    I.Font = Enum.Font.GothamBold
-    I.ZIndex = 5
-    I.Parent = Chip
-
-    local T = Instance.new("TextLabel")
-    T.Size = UDim2.new(1, -24, 1, 0)
-    T.Position = UDim2.new(0, 20, 0, 0)
-    T.BackgroundTransparency = 1
-    T.Text = label
-    T.TextColor3 = COLORS.subtext
-    T.Font = Enum.Font.GothamSemibold
-    T.TextSize = 9
-    T.TextXAlignment = Enum.TextXAlignment.Left
-    T.ZIndex = 5
-    T.Parent = Chip
-
-    return T
-end
-
-local FpsVal  = makeStatChip(StatusBar, -376, "⚡", "FPS 60")
-local PingVal = makeStatChip(StatusBar, -284, "📡", "PING --")
-local PlrVal  = makeStatChip(StatusBar, -192, "👥", "PLR 1")
-local TimeVal = makeStatChip(StatusBar, -100, "🕒", "00:00:00")
-
-task.spawn(function()
-    while StatusBar.Parent do
-        local ok, ping = pcall(function()
-            return math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
-        end)
-        if not ok or ping < 0 then ping = 0 end
-        local players = #Players:GetPlayers()
-        local fps = math.floor(1 / workspace:GetRealPhysicsFPS())
-        if fps <= 0 or fps > 999 then fps = 60 end
-        FpsVal.Text = "FPS " .. fps
-        PingVal.Text = "PING " .. ping
-        PlrVal.Text = "PLR " .. players
-        task.wait(1)
-    end
-end)
-
-task.spawn(function()
-    while StatusBar.Parent do
-        local t = os.date("*t", os.time())
-        TimeVal.Text = string.format("%02d:%02d:%02d", t.hour, t.min, t.sec)
-        task.wait(1)
-    end
-end)
+-- Result Count
+local ResultCount = Instance.new("TextLabel")
+ResultCount.Size = UDim2.new(1, -24, 0, 16)
+ResultCount.Position = UDim2.new(0, 12, 0, 108)
+ResultCount.BackgroundTransparency = 1
+ResultCount.Text = ""
+ResultCount.TextColor3 = COLORS.subtext
+ResultCount.Font = Enum.Font.GothamSemibold
+ResultCount.TextSize = 10
+ResultCount.TextXAlignment = Enum.TextXAlignment.Left
+ResultCount.ZIndex = 3
+ResultCount.Parent = Main
 
 -- ==========================================
--- DATABASE
+-- NOTIFICAÇÕES
+-- ==========================================
+local function showNotification(title, message, color, duration)
+    local N = Instance.new("Frame")
+    N.Size = UDim2.new(0, 260, 0, 0)
+    N.Position = UDim2.new(1, -280, 0, 20)
+    N.BackgroundColor3 = COLORS.panel
+    N.BorderSizePixel = 0
+    N.ZIndex = 500
+    N.ClipsDescendants = true
+    N.Parent = ScreenGui
+    corner(N, 12)
+    stroke(N, color or COLORS.gold, 2)
+
+    local AccentBar = Instance.new("Frame")
+    AccentBar.Size = UDim2.new(0, 4, 1, 0)
+    AccentBar.BackgroundColor3 = color or COLORS.gold
+    AccentBar.BorderSizePixel = 0
+    AccentBar.ZIndex = 501
+    AccentBar.Parent = N
+    corner(AccentBar, UDim.new(1, 0))
+
+    local NTitle = Instance.new("TextLabel")
+    NTitle.Size = UDim2.new(1, -16, 0, 22)
+    NTitle.Position = UDim2.new(0, 14, 0, 8)
+    NTitle.BackgroundTransparency = 1
+    NTitle.Text = title
+    NTitle.TextColor3 = color or COLORS.gold
+    NTitle.Font = Enum.Font.GothamBold
+    NTitle.TextSize = 13
+    NTitle.TextXAlignment = Enum.TextXAlignment.Left
+    NTitle.ZIndex = 501
+    NTitle.Parent = N
+
+    local Msg = Instance.new("TextLabel")
+    Msg.Size = UDim2.new(1, -16, 0, 30)
+    Msg.Position = UDim2.new(0, 14, 0, 30)
+    Msg.BackgroundTransparency = 1
+    Msg.Text = message
+    Msg.TextColor3 = COLORS.text
+    Msg.Font = Enum.Font.GothamSemibold
+    Msg.TextSize = 11
+    Msg.TextXAlignment = Enum.TextXAlignment.Left
+    Msg.TextWrapped = true
+    Msg.ZIndex = 501
+    Msg.Parent = N
+
+    TweenService:Create(N, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 260, 0, 64)}):Play()
+
+    task.delay(duration or 3, function()
+        TweenService:Create(N, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+            Size = UDim2.new(0, 0, 0, 64),
+            Position = UDim2.new(1, 0, 0, 20)
+        }):Play()
+        task.wait(0.35)
+        N:Destroy()
+    end)
+end
+
+-- ==========================================
+-- DATABASE DE SCRIPTS
 -- ==========================================
 local SCRIPTS = {
     -- EGG • DESTAQUES
@@ -1178,7 +927,11 @@ local SCRIPTS = {
       load = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/4479cantcode/4479Hub/refs/heads/main/Script.lua"))() end },
 }
 
+-- ==========================================
+-- CATEGORIAS
+-- ==========================================
 local CATEGORIES = {
+    { name = "⭐ Favoritos",     icon = "⭐" },
     { name = "Egg • Destaques",  icon = "✨" },
     { name = "Egg • Auto Farm",  icon = "⚡" },
     { name = "Egg • Keyless",    icon = "🎁" },
@@ -1186,18 +939,60 @@ local CATEGORIES = {
     { name = "Fruit • Auto Farm",icon = "⚡" },
     { name = "Fruit • PVP",      icon = "⚔" },
     { name = "Fruit • Keyless",  icon = "🎁" },
+    { name = "⚙ Config",         icon = "⚙" },
+    { name = "📜 Histórico",     icon = "📜" },
 }
 
-local activeCategory = CATEGORIES[1].name
+local activeCategory = CATEGORIES[2].name
 local searchQuery = ""
 local Pills = {}
 local Cards = {}
+
+-- ==========================================
+-- FAVORITOS / HISTÓRICO
+-- ==========================================
+local function isFavorite(scriptName)
+    for _, n in ipairs(Config.favorites) do
+        if n == scriptName then return true end
+    end
+    return false
+end
+
+local function toggleFavorite(scriptName)
+    for i, n in ipairs(Config.favorites) do
+        if n == scriptName then
+            table.remove(Config.favorites, i)
+            saveConfig()
+            return false
+        end
+    end
+    table.insert(Config.favorites, scriptName)
+    saveConfig()
+    return true
+end
+
+local function addToHistory(scriptName)
+    for i, n in ipairs(Config.history) do
+        if n == scriptName then
+            table.remove(Config.history, i)
+            break
+        end
+    end
+    table.insert(Config.history, 1, scriptName)
+    while #Config.history > 10 do
+        table.remove(Config.history)
+    end
+    saveConfig()
+end
 
 local function clearCards()
     for _, c in pairs(Cards) do c:Destroy() end
     Cards = {}
 end
 
+-- ==========================================
+-- CRIAR CARD NORMAL
+-- ==========================================
 local function createCard(script)
     local Card = Instance.new("Frame")
     Card.BackgroundColor3 = COLORS.card
@@ -1217,25 +1012,8 @@ local function createCard(script)
     Accent.Parent = Card
     corner(Accent, UDim.new(1, 0))
 
-    local AGrad = Instance.new("UIGradient")
-    AGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, COLORS.accent),
-        ColorSequenceKeypoint.new(0.5, COLORS.goldBright),
-        ColorSequenceKeypoint.new(1, COLORS.accent)
-    })
-    AGrad.Rotation = 90
-    AGrad.Parent = Accent
-
-    task.spawn(function()
-        while Accent.Parent do
-            AGrad.Offset = Vector2.new(0, 0)
-            TweenService:Create(AGrad, TweenInfo.new(1.8), {Offset = Vector2.new(0, 1)}):Play()
-            task.wait(1.8)
-        end
-    end)
-
     local Name = Instance.new("TextLabel")
-    Name.Size = UDim2.new(1, -85, 0, 20)
+    Name.Size = UDim2.new(1, -110, 0, 20)
     Name.Position = UDim2.new(0, 12, 0, 8)
     Name.BackgroundTransparency = 1
     Name.Text = script.name
@@ -1248,7 +1026,7 @@ local function createCard(script)
     Name.Parent = Card
 
     local Desc = Instance.new("TextLabel")
-    Desc.Size = UDim2.new(1, -85, 0, 14)
+    Desc.Size = UDim2.new(1, -110, 0, 14)
     Desc.Position = UDim2.new(0, 12, 0, 26)
     Desc.BackgroundTransparency = 1
     Desc.Text = script.desc
@@ -1259,6 +1037,54 @@ local function createCard(script)
     Desc.TextTruncate = Enum.TextTruncate.AtEnd
     Desc.ZIndex = 4
     Desc.Parent = Card
+
+    -- Botão Favorito
+    local FavBtn = Instance.new("TextButton")
+    FavBtn.Size = UDim2.new(0, 22, 0, 22)
+    FavBtn.Position = UDim2.new(1, -108, 0, 8)
+    FavBtn.BackgroundTransparency = 1
+    FavBtn.Text = isFavorite(script.name) and "⭐" or "☆"
+    FavBtn.TextSize = 16
+    FavBtn.TextColor3 = isFavorite(script.name) and COLORS.gold or COLORS.subtext
+    FavBtn.Font = Enum.Font.GothamBold
+    FavBtn.BorderSizePixel = 0
+    FavBtn.AutoButtonColor = false
+    FavBtn.ZIndex = 6
+    FavBtn.Parent = Card
+
+    FavBtn.MouseButton1Click:Connect(function()
+        local isFav = toggleFavorite(script.name)
+        FavBtn.Text = isFav and "⭐" or "☆"
+        FavBtn.TextColor3 = isFav and COLORS.gold or COLORS.subtext
+        if activeCategory == "⭐ Favoritos" then refreshCards() end
+    end)
+
+    -- Botão Copiar
+    local CopyBtn = Instance.new("TextButton")
+    CopyBtn.Size = UDim2.new(0, 22, 0, 22)
+    CopyBtn.Position = UDim2.new(1, -84, 0, 8)
+    CopyBtn.BackgroundTransparency = 1
+    CopyBtn.Text = "📋"
+    CopyBtn.TextSize = 14
+    CopyBtn.TextColor3 = COLORS.subtext
+    CopyBtn.BorderSizePixel = 0
+    CopyBtn.AutoButtonColor = false
+    CopyBtn.ZIndex = 6
+    CopyBtn.Parent = Card
+
+    CopyBtn.MouseButton1Click:Connect(function()
+        pcall(function()
+            if setclipboard then
+                setclipboard(script.name .. " | " .. script.desc)
+            end
+        end)
+        CopyBtn.Text = "✓"
+        CopyBtn.TextColor3 = COLORS.green
+        task.delay(0.6, function()
+            CopyBtn.Text = "📋"
+            CopyBtn.TextColor3 = COLORS.subtext
+        end)
+    end)
 
     if script.keyless then
         local Badge = Instance.new("TextLabel")
@@ -1290,206 +1116,331 @@ local function createCard(script)
         corner(Tag, 5)
     end
 
-    local ExecHolder = Instance.new("Frame")
-    ExecHolder.Size = UDim2.new(0, 70, 0, 28)
-    ExecHolder.Position = UDim2.new(1, -78, 0.5, -14)
-    ExecHolder.BackgroundColor3 = COLORS.accent
-    ExecHolder.BorderSizePixel = 0
-    ExecHolder.ZIndex = 4
-    ExecHolder.ClipsDescendants = true
-    ExecHolder.Parent = Card
-    corner(ExecHolder, 8)
-
-    local EG = Instance.new("UIGradient")
-    EG.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, COLORS.goldBright),
-        ColorSequenceKeypoint.new(0.5, COLORS.accent),
-        ColorSequenceKeypoint.new(1, COLORS.accentDark)
-    })
-    EG.Rotation = 0
-    EG.Parent = ExecHolder
-
-    task.spawn(function()
-        while EG.Parent do
-            EG.Rotation = 0
-            TweenService:Create(EG, TweenInfo.new(2.2), {Rotation = 360}):Play()
-            task.wait(2.2)
-        end
-    end)
-
     local Exec = Instance.new("TextButton")
-    Exec.Size = UDim2.new(1, 0, 1, 0)
-    Exec.BackgroundTransparency = 1
+    Exec.Size = UDim2.new(0, 70, 0, 28)
+    Exec.Position = UDim2.new(1, -78, 0.5, -14)
+    Exec.BackgroundColor3 = COLORS.accent
     Exec.Text = "EXEC"
     Exec.TextColor3 = Color3.fromRGB(255, 255, 255)
     Exec.Font = Enum.Font.GothamBold
     Exec.TextSize = 11
     Exec.BorderSizePixel = 0
     Exec.AutoButtonColor = false
-    Exec.ZIndex = 5
-    Exec.Parent = ExecHolder
+    Exec.Parent = Card
+    corner(Exec, 8)
 
     Card.MouseEnter:Connect(function()
-        TweenService:Create(Card, TweenInfo.new(0.18), {
-            BackgroundColor3 = COLORS.cardHover,
-            Size = UDim2.new(1, 3, 1, 3),
-            Position = UDim2.new(0, -1.5, 0, -1.5)
-        }):Play()
-        TweenService:Create(cs, TweenInfo.new(0.18), {Color = COLORS.gold, Thickness = 1.5}):Play()
-
-        local tip = Instance.new("TextLabel")
-        tip.Size = UDim2.new(0, 240, 0, 50)
-        tip.Position = UDim2.new(0, 0, 1, 4)
-        tip.BackgroundColor3 = COLORS.panel
-        tip.Text = script.name .. "\n" .. script.desc
-        tip.TextColor3 = COLORS.text
-        tip.Font = Enum.Font.GothamSemibold
-        tip.TextSize = 10
-        tip.TextWrapped = true
-        tip.BorderSizePixel = 0
-        tip.ZIndex = 200
-        tip.Name = "Tooltip_" .. script.name
-        tip.Parent = Card
-        corner(tip, 6)
-        stroke(tip, COLORS.gold, 1)
-
-        tip.BackgroundTransparency = 1
-        tip.TextTransparency = 1
-        TweenService:Create(tip, TweenInfo.new(0.2), {BackgroundTransparency = 0, TextTransparency = 0}):Play()
+        TweenService:Create(Card, TweenInfo.new(0.15), {BackgroundColor3 = COLORS.cardHover}):Play()
+        TweenService:Create(cs, TweenInfo.new(0.15), {Color = COLORS.gold}):Play()
     end)
     Card.MouseLeave:Connect(function()
-        TweenService:Create(Card, TweenInfo.new(0.18), {
-            BackgroundColor3 = COLORS.card,
-            Size = UDim2.new(1, 0, 1, 0),
-            Position = UDim2.new(0, 0, 0, 0)
-        }):Play()
-        TweenService:Create(cs, TweenInfo.new(0.18), {Color = COLORS.stroke, Thickness = 1}):Play()
-
-        local tip = Card:FindFirstChild("Tooltip_" .. script.name)
-        if tip then
-            TweenService:Create(tip, TweenInfo.new(0.15), {BackgroundTransparency = 1, TextTransparency = 1}):Play()
-            task.delay(0.2, function()
-                if tip and tip.Parent then tip:Destroy() end
-            end)
-        end
+        TweenService:Create(Card, TweenInfo.new(0.15), {BackgroundColor3 = COLORS.card}):Play()
+        TweenService:Create(cs, TweenInfo.new(0.15), {Color = COLORS.stroke}):Play()
     end)
 
     Exec.MouseButton1Click:Connect(function()
-        playSound("6042053626", 0.4)
-
-        local oldText = Exec.Text
-        Exec.Text = "⏳"
-        task.spawn(function()
-            local frames = {"⏳", "⌛", "⏳", "⌛"}
-            local i = 1
-            while Exec.Text ~= "OK!" and Exec.Text ~= "✗" and Exec.Parent do
-                Exec.Text = frames[i]
-                i = i % #frames + 1
-                task.wait(0.15)
-            end
-        end)
-
-        for i = 1, 2 do
-            task.spawn(function()
-                task.wait((i - 1) * 0.12)
-                local ripple = Instance.new("Frame")
-                ripple.Size = UDim2.new(0, 0, 0, 0)
-                ripple.Position = UDim2.new(0.5, 0, 0.5, 0)
-                ripple.AnchorPoint = Vector2.new(0.5, 0.5)
-                ripple.BackgroundColor3 = i == 1 and COLORS.white or COLORS.goldBright
-                ripple.BackgroundTransparency = 0.4
-                ripple.BorderSizePixel = 0
-                ripple.ZIndex = 6
-                ripple.Parent = ExecHolder
-                corner(ripple, UDim.new(1, 0))
-                TweenService:Create(ripple, TweenInfo.new(0.6, Enum.EasingStyle.Quad), {
-                    Size = UDim2.new(0, 240, 0, 240),
-                    BackgroundTransparency = 1
-                }):Play()
-                Debris:AddItem(ripple, 0.7)
-            end)
-        end
-
+        Exec.Text = "OK!"
         StatusText.Text = "Executando: " .. script.name
         StatusText.TextColor3 = COLORS.orange
+        addToHistory(script.name)
 
         task.spawn(function()
             local ok, err = pcall(script.load)
             if ok then
-                Exec.Text = "OK!"
                 StatusText.Text = "✓ " .. script.name
                 StatusText.TextColor3 = COLORS.green
+                showNotification("✓ Executado", script.name, COLORS.green, 2)
             else
-                Exec.Text = "✗"
-                StatusText.Text = "✗ Falha: " .. tostring(err):sub(1, 40)
+                StatusText.Text = "✗ " .. tostring(err):sub(1, 40)
                 StatusText.TextColor3 = COLORS.red
+                showNotification("✗ Falha", tostring(err):sub(1, 50), COLORS.red, 3)
             end
-            task.wait(1.5)
-            Exec.Text = oldText
             task.wait(2)
-            StatusText.Text = "Pronto  •  VICTTOR HUB"
+            Exec.Text = "EXEC"
+            task.wait(2)
+            StatusText.Text = "Pronto  •  VICTTOR HUB v2.0"
             StatusText.TextColor3 = COLORS.goldBright
         end)
     end)
-
-    return Card
 end
 
+-- ==========================================
+-- CARD DE CONFIGURAÇÕES
+-- ==========================================
+local function createConfigCard()
+    local ConfigFrame = Instance.new("Frame")
+    ConfigFrame.Size = UDim2.new(1, -4, 0, 300)
+    ConfigFrame.BackgroundColor3 = COLORS.card
+    ConfigFrame.BorderSizePixel = 0
+    ConfigFrame.Parent = CardsScroll
+    table.insert(Cards, ConfigFrame)
+    corner(ConfigFrame, 10)
+    stroke(ConfigFrame, COLORS.stroke, 1)
+
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(1, -20, 0, 26)
+    Title.Position = UDim2.new(0, 10, 0, 8)
+    Title.BackgroundTransparency = 1
+    Title.Text = "⚙ CONFIGURAÇÕES"
+    Title.TextColor3 = COLORS.goldBright
+    Title.Font = Enum.Font.GothamBlack
+    Title.TextSize = 13
+    Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.Parent = ConfigFrame
+
+    local function makeToggle(y, label, getValue, setValue)
+        local Holder = Instance.new("Frame")
+        Holder.Size = UDim2.new(1, -20, 0, 30)
+        Holder.Position = UDim2.new(0, 10, 0, y)
+        Holder.BackgroundColor3 = COLORS.panelLight
+        Holder.BorderSizePixel = 0
+        Holder.Parent = ConfigFrame
+        corner(Holder, 6)
+
+        local Lbl = Instance.new("TextLabel")
+        Lbl.Size = UDim2.new(1, -70, 1, 0)
+        Lbl.Position = UDim2.new(0, 10, 0, 0)
+        Lbl.BackgroundTransparency = 1
+        Lbl.Text = label
+        Lbl.TextColor3 = COLORS.text
+        Lbl.Font = Enum.Font.GothamSemibold
+        Lbl.TextSize = 11
+        Lbl.TextXAlignment = Enum.TextXAlignment.Left
+        Lbl.Parent = Holder
+
+        local state = getValue()
+        local Btn = Instance.new("TextButton")
+        Btn.Size = UDim2.new(0, 40, 0, 20)
+        Btn.Position = UDim2.new(1, -50, 0.5, -10)
+        Btn.BackgroundColor3 = state and COLORS.green or COLORS.stroke
+        Btn.Text = state and "ON" or "OFF"
+        Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Btn.Font = Enum.Font.GothamBold
+        Btn.TextSize = 9
+        Btn.BorderSizePixel = 0
+        Btn.AutoButtonColor = false
+        Btn.Parent = Holder
+        corner(Btn, 5)
+
+        Btn.MouseButton1Click:Connect(function()
+            state = not state
+            Btn.BackgroundColor3 = state and COLORS.green or COLORS.stroke
+            Btn.Text = state and "ON" or "OFF"
+            setValue(state)
+            saveConfig()
+        end)
+    end
+
+    makeToggle(40, "🔊 Som de clique", function() return Config.soundEnabled end, function(v) Config.soundEnabled = v end)
+    makeToggle(75, "✨ Animações", function() return Config.animationsEnabled end, function(v) Config.animationsEnabled = v end)
+    makeToggle(110, "⚡ Modo Turbo (mobile)", function() return Config.turboMode end, function(v) Config.turboMode = v end)
+
+    local ThemeLabel = Instance.new("TextLabel")
+    ThemeLabel.Size = UDim2.new(1, -20, 0, 20)
+    ThemeLabel.Position = UDim2.new(0, 10, 0, 148)
+    ThemeLabel.BackgroundTransparency = 1
+    ThemeLabel.Text = "🎨 Tema de cor:"
+    ThemeLabel.TextColor3 = COLORS.goldBright
+    ThemeLabel.Font = Enum.Font.GothamBold
+    ThemeLabel.TextSize = 11
+    ThemeLabel.TextXAlignment = Enum.TextXAlignment.Left
+    ThemeLabel.Parent = ConfigFrame
+
+    local ThemesHolder = Instance.new("Frame")
+    ThemesHolder.Size = UDim2.new(1, -20, 0, 40)
+    ThemesHolder.Position = UDim2.new(0, 10, 0, 172)
+    ThemesHolder.BackgroundTransparency = 1
+    ThemesHolder.Parent = ConfigFrame
+
+    local ThemesGrid = Instance.new("UIGridLayout")
+    ThemesGrid.CellSize = UDim2.new(0.16, -4, 0, 32)
+    ThemesGrid.CellPadding = UDim2.new(0, 4, 0, 4)
+    ThemesGrid.Parent = ThemesHolder
+
+    for i, theme in ipairs(THEMES) do
+        local TBtn = Instance.new("TextButton")
+        TBtn.BackgroundColor3 = theme.accent
+        TBtn.Text = tostring(i)
+        TBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TBtn.Font = Enum.Font.GothamBold
+        TBtn.TextSize = 10
+        TBtn.BorderSizePixel = 0
+        TBtn.AutoButtonColor = false
+        TBtn.Parent = ThemesHolder
+        corner(TBtn, 6)
+        stroke(TBtn, i == Config.themeIndex and COLORS.goldBright or COLORS.stroke, i == Config.themeIndex and 2 or 1)
+
+        TBtn.MouseButton1Click:Connect(function()
+            applyTheme(i)
+            saveConfig()
+            showNotification("🎨 Tema", "Tema " .. theme.name .. " aplicado!", theme.accent, 2)
+        end)
+    end
+
+    local ClearBtn = Instance.new("TextButton")
+    ClearBtn.Size = UDim2.new(1, -20, 0, 30)
+    ClearBtn.Position = UDim2.new(0, 10, 0, 220)
+    ClearBtn.BackgroundColor3 = COLORS.red
+    ClearBtn.Text = "🗑 Limpar Favoritos e Histórico"
+    ClearBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ClearBtn.Font = Enum.Font.GothamBold
+    ClearBtn.TextSize = 11
+    ClearBtn.BorderSizePixel = 0
+    ClearBtn.AutoButtonColor = false
+    ClearBtn.Parent = ConfigFrame
+    corner(ClearBtn, 8)
+
+    ClearBtn.MouseButton1Click:Connect(function()
+        Config.favorites = {}
+        Config.history = {}
+        saveConfig()
+        showNotification("🗑 Limpo", "Favoritos e histórico apagados", COLORS.red, 2)
+    end)
+
+    local Info = Instance.new("TextLabel")
+    Info.Size = UDim2.new(1, -20, 0, 40)
+    Info.Position = UDim2.new(0, 10, 0, 256)
+    Info.BackgroundTransparency = 1
+    Info.Text = "VICTTOR HUB v2.0 • Configs salvam automaticamente"
+    Info.TextColor3 = COLORS.subtext
+    Info.Font = Enum.Font.GothamSemibold
+    Info.TextSize = 9
+    Info.TextXAlignment = Enum.TextXAlignment.Center
+    Info.Parent = ConfigFrame
+end
+
+-- ==========================================
+-- CARD DE HISTÓRICO
+-- ==========================================
+local function createHistoryCard()
+    if #Config.history == 0 then
+        local Empty = Instance.new("TextLabel")
+        Empty.Size = UDim2.new(1, -4, 0, 80)
+        Empty.BackgroundColor3 = COLORS.card
+        Empty.Text = "📜 Nenhum script executado ainda.\nExecute algum hub para aparecer aqui."
+        Empty.TextColor3 = COLORS.subtext
+        Empty.Font = Enum.Font.GothamSemibold
+        Empty.TextSize = 11
+        Empty.TextWrapped = true
+        Empty.BorderSizePixel = 0
+        Empty.Parent = CardsScroll
+        table.insert(Cards, Empty)
+        corner(Empty, 10)
+        return
+    end
+
+    for i, name in ipairs(Config.history) do
+        local HCard = Instance.new("Frame")
+        HCard.Size = UDim2.new(1, -4, 0, 36)
+        HCard.BackgroundColor3 = COLORS.card
+        HCard.BorderSizePixel = 0
+        HCard.Parent = CardsScroll
+        table.insert(Cards, HCard)
+        corner(HCard, 8)
+        stroke(HCard, COLORS.stroke, 1)
+
+        local Num = Instance.new("TextLabel")
+        Num.Size = UDim2.new(0, 24, 1, 0)
+        Num.Position = UDim2.new(0, 6, 0, 0)
+        Num.BackgroundTransparency = 1
+        Num.Text = "#" .. i
+        Num.TextColor3 = COLORS.gold
+        Num.Font = Enum.Font.GothamBold
+        Num.TextSize = 10
+        Num.Parent = HCard
+
+        local HName = Instance.new("TextLabel")
+        HName.Size = UDim2.new(1, -40, 1, 0)
+        HName.Position = UDim2.new(0, 32, 0, 0)
+        HName.BackgroundTransparency = 1
+        HName.Text = name
+        HName.TextColor3 = COLORS.text
+        HName.Font = Enum.Font.GothamSemibold
+        HName.TextSize = 11
+        HName.TextXAlignment = Enum.TextXAlignment.Left
+        HName.Parent = HCard
+    end
+end
+
+-- ==========================================
+-- REFRESH
+-- ==========================================
 local function refreshCards()
     clearCards()
     local count = 0
+
+    if activeCategory == "⚙ Config" then
+        createConfigCard()
+        ResultCount.Text = "Painel de configurações"
+        return
+    end
+
+    if activeCategory == "📜 Histórico" then
+        createHistoryCard()
+        ResultCount.Text = #Config.history .. " script(s) no histórico"
+        return
+    end
+
     for _, s in ipairs(SCRIPTS) do
-        local matchCat = (s.cat == activeCategory)
+        local matchCat = false
+
+        if activeCategory == "⭐ Favoritos" then
+            matchCat = isFavorite(s.name)
+        else
+            matchCat = (s.cat == activeCategory)
+        end
+
         local matchSearch = (searchQuery == "" or s.name:lower():find(searchQuery:lower(), 1, true) or s.desc:lower():find(searchQuery:lower(), 1, true))
-        if matchCat and matchSearch then
-            local card = createCard(s)
-            if card then
-                card.BackgroundTransparency = 1
-                card.Position = UDim2.new(0.05, 0, 0, 0)
-                TweenService:Create(card, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                    BackgroundTransparency = 0,
-                    Position = UDim2.new(0, 0, 0, 0)
-                }):Play()
-                task.wait(0.03)
-            end
+        local matchKeyless = (not onlyKeyless) or s.keyless
+
+        if matchCat and matchSearch and matchKeyless then
+            createCard(s)
             count = count + 1
         end
     end
+
     ResultCount.Text = count .. " script(s) em " .. activeCategory
 end
 
 local function setActivePill(catName)
-    if activeCategory == catName then return end
     activeCategory = catName
-    
     for name, data in pairs(Pills) do
         local p = data.button
         if name == catName then
-            TweenService:Create(p, TweenInfo.new(0.2), {BackgroundColor3 = COLORS.accent}):Play()
-            TweenService:Create(data.stroke, TweenInfo.new(0.2), {Color = COLORS.goldBright, Thickness = 1.5}):Play()
+            p.BackgroundColor3 = COLORS.accent
+            data.stroke.Color = COLORS.goldBright
             p.TextColor3 = Color3.fromRGB(255, 255, 255)
         else
-            TweenService:Create(p, TweenInfo.new(0.2), {BackgroundColor3 = COLORS.card}):Play()
-            TweenService:Create(data.stroke, TweenInfo.new(0.2), {Color = COLORS.stroke, Thickness = 1}):Play()
+            p.BackgroundColor3 = COLORS.card
+            data.stroke.Color = COLORS.stroke
             p.TextColor3 = COLORS.subtext
         end
     end
     refreshCards()
 end
 
+-- ==========================================
+-- CRIAR PILLS
+-- ==========================================
 for _, cat in ipairs(CATEGORIES) do
     local isActive = (cat.name == activeCategory)
-    
+
     local catCount = 0
-    for _, s in ipairs(SCRIPTS) do
-        if s.cat == cat.name then catCount = catCount + 1 end
+    if cat.name == "⭐ Favoritos" then
+        catCount = #Config.favorites
+    elseif cat.name == "📜 Histórico" then
+        catCount = #Config.history
+    elseif cat.name ~= "⚙ Config" then
+        for _, s in ipairs(SCRIPTS) do
+            if s.cat == cat.name then catCount = catCount + 1 end
+        end
     end
-    
+
     local Pill = Instance.new("TextButton")
     Pill.Size = UDim2.new(0, 0, 1, 0)
     Pill.AutomaticSize = Enum.AutomaticSize.X
     Pill.BackgroundColor3 = isActive and COLORS.accent or COLORS.card
-    Pill.Text = "  " .. cat.icon .. "  " .. cat.name .. "  (" .. catCount .. ")  "
+    Pill.Text = "  " .. cat.icon .. "  " .. cat.name .. (catCount > 0 and "  (" .. catCount .. ")  " or "  ")
     Pill.TextColor3 = isActive and Color3.fromRGB(255, 255, 255) or COLORS.subtext
     Pill.Font = Enum.Font.GothamBold
     Pill.TextSize = 11
@@ -1503,7 +1454,6 @@ for _, cat in ipairs(CATEGORIES) do
     Pills[cat.name] = { button = Pill, stroke = ps }
 
     Pill.MouseButton1Click:Connect(function()
-        playSound("6042053626", 0.3)
         setActivePill(cat.name)
     end)
 end
@@ -1527,7 +1477,6 @@ UserInputService.InputChanged:Connect(function(input)
         local delta = input.Position - dragStart
         Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         MainShadow.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X - 12, startPos.Y.Scale, startPos.Y.Offset + delta.Y + 10)
-        MainShadow2.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X - 22, startPos.Y.Scale, startPos.Y.Offset + delta.Y + 16)
     end
 end)
 UserInputService.InputEnded:Connect(function(input)
@@ -1536,31 +1485,24 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
+-- Abrir/Fechar
 local function openPanel()
     Main.Visible = true
     MainShadow.Visible = true
-    MainShadow2.Visible = true
     Main.Size = UDim2.new(0, 0, 0, 0)
     Main.Position = UDim2.new(0.5, 0, 0.5, 0)
-    MainShadow.Size = UDim2.new(0, 0, 0, 0)
-    MainShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-    MainShadow2.Size = UDim2.new(0, 0, 0, 0)
-    MainShadow2.Position = UDim2.new(0.5, 0, 0.5, 0)
-    local tw = TweenInfo.new(0.42, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    local tw = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     TweenService:Create(Main, tw, {Size = UDim2.new(0, WIN_W, 0, WIN_H), Position = UDim2.new(0.5, -WIN_W/2, 0.5, -WIN_H/2)}):Play()
     TweenService:Create(MainShadow, tw, {Size = UDim2.new(0, WIN_W + 24, 0, WIN_H + 24), Position = UDim2.new(0.5, -WIN_W/2 - 12, 0.5, -WIN_H/2 + 10)}):Play()
-    TweenService:Create(MainShadow2, tw, {Size = UDim2.new(0, WIN_W + 44, 0, WIN_H + 44), Position = UDim2.new(0.5, -WIN_W/2 - 22, 0.5, -WIN_H/2 + 16)}):Play()
 end
 
 local function closePanel()
-    local tw = TweenInfo.new(0.26, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+    local tw = TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
     TweenService:Create(Main, tw, {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
     TweenService:Create(MainShadow, tw, {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
-    TweenService:Create(MainShadow2, tw, {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
-    task.delay(0.28, function()
+    task.delay(0.24, function()
         Main.Visible = false
         MainShadow.Visible = false
-        MainShadow2.Visible = false
     end)
 end
 
@@ -1569,8 +1511,8 @@ OpenBtn.MouseButton1Click:Connect(function()
 end)
 CloseBtn.MouseButton1Click:Connect(closePanel)
 
-setActivePill(CATEGORIES[1].name)
+setActivePill(CATEGORIES[2].name)
 task.wait(0.15)
 openPanel()
 
-print("[VICTTOR HUB] Carregado com sucesso!")
+print("[VICTTOR HUB v2.0] Carregado com sucesso!")
