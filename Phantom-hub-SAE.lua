@@ -237,7 +237,13 @@ local function carregarScript(nome, url)
     contadorScripts = contadorScripts + 1
     config.contadorScripts = contadorScripts
     salvarConfig()
-    if subTitulo then subTitulo.Text = "PHANTOM HUB • " .. contadorScripts .. " scripts" end
+    if subTitulo then
+        subTitulo.Text = "PHANTOM HUB • " .. contadorScripts .. " scripts"
+        local tamOriginal = subTitulo.TextSize
+        TweenService:Create(subTitulo, TweenInfo.new(0.1), {TextSize = tamOriginal + 4}):Play()
+        task.wait(0.1)
+        TweenService:Create(subTitulo, TweenInfo.new(0.2), {TextSize = tamOriginal}):Play()
+    end
     addLog("Carregando " .. nome)
     addHistorico(nome, url)
     notificar("Carregando", nome, 2)
@@ -252,6 +258,36 @@ local function carregarScript(nome, url)
         addLog("ERRO em " .. nome)
         tocarSom("erro", 0.5)
     end
+end
+
+-- ========== EXPLOSÃO DE PARTÍCULAS ==========
+local function explodirParticulas()
+    pcall(function()
+        local sg = Instance.new("ScreenGui")
+        sg.Name = "ExplosaoPHANTOM"
+        sg.ResetOnSpawn = false
+        sg.DisplayOrder = 2000
+        sg.Parent = playerGui
+        for i = 1, 30 do
+            local p = Instance.new("Frame")
+            p.Size = UDim2.new(0, math.random(4, 10), 0, math.random(4, 10))
+            p.Position = UDim2.new(0.5, 0, 0.5, 0)
+            p.BackgroundColor3 = corDestaque
+            p.BorderSizePixel = 0
+            p.Parent = sg
+            local c = Instance.new("UICorner")
+            c.CornerRadius = UDim.new(1, 0)
+            c.Parent = p
+            local angulo = math.random() * math.pi * 2
+            local dist = math.random(200, 500)
+            TweenService:Create(p, TweenInfo.new(math.random(0.5, 1.2), Enum.EasingStyle.Quad), {
+                Position = UDim2.new(0.5, math.cos(angulo) * dist, 0.5, math.sin(angulo) * dist),
+                BackgroundTransparency = 1,
+                Size = UDim2.new(0, 0, 0, 0)
+            }):Play()
+        end
+        task.delay(1.5, function() sg:Destroy() end)
+    end)
 end
 
 -- ========== JANELA PRINCIPAL ==========
@@ -276,7 +312,6 @@ local cJanela = Instance.new("UICorner")
 cJanela.CornerRadius = UDim.new(0, 14)
 cJanela.Parent = janelaPrincipal
 
--- Gradiente animado
 local gradFundo = Instance.new("UIGradient")
 gradFundo.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, corDestaque),
@@ -292,7 +327,6 @@ gradFundo.Transparency = NumberSequence.new({
 })
 gradFundo.Parent = janelaPrincipal
 
--- Borda pulsante
 sJanela = Instance.new("UIStroke")
 sJanela.Color = corDestaque
 sJanela.Thickness = 2
@@ -300,7 +334,6 @@ sJanela.Transparency = 0
 sJanela.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 sJanela.Parent = janelaPrincipal
 
--- Scanline
 local scanline = Instance.new("Frame")
 scanline.Size = UDim2.new(1, 0, 0, 2)
 scanline.Position = UDim2.new(0, 0, 0, 0)
@@ -313,7 +346,7 @@ local cScan = Instance.new("UICorner")
 cScan.CornerRadius = UDim.new(1, 0)
 cScan.Parent = scanline
 
--- Orbs com glow (partículas maiores e brilhantes)
+-- Orbs com glow
 for i = 1, 6 do
     local orb = Instance.new("Frame")
     orb.Size = UDim2.new(0, math.random(8, 14), 0, math.random(8, 14))
@@ -353,7 +386,6 @@ for i = 1, 8 do
     table.insert(particulasFundo, p)
 end
 
--- Animações dos orbs
 task.spawn(function()
     while janelaPrincipal and janelaPrincipal.Parent do
         for i, orb in ipairs(orbs) do
@@ -375,7 +407,6 @@ task.spawn(function()
     end
 end)
 
--- Animação das partículas
 task.spawn(function()
     while janelaPrincipal and janelaPrincipal.Parent do
         for i, p in ipairs(particulasFundo) do
@@ -392,7 +423,6 @@ task.spawn(function()
     end
 end)
 
--- Animação do gradiente
 task.spawn(function()
     while gradFundo and gradFundo.Parent do
         gradFundo.Rotation = (gradFundo.Rotation + 2) % 360
@@ -400,7 +430,6 @@ task.spawn(function()
     end
 end)
 
--- Animação da borda pulsante
 task.spawn(function()
     while sJanela and sJanela.Parent do
         TweenService:Create(sJanela, TweenInfo.new(1.5, Enum.EasingStyle.Sine), {Transparency = 0.4, Thickness = 3}):Play()
@@ -410,7 +439,6 @@ task.spawn(function()
     end
 end)
 
--- Animação da scanline
 task.spawn(function()
     while scanline and scanline.Parent do
         scanline.Position = UDim2.new(0, 0, 0, 0)
@@ -458,7 +486,18 @@ tituloJanela.TextSize = 16
 tituloJanela.TextXAlignment = Enum.TextXAlignment.Left
 tituloJanela.Parent = barraTitulo
 
--- Brilho passando no título
+-- Glitch no título
+task.spawn(function()
+    while tituloJanela and tituloJanela.Parent do
+        task.wait(math.random(3, 6))
+        for i = 1, 5 do
+            tituloJanela.Position = UDim2.new(0, 15 + math.random(-3, 3), 0, math.random(-2, 2))
+            task.wait(0.05)
+        end
+        tituloJanela.Position = UDim2.new(0, 15, 0, 0)
+    end
+end)
+
 local brilhoTitulo = Instance.new("Frame")
 brilhoTitulo.Size = UDim2.new(0, 40, 1, 0)
 brilhoTitulo.Position = UDim2.new(-0.1, 0, 0, 0)
@@ -667,8 +706,7 @@ local function criarAba(nome, icone)
         if abaAtiva == frame then return end
         tocarSom("aba", 0.25)
         for _, aba in ipairs(abas) do
-            if aba.frame == abaAtiva then
-                aba.frame.Visible = false
+            if aba.frame == abaAtiva then                aba.frame.Visible = false
                 aba.btn.BackgroundColor3 = corBotao
                 aba.btn.BackgroundTransparency = 0.3
                 TweenService:Create(aba.stroke, TweenInfo.new(0.15), {Transparency = 0.8}):Play()
@@ -708,6 +746,7 @@ local function criarBotao(parent, nome, callback, altura)
     btn.TextSize = tamanhoFonte
     btn.BorderSizePixel = 0
     btn.AutoButtonColor = false
+    btn.ClipsDescendants = true
     btn.Parent = parent
 
     local c = Instance.new("UICorner")
@@ -720,86 +759,46 @@ local function criarBotao(parent, nome, callback, altura)
     s.Transparency = 0.6
     s.Parent = btn
 
-    local sombra = Instance.new("Frame")
-    sombra.Size = UDim2.new(1, 0, 1, 0)
-    sombra.Position = UDim2.new(0, 2, 0, 2)
-    sombra.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    sombra.BackgroundTransparency = 0.7
-    sombra.BorderSizePixel = 0
-    sombra.ZIndex = -1
-    sombra.Parent = btn
+    local brilho = Instance.new("Frame")
+    brilho.Size = UDim2.new(0, 60, 1, 0)
+    brilho.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    brilho.BackgroundTransparency = 0.9
+    brilho.BorderSizePixel = 0
+    brilho.Parent = btn
 
-    local cSombra = Instance.new("UICorner")
-    cSombra.CornerRadius = UDim.new(0, 9)
-    cSombra.Parent = sombra
+    local cb = Instance.new("UICorner")
+    cb.CornerRadius = UDim.new(1, 0)
+    cb.Parent = brilho
 
     btn.MouseEnter:Connect(function()
         TweenService:Create(btn, TweenInfo.new(0.15), {
             BackgroundColor3 = corDestaque,
             BackgroundTransparency = 0.2,
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-            Size = UDim2.new(1, -8, 0, altura + 2)
+            TextColor3 = Color3.fromRGB(255, 255, 255)
         }):Play()
         TweenService:Create(s, TweenInfo.new(0.15), {Transparency = 0, Thickness = 2}):Play()
+        TweenService:Create(brilho, TweenInfo.new(0.6, Enum.EasingStyle.Linear), {
+            Position = UDim2.new(1.2, 0, 0, 0)
+        }):Play()
     end)
     btn.MouseLeave:Connect(function()
         TweenService:Create(btn, TweenInfo.new(0.15), {
             BackgroundColor3 = corBotao,
             BackgroundTransparency = 0.15,
-            TextColor3 = corTexto,
-            Size = UDim2.new(1, -10, 0, altura)
+            TextColor3 = corTexto
         }):Play()
         TweenService:Create(s, TweenInfo.new(0.15), {Transparency = 0.6, Thickness = 1}):Play()
+        brilho.Position = UDim2.new(-0.2, 0, 0, 0)
     end)
 
     btn.MouseButton1Click:Connect(function()
         tocarSom("clicar", 0.3)
-        -- Ripple
-        local ripple = Instance.new("Frame")
-        ripple.Size = UDim2.new(0, 0, 0, 0)
-        ripple.Position = UDim2.new(0.5, 0, 0.5, 0)
-        ripple.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        ripple.BackgroundTransparency = 0.4
-        ripple.BorderSizePixel = 0
-        ripple.ZIndex = 10
-        ripple.Parent = btn
-
-        local cR = Instance.new("UICorner")
-        cR.CornerRadius = UDim.new(1, 0)
-        cR.Parent = ripple
-
-        TweenService:Create(ripple, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {
-            Size = UDim2.new(1.5, 0, 1.5, 0),
-            Position = UDim2.new(-0.25, 0, -0.25, 0),
-            BackgroundTransparency = 1
-        }):Play()
-
-        -- Explosão de partículas ao clicar
-        for i = 1, 6 do
-            local part = Instance.new("Frame")
-            part.Size = UDim2.new(0, 4, 0, 4)
-            part.Position = UDim2.new(0.5, 0, 0.5, 0)
-            part.BackgroundColor3 = corDestaque
-            part.BorderSizePixel = 0
-            part.ZIndex = 11
-            part.Parent = btn
-
-            local pc = Instance.new("UICorner")
-            pc.CornerRadius = UDim.new(1, 0)
-            pc.Parent = part
-
-            local angulo = math.random() * math.pi * 2
-            local distancia = math.random(20, 40)
-            TweenService:Create(part, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
-                Position = UDim2.new(0.5, math.cos(angulo) * distancia, 0.5, math.sin(angulo) * distancia),
-                BackgroundTransparency = 1,
-                Size = UDim2.new(0, 0, 0, 0)
-            }):Play()
-
-            task.delay(0.5, function() part:Destroy() end)
+        local posOriginal = btn.Position
+        for i = 1, 3 do
+            btn.Position = posOriginal + UDim2.new(0, math.random(-3, 3), 0, math.random(-2, 2))
+            task.wait(0.03)
         end
-
-        task.delay(0.6, function() ripple:Destroy() end)
+        btn.Position = posOriginal
         pcall(callback)
     end)
 
@@ -988,7 +987,6 @@ indicador.Position = UDim2.new(0, 0, 0, 0)
 -- ========== KEYLESS ==========
 local function addKeyless(nome, url) criarBotao(AbaKeyless, nome, function() carregarScript(nome, url) end) end
 
--- Scripts originais
 addKeyless("Polluted Hub", "https://raw.githubusercontent.com/PollutedHub/Sae/main/SaePolluted")
 addKeyless("Sena v6.2", "https://raw.githubusercontent.com/LSSOPS/OpenSource/refs/heads/main/Senav6.2Hub_Steal_An_Egg.lua")
 addKeyless("Moondiety", "https://moondiety.com/loader")
@@ -1006,14 +1004,16 @@ addKeyless("ScriptVerse Hub", "https://pastebin.com/raw/vE3xvTaR")
 addKeyless("Chilli Hub", "https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua")
 addKeyless("LKZ Hub", "https://raw.githubusercontent.com/LucasggkX/LKZ-Hub/refs/heads/main/Loader.lua")
 addKeyless("PulseZax", "https://raw.githubusercontent.com/PulseZax/Loader/main/.lua")
-
--- Novos scripts (da pesquisa)
-addKeyless("Egg Hub", "https://raw.githubusercontent.com/robomohit/EggHub/main/egghub.lua")
-addKeyless("Sources Hub (64+)", "https://pastefy.app/Lk0vDMmN/raw")
-addKeyless("WZEUS Hub", "https://raw.githubusercontent.com/Wzeus-NTH/Wzeusno1/main/Wzeus/nthzz")
+addKeyless("SoftKillz Auto Cosmic", "https://pastebin.com/raw/ZuEBwb5K")
+addKeyless("Monarch Hub", "https://raw.githubusercontent.com/nobuxy/monarch.win/refs/heads/main/Monarch.lua")
+addKeyless("CRZ Hub", "https://flowauth.net/v1/loaders/3c4e87ed34813171b0f8d53a108a7d88.lua")
+addKeyless("Delta Instant Steal", "https://pastebin.com/raw/27AqHcXs")
+addKeyless("Ouroboros Hub", "https://raw.githubusercontent.com/joustingmatch/Ouroboros/main/loader.lua")
 addKeyless("Nox Hub", "https://noxscript.com/loader")
+addKeyless("Oxide Hub", "https://raw.githubusercontent.com/LSSOPS/OpenSource/refs/heads/main/OxideHub_Steal_An_Egg.lua")
+addKeyless("Foxname", "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Fn-stealanegg.lua")
+addKeyless("Sources Hub (64+)", "https://pastefy.app/Lk0vDMmN/raw")
 addKeyless("Goha Hub", "https://api.goha.dev/loader")
-addKeyless("FynessedHub", "https://raw.githubusercontent.com/AhmadV6/StealAnEgg/refs/heads/main/FynessedHub")
 
 -- ========== COM KEY ==========
 local aviso = Instance.new("TextLabel")
@@ -1029,15 +1029,12 @@ aviso.Parent = AbaKey
 
 local function addKey(nome, url) criarBotao(AbaKey, nome, function() carregarScript(nome, url) end) end
 
--- Originais
 addKey("UB Hub", "https://raw.githubusercontent.com/TeamUBHub/UBLoader/refs/heads/main/index/Key.lua")
 addKey("Monarch", "https://raw.githubusercontent.com/nobuxy/monarch.win/refs/heads/main/Monarch.lua")
 addKey("The BSMT", "https://thebsmt.xyz/BSMT")
 addKey("CRZ Hub", "https://flowauth.net/v1/loaders/3c4e87ed34813171b0f8d53a108a7d88.lua")
 addKey("Neva Hub", "https://raw.githubusercontent.com/VEZ2/NEVAHUB/main/2")
 addKey("BK's Hub", "https://api.luarmor.net/files/v4/loaders/9ee4edde227ac85f50872bf9e4226508.lua")
-
--- Novos (da pesquisa)
 addKey("Codex Hub", "https://cdxhub.net/load.lua")
 addKey("Lennon Hub", "https://api.jnkie.com/api/v1/luascripts/public/bf52181bce5c28e6ecd16eebfa1a88ddaf646c7acb10015fbaa7b30dc7bad0a8/download")
 addKey("Fishy Hub", "https://api.jnkie.com/api/v1/loaders/public/f303b97c2bb24ac31f25d957eb3e28e66c09789bf720909e0f6a5d4b29503501/download")
@@ -1280,6 +1277,44 @@ criarToggle(AbaVisual, "🪟 Efeito Vidro (Glassmorphism)", false, function(v)
     end
 end)
 
+local cicloAtivo = false
+criarToggle(AbaVisual, "🌈 Ciclo de Cores RGB", false, function(v)
+    cicloAtivo = v
+    if v then
+        task.spawn(function()
+            local h = 0
+            while cicloAtivo do
+                h = (h + 1) % 360
+                local cor = Color3.fromHSV(h / 360, 1, 1)
+                corDestaque = cor
+                sJanela.Color = cor
+                indicador.BackgroundColor3 = cor
+                tituloJanela.TextColor3 = cor
+                task.wait(0.05)
+            end
+        end)
+        notificar("Visual", "Ciclo RGB ON", 2)
+    else
+        notificar("Visual", "Ciclo RGB OFF", 2)
+    end
+end)
+
+criarToggle(AbaVisual, "📡 Modo Holograma", false, function(v)
+    if v then
+        janelaPrincipal.BackgroundTransparency = 0.85
+        sJanela.Color = Color3.fromRGB(0, 255, 200)
+        sJanela.Thickness = 3
+        sJanela.Transparency = 0.3
+        notificar("Visual", "Holograma ON", 2)
+    else
+        janelaPrincipal.BackgroundTransparency = transparenciaPainel
+        sJanela.Color = corDestaque
+        sJanela.Thickness = 2
+        sJanela.Transparency = 0
+        notificar("Visual", "Holograma OFF", 2)
+    end
+end)
+
 criarBotao(AbaVisual, "💾 Salvar Config", function()
     salvarConfig()
     notificar("Config", "Salvo!", 2)
@@ -1349,7 +1384,6 @@ criarBotao(AbaUtils, "🔄 Resetar Contador", function()
     notificar("Contador", "Resetado!", 2)
 end)
 
--- Utils extras
 local autoClickAtivo = false
 local autoClickCon = nil
 local autoClickIntervalo = 0.1
@@ -1454,7 +1488,6 @@ criarBotao(AbaUtils, "🗑️ Limpar Log do Chat", function()
     notificar("Chat", "Limpo!", 2)
 end)
 
--- ESP de ovos
 local espOvosAtivo = false
 local ovosDestacados = {}
 local espOvosCon = nil
@@ -1743,7 +1776,7 @@ recriarListaPerfis()
 local sobreLabel = Instance.new("TextLabel")
 sobreLabel.Size = UDim2.new(1, -10, 1, -10)
 sobreLabel.BackgroundTransparency = 1
-sobreLabel.Text = "👻 PHANTOM HUB\n\nVersão: " .. VERSAO .. "\nAutor: V Scripts\n\nChangelog:\n• v1.6.0 - Novos scripts + orbs com glow + explosão de partículas\n• v1.5.0 - Visual super insano\n• v1.4.0 - Visual avançado + utils + perfis\n• v1.3.0 - Rolagem + LKZ + PulseZax\n• v1.2.0 - Sons + sem intro\n• v1.1.0 - ESP + Webhook\n• v1.0.0 - Lançamento\n\nDiscord: discord.gg/CYp5CTu8rY"
+sobreLabel.Text = "👻 PHANTOM HUB\n\nVersão: " .. VERSAO .. "\nAutor: V Scripts\n\nChangelog:\n• v1.6.0 - Novos scripts + orbs + explosão de partículas\n• v1.5.0 - Visual super insano\n• v1.4.0 - Visual avançado + utils + perfis\n• v1.3.0 - Rolagem + LKZ + PulseZax\n• v1.2.0 - Sons + sem intro\n• v1.1.0 - ESP + Webhook\n• v1.0.0 - Lançamento\n\nDiscord: discord.gg/CYp5CTu8rY"
 sobreLabel.TextColor3 = corTexto
 sobreLabel.Font = Enum.Font.Gotham
 sobreLabel.TextSize = tamanhoFonte
@@ -1888,6 +1921,7 @@ function abrirPainel()
     sgPainel.Enabled = true
     btnContainer.Visible = false
     tocarSom("abrir", 0.4)
+    explodirParticulas()
 
     local tam = tamanhos[tamanhoIdx]
     janelaPrincipal.Size = UDim2.new(0, 0, 0, 0)
@@ -1940,4 +1974,4 @@ end
 abrirPainel()
 recriarHistorico()
 recriarListaPerfis()
-notificar("👻 PHANTOM HUB", "v1.0.0, 4)
+notificar("👻 PHANTOM HUB", "v1.6.0 - Scripts novos + orbs + explosão!", 4)
