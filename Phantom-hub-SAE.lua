@@ -1,6 +1,6 @@
 -- ============================================
 -- PHANTOM HUB - STEAL AN EGG
--- Visual insano + todos os scripts + animações
+-- Black Edition + todos os scripts + animações
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -12,12 +12,12 @@ local HttpService = game:GetService("HttpService")
 local camera = workspace.CurrentCamera
 local Lighting = game:GetService("Lighting")
 
-local VERSAO = "1.6.0"
+local VERSAO = "1.7.0"
 local CONFIG_FILE = "PHANTOM_Config.json"
 local PERFIS_FILE = "PHANTOM_Perfis.json"
 
 local config = {
-    preset = "Neon",
+    preset = "Black",
     transparencia = 0,
     fonte = 11,
     somNotif = true,
@@ -85,8 +85,11 @@ local function tocarSom(nome, volume)
     end)
 end
 
--- ========== PRESETS ==========
+-- ========== PRESETS (BLACK EDITION INCLUÍDO) ==========
 local presets = {
+    Black = {fundo = Color3.fromRGB(0, 0, 0), painel = Color3.fromRGB(10, 10, 10), texto = Color3.fromRGB(220, 220, 220), botao = Color3.fromRGB(18, 18, 18), destaque = Color3.fromRGB(180, 0, 0)},
+    BlackRoxo = {fundo = Color3.fromRGB(0, 0, 0), painel = Color3.fromRGB(10, 10, 10), texto = Color3.fromRGB(220, 220, 220), botao = Color3.fromRGB(18, 18, 18), destaque = Color3.fromRGB(100, 0, 180)},
+    BlackVerde = {fundo = Color3.fromRGB(0, 0, 0), painel = Color3.fromRGB(10, 10, 10), texto = Color3.fromRGB(220, 220, 220), botao = Color3.fromRGB(18, 18, 18), destaque = Color3.fromRGB(0, 150, 70)},
     Cyberpunk = {fundo = Color3.fromRGB(15, 5, 25), painel = Color3.fromRGB(25, 10, 40), texto = Color3.fromRGB(255, 200, 50), botao = Color3.fromRGB(40, 15, 60), destaque = Color3.fromRGB(255, 50, 200)},
     Neon = {fundo = Color3.fromRGB(10, 10, 15), painel = Color3.fromRGB(20, 20, 30), texto = Color3.fromRGB(240, 240, 240), botao = Color3.fromRGB(30, 30, 45), destaque = Color3.fromRGB(0, 200, 255)},
     Dark = {fundo = Color3.fromRGB(5, 5, 5), painel = Color3.fromRGB(15, 15, 15), texto = Color3.fromRGB(200, 200, 200), botao = Color3.fromRGB(25, 25, 25), destaque = Color3.fromRGB(120, 120, 120)},
@@ -96,7 +99,7 @@ local presets = {
 }
 
 local presetAtual = config.preset
-if not presets[presetAtual] then presetAtual = "Neon" end
+if not presets[presetAtual] then presetAtual = "Black" end
 local corDestaque = presets[presetAtual].destaque
 local corFundo = presets[presetAtual].fundo
 local corPainel = presets[presetAtual].painel
@@ -329,8 +332,8 @@ gradFundo.Parent = janelaPrincipal
 
 sJanela = Instance.new("UIStroke")
 sJanela.Color = corDestaque
-sJanela.Thickness = 2
-sJanela.Transparency = 0
+sJanela.Thickness = 1
+sJanela.Transparency = 0.3
 sJanela.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 sJanela.Parent = janelaPrincipal
 
@@ -346,7 +349,6 @@ local cScan = Instance.new("UICorner")
 cScan.CornerRadius = UDim.new(1, 0)
 cScan.Parent = scanline
 
--- Orbs com glow
 for i = 1, 6 do
     local orb = Instance.new("Frame")
     orb.Size = UDim2.new(0, math.random(8, 14), 0, math.random(8, 14))
@@ -369,7 +371,6 @@ for i = 1, 6 do
     table.insert(orbs, {frame = orb, glow = glow})
 end
 
--- Partículas pequenas
 for i = 1, 8 do
     local p = Instance.new("Frame")
     p.Size = UDim2.new(0, math.random(3, 6), 0, math.random(3, 6))
@@ -432,9 +433,9 @@ end)
 
 task.spawn(function()
     while sJanela and sJanela.Parent do
-        TweenService:Create(sJanela, TweenInfo.new(1.5, Enum.EasingStyle.Sine), {Transparency = 0.4, Thickness = 3}):Play()
+        TweenService:Create(sJanela, TweenInfo.new(1.5, Enum.EasingStyle.Sine), {Transparency = 0.6, Thickness = 2}):Play()
         task.wait(1.5)
-        TweenService:Create(sJanela, TweenInfo.new(1.5, Enum.EasingStyle.Sine), {Transparency = 0, Thickness = 2}):Play()
+        TweenService:Create(sJanela, TweenInfo.new(1.5, Enum.EasingStyle.Sine), {Transparency = 0.3, Thickness = 1}):Play()
         task.wait(1.5)
     end
 end)
@@ -453,7 +454,7 @@ end)
 local barraTitulo = Instance.new("Frame")
 barraTitulo.Size = UDim2.new(1, 0, 0, 40)
 barraTitulo.BackgroundColor3 = corPainel
-barraTitulo.BackgroundTransparency = 0.3 + transparenciaPainel
+barraTitulo.BackgroundTransparency = 0.5
 barraTitulo.BorderSizePixel = 0
 barraTitulo.Parent = janelaPrincipal
 
@@ -469,9 +470,9 @@ gradBarra.Color = ColorSequence.new({
 })
 gradBarra.Rotation = 0
 gradBarra.Transparency = NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.7),
-    NumberSequenceKeypoint.new(0.5, 0.3),
-    NumberSequenceKeypoint.new(1, 0.7)
+    NumberSequenceKeypoint.new(0, 0.85),
+    NumberSequenceKeypoint.new(0.5, 0.6),
+    NumberSequenceKeypoint.new(1, 0.85)
 })
 gradBarra.Parent = barraTitulo
 
@@ -486,7 +487,6 @@ tituloJanela.TextSize = 16
 tituloJanela.TextXAlignment = Enum.TextXAlignment.Left
 tituloJanela.Parent = barraTitulo
 
--- Glitch no título
 task.spawn(function()
     while tituloJanela and tituloJanela.Parent do
         task.wait(math.random(3, 6))
@@ -498,34 +498,12 @@ task.spawn(function()
     end
 end)
 
-local brilhoTitulo = Instance.new("Frame")
-brilhoTitulo.Size = UDim2.new(0, 40, 1, 0)
-brilhoTitulo.Position = UDim2.new(-0.1, 0, 0, 0)
-brilhoTitulo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-brilhoTitulo.BackgroundTransparency = 0.8
-brilhoTitulo.BorderSizePixel = 0
-brilhoTitulo.Parent = barraTitulo
-
-local cBrilho = Instance.new("UICorner")
-cBrilho.CornerRadius = UDim.new(1, 0)
-cBrilho.Parent = brilhoTitulo
-
-task.spawn(function()
-    while brilhoTitulo and brilhoTitulo.Parent do
-        brilhoTitulo.Position = UDim2.new(-0.1, 0, 0, 0)
-        TweenService:Create(brilhoTitulo, TweenInfo.new(3, Enum.EasingStyle.Linear), {
-            Position = UDim2.new(1.1, 0, 0, 0)
-        }):Play()
-        task.wait(3)
-    end
-end)
-
 subTitulo = Instance.new("TextLabel")
 subTitulo.Size = UDim2.new(1, -170, 0, 10)
 subTitulo.Position = UDim2.new(0, 15, 0, 27)
 subTitulo.BackgroundTransparency = 1
 subTitulo.Text = "PHANTOM HUB • " .. contadorScripts .. " scripts"
-subTitulo.TextColor3 = Color3.fromRGB(150, 150, 170)
+subTitulo.TextColor3 = Color3.fromRGB(120, 120, 120)
 subTitulo.Font = Enum.Font.Gotham
 subTitulo.TextSize = 9
 subTitulo.TextXAlignment = Enum.TextXAlignment.Left
@@ -550,9 +528,9 @@ local function criarBotaoTitulo(icone, cor, posX, callback)
     c.Parent = btn
 
     local s = Instance.new("UIStroke")
-    s.Color = Color3.fromRGB(255, 255, 255)
+    s.Color = corDestaque
     s.Thickness = 1
-    s.Transparency = 0.7
+    s.Transparency = 0.6
     s.Parent = btn
 
     btn.MouseEnter:Connect(function()
@@ -569,7 +547,7 @@ local function criarBotaoTitulo(icone, cor, posX, callback)
             Size = UDim2.new(0, 28, 0, 28),
             Position = UDim2.new(1, posX, 0, 6)
         }):Play()
-        TweenService:Create(s, TweenInfo.new(0.15), {Transparency = 0.7, Thickness = 1}):Play()
+        TweenService:Create(s, TweenInfo.new(0.15), {Transparency = 0.6, Thickness = 1}):Play()
     end)
     btn.MouseButton1Click:Connect(callback)
 
@@ -600,7 +578,7 @@ local btnAumentar = criarBotaoTitulo("+", corBotao, -102, function()
     if tamanhoIdx < 3 then tamanhoIdx = tamanhoIdx + 1; aplicarTamanho() end
 end)
 
-local btnFechar = criarBotaoTitulo("✕", Color3.fromRGB(200, 50, 50), -38, function()
+local btnFechar = criarBotaoTitulo("✕", Color3.fromRGB(80, 0, 0), -38, function()
     fecharPainel()
 end)
 
@@ -706,7 +684,8 @@ local function criarAba(nome, icone)
         if abaAtiva == frame then return end
         tocarSom("aba", 0.25)
         for _, aba in ipairs(abas) do
-            if aba.frame == abaAtiva then                aba.frame.Visible = false
+            if aba.frame == abaAtiva then
+                aba.frame.Visible = false
                 aba.btn.BackgroundColor3 = corBotao
                 aba.btn.BackgroundTransparency = 0.3
                 TweenService:Create(aba.stroke, TweenInfo.new(0.15), {Transparency = 0.8}):Play()
@@ -837,7 +816,7 @@ local function criarToggle(parent, nome, valorInicial, callback)
     local switch = Instance.new("Frame")
     switch.Size = UDim2.new(0, 46, 0, 24)
     switch.Position = UDim2.new(1, -56, 0.5, -12)
-    switch.BackgroundColor3 = valorInicial and Color3.fromRGB(0, 220, 100) or Color3.fromRGB(70, 70, 80)
+    switch.BackgroundColor3 = valorInicial and Color3.fromRGB(0, 220, 100) or Color3.fromRGB(40, 40, 40)
     switch.BorderSizePixel = 0
     switch.Parent = frame
 
@@ -871,7 +850,7 @@ local function criarToggle(parent, nome, valorInicial, callback)
             TweenService:Create(switch, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 220, 100)}):Play()
             TweenService:Create(bolinha, TweenInfo.new(0.2), {Position = UDim2.new(1, -22, 0.5, -10)}):Play()
         else
-            TweenService:Create(switch, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(70, 70, 80)}):Play()
+            TweenService:Create(switch, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
             TweenService:Create(bolinha, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -10)}):Play()
         end
         pcall(callback, estado)
@@ -912,7 +891,7 @@ local function criarSlider(parent, nome, min, max, valorInicial, callback)
     local barraFundo = Instance.new("Frame")
     barraFundo.Size = UDim2.new(1, -24, 0, 8)
     barraFundo.Position = UDim2.new(0, 12, 0, 32)
-    barraFundo.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    barraFundo.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     barraFundo.BorderSizePixel = 0
     barraFundo.Parent = frame
 
@@ -1014,11 +993,14 @@ addKeyless("Oxide Hub", "https://raw.githubusercontent.com/LSSOPS/OpenSource/ref
 addKeyless("Foxname", "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Fn-stealanegg.lua")
 addKeyless("Sources Hub (64+)", "https://pastefy.app/Lk0vDMmN/raw")
 addKeyless("Goha Hub", "https://api.goha.dev/loader")
+addKeyless("ASA MIKATA HUB", "https://raw.githubusercontent.com/discordtiktok76-ctrl/Asa-Mikata-Hub-/refs/heads/main/protected.lua")
+addKeyless("MIRANDA AFK", "https://raw.githubusercontent.com/kadit9999/stealanegg/refs/heads/main/miirandahubk.lua")
+addKeyless("VXEZE", "https://gist.githubusercontent.com/angeryy-tvy/6a9ce750ddf5860230196ac468868fdb/raw/Steal-An-Egg-Vxeze")
 
 -- ========== COM KEY ==========
 local aviso = Instance.new("TextLabel")
 aviso.Size = UDim2.new(1, -10, 0, 32)
-aviso.BackgroundColor3 = Color3.fromRGB(50, 40, 10)
+aviso.BackgroundColor3 = Color3.fromRGB(30, 20, 5)
 aviso.BackgroundTransparency = 0.3
 aviso.Text = "⚠️ Estes scripts pedem key!"
 aviso.TextColor3 = Color3.fromRGB(255, 200, 50)
@@ -1256,7 +1238,7 @@ end)
 criarToggle(AbaVisual, "🪟 Efeito Vidro (Glassmorphism)", false, function(v)
     if v then
         janelaPrincipal.BackgroundTransparency = 0.7
-        sJanela.Thickness = 3
+        sJanela.Thickness = 2
         sJanela.Transparency = 0.3
         pcall(function()
             local b = Instance.new("BlurEffect")
@@ -1267,8 +1249,8 @@ criarToggle(AbaVisual, "🪟 Efeito Vidro (Glassmorphism)", false, function(v)
         notificar("Visual", "Vidro ON", 2)
     else
         janelaPrincipal.BackgroundTransparency = transparenciaPainel
-        sJanela.Thickness = 2
-        sJanela.Transparency = 0
+        sJanela.Thickness = 1
+        sJanela.Transparency = 0.3
         pcall(function()
             local b = Lighting:FindFirstChild("GlassBlur")
             if b then b:Destroy() end
@@ -1303,14 +1285,14 @@ criarToggle(AbaVisual, "📡 Modo Holograma", false, function(v)
     if v then
         janelaPrincipal.BackgroundTransparency = 0.85
         sJanela.Color = Color3.fromRGB(0, 255, 200)
-        sJanela.Thickness = 3
+        sJanela.Thickness = 2
         sJanela.Transparency = 0.3
         notificar("Visual", "Holograma ON", 2)
     else
         janelaPrincipal.BackgroundTransparency = transparenciaPainel
         sJanela.Color = corDestaque
-        sJanela.Thickness = 2
-        sJanela.Transparency = 0
+        sJanela.Thickness = 1
+        sJanela.Transparency = 0.3
         notificar("Visual", "Holograma OFF", 2)
     end
 end)
@@ -1321,11 +1303,11 @@ criarBotao(AbaVisual, "💾 Salvar Config", function()
 end)
 
 criarBotao(AbaVisual, "🔄 Resetar Visual", function()
-    config.preset = "Neon"
+    config.preset = "Black"
     config.transparencia = 0
     config.fonte = 11
     salvarConfig()
-    aplicarPreset("Neon")
+    aplicarPreset("Black")
     transparenciaPainel = 0
     tamanhoFonte = 11
     janelaPrincipal.BackgroundTransparency = 0
@@ -1687,7 +1669,7 @@ local function recriarListaPerfis()
             perfilLabel.Text = "💾 Perfil: " .. nome
             recriarListaPerfis()
             if perfis[nome] then
-                config.preset = perfis[nome].preset or "Neon"
+                config.preset = perfis[nome].preset or "Black"
                 config.transparencia = perfis[nome].transparencia or 0
                 config.fonte = perfis[nome].fonte or 11
                 config.somNotif = perfis[nome].somNotif ~= false
@@ -1754,7 +1736,7 @@ criarBotao(AbaPerfis, "📥 Importar Config", function()
             local dados = HttpService:JSONDecode(texto)
             for k, v in pairs(dados) do config[k] = v end
             salvarConfig()
-            aplicarPreset(config.preset or "Neon")
+            aplicarPreset(config.preset or "Black")
             notificar("Importar", "Config importada!", 3)
         else
             notificar("Importar", "Clipboard vazio!", 2, true)
@@ -1776,7 +1758,7 @@ recriarListaPerfis()
 local sobreLabel = Instance.new("TextLabel")
 sobreLabel.Size = UDim2.new(1, -10, 1, -10)
 sobreLabel.BackgroundTransparency = 1
-sobreLabel.Text = "👻 PHANTOM HUB\n\nVersão: " .. VERSAO .. "\nAutor: V Scripts\n\nChangelog:\n• v1.6.0 - Novos scripts + orbs + explosão de partículas\n• v1.5.0 - Visual super insano\n• v1.4.0 - Visual avançado + utils + perfis\n• v1.3.0 - Rolagem + LKZ + PulseZax\n• v1.2.0 - Sons + sem intro\n• v1.1.0 - ESP + Webhook\n• v1.0.0 - Lançamento\n\nDiscord: discord.gg/CYp5CTu8rY"
+sobreLabel.Text = "👻 PHANTOM HUB\n\nVersão: " .. VERSAO .. "\nAutor: V Scripts\n\nChangelog:\n• v1.7.0 - Black Edition + ASA MIKATA + MIRANDA + VXEZE\n• v1.6.0 - Novos scripts + orbs + explosão\n• v1.5.0 - Visual super insano\n• v1.4.0 - Visual avançado + utils + perfis\n• v1.3.0 - Rolagem + LKZ + PulseZax\n• v1.2.0 - Sons + sem intro\n• v1.1.0 - ESP + Webhook\n• v1.0.0 - Lançamento\n\nDiscord: discord.gg/CYp5CTu8rY"
 sobreLabel.TextColor3 = corTexto
 sobreLabel.Font = Enum.Font.Gotham
 sobreLabel.TextSize = tamanhoFonte
@@ -1930,9 +1912,9 @@ function abrirPainel()
     janelaPrincipal.Rotation = -15
 
     for i = 1, 3 do
-        janelaPrincipal.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        janelaPrincipal.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
         task.wait(0.03)
-        janelaPrincipal.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+        janelaPrincipal.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         task.wait(0.03)
         janelaPrincipal.BackgroundColor3 = corFundo
         task.wait(0.03)
@@ -1974,4 +1956,4 @@ end
 abrirPainel()
 recriarHistorico()
 recriarListaPerfis()
-notificar("👻 PHANTOM HUB", "v1.6.0 - Scripts novos + orbs + explosão!", 4)
+notificar("👻 PHANTOM HUB", "Black Edition + 3 scripts novos!", 4)
