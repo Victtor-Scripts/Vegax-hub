@@ -727,8 +727,6 @@ addKey("BK's Hub", "https://api.luarmor.net/files/v4/loaders/9ee4edde227ac85f508
 addKey("Codex Hub", "https://cdxhub.net/load.lua")
 addKey("Lennon Hub", "https://api.jnkie.com/api/v1/luascripts/public/bf52181bce5c28e6ecd16eebfa1a88ddaf646c7acb10015fbaa7b30dc7bad0a8/download")
 addKey("Fishy Hub", "https://api.jnkie.com/api/v1/loaders/public/f303b97c2bb24ac31f25d957eb3e28e66c09789bf720909e0f6a5d4b29503501/download")
-
--- CONTINUA NA PARTE 2...
 -- ========== ABA FUNÇÕES ==========
 criarSlider(AbaFun, "FOV", 30, 120, camera.FieldOfView, function(v) camera.FieldOfView = v end)
 criarSlider(AbaFun, "Velocidade", 16, 300, 16, function(v) local char = Players.LocalPlayer.Character; if char and char:FindFirstChild("Humanoid") then char.Humanoid.WalkSpeed = v end end)
