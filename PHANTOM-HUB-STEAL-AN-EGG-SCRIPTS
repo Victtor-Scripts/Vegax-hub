@@ -1,6 +1,6 @@
 -- ============================================
 -- PHANTOM HUB - BLACK EDITION SUPREMA
--- v2.0.0 - Código Completo (Parte 1 + Parte 2)
+-- v2.2.0 - O Mais Completo Possível
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -12,7 +12,7 @@ local HttpService = game:GetService("HttpService")
 local camera = workspace.CurrentCamera
 local Lighting = game:GetService("Lighting")
 
-local VERSAO = "2.0.0"
+local VERSAO = "2.2.0"
 local CONFIG_FILE = "PHANTOM_Config.json"
 local PERFIS_FILE = "PHANTOM_Perfis.json"
 
@@ -977,7 +977,6 @@ end
 
 -- ========== ABA KEYLESS ==========
 local function addKeyless(nome, url) criarBotao(AbaKeyless, nome, function() carregarScript(nome, url) end) end
-
 addKeyless("Polluted Hub", "https://raw.githubusercontent.com/PollutedHub/Sae/main/SaePolluted")
 addKeyless("Sena v6.2", "https://raw.githubusercontent.com/LSSOPS/OpenSource/refs/heads/main/Senav6.2Hub_Steal_An_Egg.lua")
 addKeyless("Moondiety", "https://moondiety.com/loader")
@@ -1022,7 +1021,6 @@ aviso.TextWrapped = true
 aviso.Parent = AbaKey
 
 local function addKey(nome, url) criarBotao(AbaKey, nome, function() carregarScript(nome, url) end) end
-
 addKey("UB Hub", "https://raw.githubusercontent.com/TeamUBHub/UBLoader/refs/heads/main/index/Key.lua")
 addKey("Monarch", "https://raw.githubusercontent.com/nobuxy/monarch.win/refs/heads/main/Monarch.lua")
 addKey("The BSMT", "https://thebsmt.xyz/BSMT")
@@ -1035,24 +1033,19 @@ addKey("Fishy Hub", "https://api.jnkie.com/api/v1/loaders/public/f303b97c2bb24ac
 
 -- ========== ABA FUNÇÕES ==========
 criarSlider(AbaFun, "FOV", 30, 120, camera.FieldOfView, function(v) camera.FieldOfView = v end)
-criarSlider(AbaFun, "Velocidade", 16, 200, 16, function(v)
+criarSlider(AbaFun, "Velocidade", 16, 300, 16, function(v)
     local char = Players.LocalPlayer.Character
     if char and char:FindFirstChild("Humanoid") then char.Humanoid.WalkSpeed = v end
 end)
-criarSlider(AbaFun, "Pulo", 50, 300, 50, function(v)
+criarSlider(AbaFun, "Pulo", 50, 500, 50, function(v)
     local char = Players.LocalPlayer.Character
     if char and char:FindFirstChild("Humanoid") then char.Humanoid.JumpPower = v end
 end)
 criarToggle(AbaFun, "Fullbright", false, function(v)
     if v then
-        Lighting.Brightness = 2
-        Lighting.ClockTime = 14
-        Lighting.FogEnd = 100000
-        Lighting.GlobalShadows = false
+        Lighting.Brightness = 2; Lighting.ClockTime = 14; Lighting.FogEnd = 100000; Lighting.GlobalShadows = false
     else
-        Lighting.Brightness = 1
-        Lighting.FogEnd = 1000
-        Lighting.GlobalShadows = true
+        Lighting.Brightness = 1; Lighting.FogEnd = 1000; Lighting.GlobalShadows = true
     end
 end)
 criarToggle(AbaFun, "Noclip", false, function(v)
@@ -1082,8 +1075,7 @@ criarToggle(AbaFun, "Anti AFK", false, function(v)
         pcall(function()
             local vu = game:GetService("VirtualUser")
             Players.LocalPlayer.Idled:Connect(function()
-                vu:CaptureController()
-                vu:ClickButton2(Vector2.new())
+                vu:CaptureController(); vu:ClickButton2(Vector2.new())
             end)
         end)
     end
@@ -1094,9 +1086,7 @@ criarToggle(AbaFun, "ESP Jogadores", false, function(v)
             if v then
                 if not p.Character:FindFirstChild("ESPHighlight") then
                     local hl = Instance.new("Highlight")
-                    hl.Name = "ESPHighlight"
-                    hl.FillColor = corDestaque
-                    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                    hl.Name = "ESPHighlight"; hl.FillColor = corDestaque; hl.OutlineColor = Color3.fromRGB(255, 255, 255)
                     hl.Parent = p.Character
                 end
             else
@@ -1106,6 +1096,91 @@ criarToggle(AbaFun, "ESP Jogadores", false, function(v)
         end
     end
 end)
+
+criarToggle(AbaFun, "Fly (Voa)", false, function(v)
+    if _G.flyCon then _G.flyCon:Disconnect(); _G.flyCon = nil end
+    local char = Players.LocalPlayer.Character
+    if not char then return end
+    if v then
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local bv = Instance.new("BodyVelocity", hrp)
+            bv.MaxForce = Vector3.new(1e9, 1e9, 1e9); bv.Velocity = Vector3.new(0,0,0)
+            _G.flyCon = UserInputService.InputBegan:Connect(function(input)
+                local dir = Vector3.new(0,0,0)
+                if input.KeyCode == Enum.KeyCode.W then dir = camera.CFrame.LookVector * 50 end
+                if input.KeyCode == Enum.KeyCode.S then dir = -camera.CFrame.LookVector * 50 end
+                if input.KeyCode == Enum.KeyCode.A then dir = -camera.CFrame.RightVector * 50 end
+                if input.KeyCode == Enum.KeyCode.D then dir = camera.CFrame.RightVector * 50 end
+                if input.KeyCode == Enum.KeyCode.Space then dir = Vector3.new(0,50,0) end
+                bv.Velocity = dir
+            end)
+        end
+    else
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp then local bv = hrp:FindFirstChildOfClass("BodyVelocity"); if bv then bv:Destroy() end end
+    end
+end)
+
+criarToggle(AbaFun, "Godmode (Invencível)", false, function(v)
+    if _G.godCon then _G.godCon:Disconnect(); _G.godCon = nil end
+    if v then
+        _G.godCon = RunService.Heartbeat:Connect(function()
+            local char = Players.LocalPlayer.Character
+            if char and char:FindFirstChild("Humanoid") then
+                char.Humanoid.Health = char.Humanoid.MaxHealth
+            end
+        end)
+    end
+end)
+
+criarToggle(AbaFun, "Aimbot (Mira Automática)", false, function(v)
+    if _G.aimCon then _G.aimCon:Disconnect(); _G.aimCon = nil end
+    if v then
+        _G.aimCon = RunService.RenderStepped:Connect(function()
+            local closest = nil; local dist = math.huge
+            for _, p in pairs(Players:GetPlayers()) do
+                if p ~= Players.LocalPlayer and p.Character and p.Character:FindFirstChild("Head") then
+                    local d = (p.Character.Head.Position - camera.CFrame.Position).Magnitude
+                    if d < dist then dist = d; closest = p.Character.Head end
+                end
+            end
+            if closest then camera.CFrame = CFrame.new(camera.CFrame.Position, closest.Position) end
+        end)
+    end
+end)
+
+criarToggle(AbaFun, "ESP Ovos (Global)", false, function(v)
+    if v then
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and (obj.Name:lower():find("egg") or obj.Name:lower():find("ovo")) then
+                if not obj:FindFirstChild("ESPOvoFun") then
+                    local hl = Instance.new("Highlight")
+                    hl.Name = "ESPOvoFun"; hl.FillColor = Color3.fromRGB(255, 215, 0); hl.Parent = obj
+                end
+            end
+        end
+    else
+        for _, obj in pairs(workspace:GetDescendants()) do
+            local hl = obj:FindFirstChild("ESPOvoFun")
+            if hl then hl:Destroy() end
+        end
+    end
+end)
+
+criarBotao(AbaFun, "Teleportar pro Ovo Próximo", function()
+    local char = Players.LocalPlayer.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and (obj.Name:lower():find("egg") or obj.Name:lower():find("ovo")) then
+                char.HumanoidRootPart.CFrame = obj.CFrame + Vector3.new(0, 5, 0)
+                notificar("Teleporte", "Fui pro ovo!", 2)
+                break
+            end
+        end
+    end
+end)
+criarSlider(AbaFun, "Gravidade", 0, 200, workspace.Gravity, function(v) workspace.Gravity = v end)
 
 -- ========== ABA VISUAL ==========
 local presetLabel = Instance.new("TextLabel")
@@ -1119,210 +1194,83 @@ presetLabel.TextXAlignment = Enum.TextXAlignment.Left
 presetLabel.Parent = AbaVisual
 
 local function aplicarPreset(nome)
-    presetAtual = nome
-    config.preset = nome
+    presetAtual = nome; config.preset = nome
     local p = presets[nome]
-    corFundo = p.fundo
-    corPainel = p.painel
-    corTexto = p.texto
-    corBotao = p.botao
-    corDestaque = p.destaque
-
-    janelaPrincipal.BackgroundColor3 = corFundo
-    barraTitulo.BackgroundColor3 = corPainel
-    sJanela.Color = corDestaque
-    indicador.BackgroundColor3 = corDestaque
-    tituloJanela.TextColor3 = corDestaque
+    corFundo = p.fundo; corPainel = p.painel; corTexto = p.texto; corBotao = p.botao; corDestaque = p.destaque
+    janelaPrincipal.BackgroundColor3 = corFundo; barraTitulo.BackgroundColor3 = corPainel
+    sJanela.Color = corDestaque; indicador.BackgroundColor3 = corDestaque; tituloJanela.TextColor3 = corDestaque
     presetLabel.Text = "🎨 Preset: " .. nome
-
     gradFundo.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, corDestaque),
-        ColorSequenceKeypoint.new(0.3, corFundo),
-        ColorSequenceKeypoint.new(0.7, corPainel),
-        ColorSequenceKeypoint.new(1, corDestaque)
+        ColorSequenceKeypoint.new(0, corDestaque), ColorSequenceKeypoint.new(0.3, corFundo),
+        ColorSequenceKeypoint.new(0.7, corPainel), ColorSequenceKeypoint.new(1, corDestaque)
     })
-
-    for _, p in ipairs(particulasFundo) do
-        if p and p.Parent then p.BackgroundColor3 = corDestaque end
-    end
-    for _, orb in ipairs(orbs) do
-        if orb.frame and orb.frame.Parent then
-            orb.frame.BackgroundColor3 = corDestaque
-            orb.glow.Color = corDestaque
-        end
-    end
-
-    salvarConfig()
-    addLog("Preset: " .. nome)
-    notificar("Preset", nome .. " aplicado!", 2)
+    for _, p in ipairs(particulasFundo) do if p and p.Parent then p.BackgroundColor3 = corDestaque end end
+    for _, orb in ipairs(orbs) do if orb.frame and orb.frame.Parent then orb.frame.BackgroundColor3 = corDestaque; orb.glow.Color = corDestaque end end
+    salvarConfig(); addLog("Preset: " .. nome); notificar("Preset", nome .. " aplicado!", 2)
 end
 
 for nome, _ in pairs(presets) do
     criarBotao(AbaVisual, "🎨 " .. nome, function() aplicarPreset(nome) end)
 end
 
-criarSlider(AbaVisual, "Transparência (%)", 0, 90, transparenciaPainel * 100, function(v)
-    transparenciaPainel = v / 100
-    config.transparencia = transparenciaPainel
-    janelaPrincipal.BackgroundTransparency = transparenciaPainel
-    salvarConfig()
+criarSlider(AbaVisual, "Transparência (%)", 0, 100, transparenciaPainel * 100, function(v)
+    transparenciaPainel = v / 100; config.transparencia = transparenciaPainel
+    janelaPrincipal.BackgroundTransparency = transparenciaPainel; salvarConfig()
+end)
+criarSlider(AbaVisual, "Tamanho da Fonte", 8, 20, tamanhoFonte, function(v)
+    tamanhoFonte = v; config.fonte = v; salvarConfig()
 end)
 
-criarSlider(AbaVisual, "Tamanho da Fonte", 8, 16, tamanhoFonte, function(v)
-    tamanhoFonte = v
-    config.fonte = v
-    salvarConfig()
+criarToggle(AbaVisual, "Transparente Total", false, function(v)
+    TweenService:Create(janelaPrincipal, TweenInfo.new(0.5), {BackgroundTransparency = v and 0.95 or transparenciaPainel}):Play()
 end)
-
-criarToggle(AbaVisual, "💎 Modo Transparente Total", false, function(v)
+criarToggle(AbaVisual, "Blur no Fundo", false, function(v)
     if v then
-        TweenService:Create(janelaPrincipal, TweenInfo.new(0.5), {BackgroundTransparency = 0.95}):Play()
-        notificar("Visual", "Transparente ON", 2)
+        pcall(function() local b = Instance.new("BlurEffect"); b.Size = 20; b.Name = "PHANTOMBlur"; b.Parent = Lighting end)
     else
-        TweenService:Create(janelaPrincipal, TweenInfo.new(0.5), {BackgroundTransparency = transparenciaPainel}):Play()
-        notificar("Visual", "Transparente OFF", 2)
+        pcall(function() local b = Lighting:FindFirstChild("PHANTOMBlur"); if b then b:Destroy() end end)
     end
 end)
-
-criarToggle(AbaVisual, "🌫️ Blur no Fundo", false, function(v)
+criarToggle(AbaVisual, "Modo Compacto Extremo", false, function(v)
     if v then
-        pcall(function()
-            local b = Instance.new("BlurEffect")
-            b.Size = 20
-            b.Name = "PHANTOMBlur"
-            b.Parent = Lighting
-        end)
-        notificar("Visual", "Blur ON", 2)
+        janelaPrincipal.Size = UDim2.new(0, 60, 0, 60); janelaPrincipal.Position = UDim2.new(0, 15, 0.4, 0)
+        barraTitulo.Visible = false; painelAbas.Visible = false; painelConteudo.Visible = false; janelaPrincipal.BackgroundTransparency = 1
     else
-        pcall(function()
-            local b = Lighting:FindFirstChild("PHANTOMBlur")
-            if b then b:Destroy() end
-        end)
-        notificar("Visual", "Blur OFF", 2)
+        barraTitulo.Visible = true; painelAbas.Visible = true; painelConteudo.Visible = true; janelaPrincipal.BackgroundTransparency = transparenciaPainel
+        local tam = tamanhos[tamanhoIdx]; janelaPrincipal.Size = tam; janelaPrincipal.Position = UDim2.new(0.5, -(tam.X.Offset/2), 0.5, -(tam.Y.Offset/2))
     end
 end)
-
-local compactoExtremo = false
-criarToggle(AbaVisual, "📱 Modo Compacto Extremo", false, function(v)
-    compactoExtremo = v
+criarToggle(AbaVisual, "Ciclo RGB Insano", false, function(v)
+    if _G.rgbCon then _G.rgbCon:Disconnect(); _G.rgbCon = nil end
     if v then
-        janelaPrincipal.Size = UDim2.new(0, 60, 0, 60)
-        janelaPrincipal.Position = UDim2.new(0, 15, 0.4, 0)
-        barraTitulo.Visible = false
-        painelAbas.Visible = false
-        painelConteudo.Visible = false
-        janelaPrincipal.BackgroundTransparency = 1
-        notificar("Compacto", "Extremo ON", 3)
-    else
-        barraTitulo.Visible = true
-        painelAbas.Visible = true
-        painelConteudo.Visible = true
-        janelaPrincipal.BackgroundTransparency = transparenciaPainel
-        local tam = tamanhos[tamanhoIdx]
-        janelaPrincipal.Size = tam
-        janelaPrincipal.Position = UDim2.new(0.5, -(tam.X.Offset/2), 0.5, -(tam.Y.Offset/2))
-        notificar("Compacto", "Extremo OFF", 2)
-    end
-end)
-
-local temaAutoCon = nil
-criarToggle(AbaVisual, "🕐 Tema Automático (Dia/Noite)", false, function(v)
-    if v then
-        if temaAutoCon then temaAutoCon:Disconnect() end
-        temaAutoCon = task.spawn(function()
-            while true do
-                local hora = tonumber(os.date("%H"))
-                if hora >= 6 and hora < 18 then
-                    if presetAtual ~= "Neon" then aplicarPreset("Neon") end
-                else
-                    if presetAtual ~= "Black" then aplicarPreset("Black") end
-                end
-                task.wait(60)
-            end
-        end)
-        notificar("Visual", "Tema automático ON", 2)
-    else
-        if temaAutoCon then task.cancel(temaAutoCon); temaAutoCon = nil end
-        notificar("Visual", "Tema automático OFF", 2)
-    end
-end)
-
-criarToggle(AbaVisual, "🪟 Efeito Vidro (Glassmorphism)", false, function(v)
-    if v then
-        janelaPrincipal.BackgroundTransparency = 0.7
-        sJanela.Thickness = 2
-        sJanela.Transparency = 0.3
-        pcall(function()
-            local b = Instance.new("BlurEffect")
-            b.Size = 10
-            b.Name = "GlassBlur"
-            b.Parent = Lighting
-        end)
-        notificar("Visual", "Vidro ON", 2)
-    else
-        janelaPrincipal.BackgroundTransparency = transparenciaPainel
-        sJanela.Thickness = 1
-        sJanela.Transparency = 0.3
-        pcall(function()
-            local b = Lighting:FindFirstChild("GlassBlur")
-            if b then b:Destroy() end
-        end)
-        notificar("Visual", "Vidro OFF", 2)
-    end
-end)
-
-local cicloAtivo = false
-criarToggle(AbaVisual, "🌈 Ciclo de Cores RGB", false, function(v)
-    cicloAtivo = v
-    if v then
-        task.spawn(function()
+        _G.rgbCon = task.spawn(function()
             local h = 0
-            while cicloAtivo do
-                h = (h + 1) % 360
+            while true do
+                task.wait(0.05); h = (h + 1) % 360
                 local cor = Color3.fromHSV(h / 360, 1, 1)
-                corDestaque = cor
-                sJanela.Color = cor
-                indicador.BackgroundColor3 = cor
-                tituloJanela.TextColor3 = cor
-                task.wait(0.05)
+                corDestaque = cor; sJanela.Color = cor; indicador.BackgroundColor3 = cor; tituloJanela.TextColor3 = cor
             end
         end)
-        notificar("Visual", "Ciclo RGB ON", 2)
-    else
-        notificar("Visual", "Ciclo RGB OFF", 2)
     end
 end)
-
-criarToggle(AbaVisual, "📡 Modo Holograma", false, function(v)
+criarToggle(AbaVisual, "Modo Holograma", false, function(v)
+    janelaPrincipal.BackgroundTransparency = v and 0.85 or transparenciaPainel
+    sJanela.Color = v and Color3.fromRGB(0, 255, 200) or corDestaque
+    sJanela.Thickness = v and 2 or 1
+end)
+criarToggle(AbaVisual, "Efeito Vidro (Glass)", false, function(v)
     if v then
-        janelaPrincipal.BackgroundTransparency = 0.85
-        sJanela.Color = Color3.fromRGB(0, 255, 200)
-        sJanela.Thickness = 2
-        sJanela.Transparency = 0.3
-        notificar("Visual", "Holograma ON", 2)
+        janelaPrincipal.BackgroundTransparency = 0.7; sJanela.Thickness = 2; sJanela.Transparency = 0.3
+        pcall(function() local b = Instance.new("BlurEffect"); b.Size = 10; b.Name = "GlassBlur"; b.Parent = Lighting end)
     else
-        janelaPrincipal.BackgroundTransparency = transparenciaPainel
-        sJanela.Color = corDestaque
-        sJanela.Thickness = 1
-        sJanela.Transparency = 0.3
-        notificar("Visual", "Holograma OFF", 2)
+        janelaPrincipal.BackgroundTransparency = transparenciaPainel; sJanela.Thickness = 1; sJanela.Transparency = 0.3
+        pcall(function() local b = Lighting:FindFirstChild("GlassBlur"); if b then b:Destroy() end end)
     end
 end)
-
-criarBotao(AbaVisual, "💾 Salvar Config", function()
-    salvarConfig()
-    notificar("Config", "Salvo!", 2)
-end)
-
-criarBotao(AbaVisual, "🔄 Resetar Visual", function()
-    config.preset = "Black"
-    config.transparencia = 0
-    config.fonte = 11
-    salvarConfig()
-    aplicarPreset("Black")
-    transparenciaPainel = 0
-    tamanhoFonte = 11
-    janelaPrincipal.BackgroundTransparency = 0
+criarBotao(AbaVisual, "Salvar Visual", function() salvarConfig(); notificar("Config", "Salvo!", 2) end)
+criarBotao(AbaVisual, "Resetar Visual", function()
+    config.preset = "Black"; config.transparencia = 0; config.fonte = 11; salvarConfig()
+    aplicarPreset("Black"); transparenciaPainel = 0; tamanhoFonte = 11; janelaPrincipal.BackgroundTransparency = 0
     notificar("Reset", "Visual resetado!", 2)
 end)
 
@@ -1330,17 +1278,14 @@ end)
 criarBotao(AbaUtils, "Anti Trap", function() carregarScript("Anti Trap", "https://raw.githubusercontent.com/Lutosys/opensrc/refs/heads/main/StealAnEggAntiTrap.lua") end)
 criarBotao(AbaUtils, "Auto Redeem Index", function() carregarScript("Auto Redeem", "https://raw.githubusercontent.com/Lutosys/opensrc/refs/heads/main/StealAnEggAutoredeemIndex.lua") end)
 criarBotao(AbaUtils, "Rejoin Server", function() game:GetService("TeleportService"):Teleport(game.PlaceId, Players.LocalPlayer) end)
-
 criarToggle(AbaUtils, "Rejoin Automático", false, function(v)
     if _G.rejoinCon then _G.rejoinCon:Disconnect(); _G.rejoinCon = nil end
     if v then
         _G.rejoinCon = Players.LocalPlayer.OnTeleport:Connect(function()
-            task.wait(3)
-            game:GetService("TeleportService"):Teleport(game.PlaceId, Players.LocalPlayer)
+            task.wait(3); game:GetService("TeleportService"):Teleport(game.PlaceId, Players.LocalPlayer)
         end)
     end
 end)
-
 criarBotao(AbaUtils, "FPS Boost", function()
     pcall(function() settings().Rendering.QualityLevel = 1 end)
     for _, v in pairs(workspace:GetDescendants()) do
@@ -1350,8 +1295,7 @@ criarBotao(AbaUtils, "FPS Boost", function()
     end
     notificar("FPS Boost", "Ativado!", 2)
 end)
-
-criarBotao(AbaUtils, "Server Hop", function()
+criarBotao(AbaUtils, "Server Hop (Procurar)", function()
     local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
     local ok, res = pcall(function() return HttpService:JSONDecode(game:HttpGet(url)) end)
     if ok and res and res.data then
@@ -1362,125 +1306,73 @@ criarBotao(AbaUtils, "Server Hop", function()
             end
         end
     end
-    notificar("Server Hop", "Nenhum encontrado.", 2)
+    notificar("Server Hop", "Nenhum encontrado.", 2, true)
 end)
-
-criarBotao(AbaUtils, "📋 Copiar Job ID", function()
+criarBotao(AbaUtils, "Copiar Job ID", function()
     pcall(function() setclipboard(game.JobId) end)
     notificar("Job ID", "Copiado!", 2)
 end)
-
-criarBotao(AbaUtils, "🔄 Resetar Contador", function()
-    contadorScripts = 0
-    config.contadorScripts = 0
-    salvarConfig()
-    subTitulo.Text = "PHANTOM HUB • 0 scripts"
-    notificar("Contador", "Resetado!", 2)
-end)
-
-local autoClickAtivo = false
-local autoClickCon = nil
-local autoClickIntervalo = 0.1
-
-criarToggle(AbaUtils, "🖱️ Auto Clicker", false, function(v)
-    autoClickAtivo = v
+criarToggle(AbaUtils, "Auto Clicker", false, function(v)
+    if _G.clickCon then _G.clickCon:Disconnect(); _G.clickCon = nil end
     if v then
-        if autoClickCon then autoClickCon:Disconnect() end
-        autoClickCon = task.spawn(function()
-            while autoClickAtivo do
+        _G.clickCon = task.spawn(function()
+            while true do
+                task.wait(0.1)
                 pcall(function()
                     local vu = game:GetService("VirtualUser")
-                    vu:CaptureController()
-                    vu:ClickButton1(Vector2.new(500, 500))
+                    vu:CaptureController(); vu:ClickButton1(Vector2.new(500, 500))
                 end)
-                task.wait(autoClickIntervalo)
             end
         end)
-        notificar("Auto Clicker", "ON", 2)
-    else
-        notificar("Auto Clicker", "OFF", 2)
     end
 end)
-
-criarSlider(AbaUtils, "Intervalo Auto Click (ms)", 10, 1000, 100, function(v)
-    autoClickIntervalo = v / 1000
-end)
-
-criarToggle(AbaUtils, "🚫 Anti Kick (AFK)", false, function(v)
+criarToggle(AbaUtils, "Anti Kick (AFK)", false, function(v)
     if v then
         pcall(function()
             local vu = game:GetService("VirtualUser")
             Players.LocalPlayer.Idled:Connect(function()
-                vu:CaptureController()
-                vu:ClickButton2(Vector2.new())
+                vu:CaptureController(); vu:ClickButton2(Vector2.new())
             end)
         end)
-        notificar("Anti Kick", "ON", 2)
-    else
-        notificar("Anti Kick", "OFF", 2)
     end
 end)
-
-local antiTeleportCon = nil
-criarToggle(AbaUtils, "🛡️ Anti Teleport", false, function(v)
+criarToggle(AbaUtils, "Anti Teleport", false, function(v)
+    if _G.tpCon then _G.tpCon:Disconnect(); _G.tpCon = nil end
     if v then
-        if antiTeleportCon then antiTeleportCon:Disconnect() end
-        antiTeleportCon = RunService.Heartbeat:Connect(function()
+        _G.tpCon = RunService.Heartbeat:Connect(function()
             local char = Players.LocalPlayer.Character
             if char and char:FindFirstChild("HumanoidRootPart") then
                 local pos = char.HumanoidRootPart.Position
                 if _G.lastPos and (pos - _G.lastPos).Magnitude > 50 then
                     char.HumanoidRootPart.CFrame = _G.lastCFrame
                 end
-                _G.lastPos = pos
-                _G.lastCFrame = char.HumanoidRootPart.CFrame
+                _G.lastPos = pos; _G.lastCFrame = char.HumanoidRootPart.CFrame
             end
         end)
-        notificar("Anti TP", "ON", 2)
-    else
-        if antiTeleportCon then antiTeleportCon:Disconnect(); antiTeleportCon = nil end
-        notificar("Anti TP", "OFF", 2)
     end
 end)
-
-criarToggle(AbaUtils, "💀 Auto Respawn", false, function(v)
+criarToggle(AbaUtils, "Auto Respawn", false, function(v)
     if v then
         Players.LocalPlayer.CharacterAdded:Connect(function(char)
-            task.wait(1)
-            pcall(function() char:WaitForChild("Humanoid") end)
+            task.wait(1); pcall(function() char:WaitForChild("Humanoid") end)
         end)
-        notificar("Auto Respawn", "ON", 2)
-    else
-        notificar("Auto Respawn", "OFF", 2)
     end
 end)
-
 local chatLog = {}
-criarToggle(AbaUtils, "💬 Log de Chat", false, function(v)
+criarToggle(AbaUtils, "Log de Chat", false, function(v)
     if v then
         Players.LocalPlayer.Chatted:Connect(function(msg)
             table.insert(chatLog, 1, "[" .. os.date("%H:%M:%S") .. "] " .. msg)
             if #chatLog > 50 then table.remove(chatLog) end
         end)
-        notificar("Log Chat", "ON", 2)
-    else
-        notificar("Log Chat", "OFF", 2)
     end
 end)
-
-criarBotao(AbaUtils, "📜 Ver Log do Chat", function()
+criarBotao(AbaUtils, "Ver Log do Chat", function()
     local texto = ""
-    for i, v in ipairs(chatLog) do
-        if i > 10 then break end
-        texto = texto .. v .. "\n"
-    end
-    notificar("💬 Chat", texto ~= "" and texto or "Nenhuma.", 5)
+    for i, v in ipairs(chatLog) do if i > 10 then break end; texto = texto .. v .. "\n" end
+    notificar("Chat", texto ~= "" and texto or "Nenhuma.", 5)
 end)
-
-criarBotao(AbaUtils, "🗑️ Limpar Log do Chat", function()
-    chatLog = {}
-    notificar("Chat", "Limpo!", 2)
-end)
+criarBotao(AbaUtils, "Limpar Log do Chat", function() chatLog = {}; notificar("Chat", "Limpo!", 2) end)
 
 local espOvosAtivo = false
 local ovosDestacados = {}
@@ -1503,32 +1395,17 @@ end
 local function destacarOvo(obj)
     if not obj or not obj:IsA("BasePart") then return end
     if obj:FindFirstChild("ESPOvo") then return end
-
     local hl = Instance.new("Highlight")
-    hl.Name = "ESPOvo"
-    hl.FillColor = Color3.fromRGB(255, 215, 0)
-    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-    hl.FillTransparency = 0.5
-    hl.Parent = obj
-
+    hl.Name = "ESPOvo"; hl.FillColor = Color3.fromRGB(255, 215, 0); hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+    hl.FillTransparency = 0.5; hl.Parent = obj
     local bill = Instance.new("BillboardGui")
-    bill.Name = "ESPOvoBillboard"
-    bill.Size = UDim2.new(0, 100, 0, 30)
-    bill.StudsOffset = Vector3.new(0, 3, 0)
-    bill.AlwaysOnTop = true
-    bill.Parent = obj
-
+    bill.Name = "ESPOvoBillboard"; bill.Size = UDim2.new(0, 100, 0, 30)
+    bill.StudsOffset = Vector3.new(0, 3, 0); bill.AlwaysOnTop = true; bill.Parent = obj
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.Text = "🥚 " .. obj.Name
-    label.TextColor3 = Color3.fromRGB(255, 215, 0)
-    label.TextStrokeTransparency = 0
-    label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-    label.Font = Enum.Font.GothamBold
-    label.TextSize = 14
-    label.Parent = bill
-
+    label.Size = UDim2.new(1, 0, 1, 0); label.BackgroundTransparency = 1
+    label.Text = "🥚 " .. obj.Name; label.TextColor3 = Color3.fromRGB(255, 215, 0)
+    label.TextStrokeTransparency = 0; label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    label.Font = Enum.Font.GothamBold; label.TextSize = 14; label.Parent = bill
     table.insert(ovosDestacados, obj)
 end
 
@@ -1536,304 +1413,168 @@ local function escanearOvos()
     for _, obj in pairs(workspace:GetDescendants()) do
         if obj:IsA("BasePart") then
             local nome = obj.Name:lower()
-            if nome:find("egg") or nome:find("ovo") then
-                destacarOvo(obj)
-            end
+            if nome:find("egg") or nome:find("ovo") then destacarOvo(obj) end
         end
     end
 end
 
-criarToggle(AbaUtils, "🥚 ESP de Ovos", false, function(v)
+criarToggle(AbaUtils, "ESP de Ovos", false, function(v)
     espOvosAtivo = v
     if v then
         escanearOvos()
         espOvosCon = workspace.DescendantAdded:Connect(function(obj)
             if espOvosAtivo and obj:IsA("BasePart") then
                 local nome = obj.Name:lower()
-                if nome:find("egg") or nome:find("ovo") then
-                    destacarOvo(obj)
-                end
+                if nome:find("egg") or nome:find("ovo") then destacarOvo(obj) end
             end
         end)
         notificar("ESP Ovos", "ON", 2)
     else
         if espOvosCon then espOvosCon:Disconnect(); espOvosCon = nil end
-        limparESP()
-        notificar("ESP Ovos", "OFF", 2)
+        limparESP(); notificar("ESP Ovos", "OFF", 2)
     end
 end)
-
-criarBotao(AbaUtils, "🔄 Re-escanear Ovos", function()
-    limparESP()
-    escanearOvos()
-    notificar("ESP Ovos", #ovosDestacados .. " ovos", 2)
-end)
+criarBotao(AbaUtils, "Re-escanear Ovos", function() limparESP(); escanearOvos(); notificar("ESP Ovos", #ovosDestacados .. " ovos", 2) end)
 
 -- ========== ABA NOTIFICAÇÕES ==========
-criarToggle(AbaNotif, "Som de Notificação", config.somNotif, function(v)
-    config.somNotif = v
-    salvarConfig()
-end)
-criarToggle(AbaNotif, "Notificação de Ovo Raro", config.notifOvoRaro, function(v)
-    config.notifOvoRaro = v
-    salvarConfig()
-end)
-criarBotao(AbaNotif, "📜 Ver Histórico", function()
+criarToggle(AbaNotif, "Som de Notificação", config.somNotif, function(v) config.somNotif = v; salvarConfig() end)
+criarToggle(AbaNotif, "Notificação de Ovo Raro", config.notifOvoRaro, function(v) config.notifOvoRaro = v; salvarConfig() end)
+criarBotao(AbaNotif, "Ver Histórico", function()
     local texto = ""
-    for i, v in ipairs(historicoNotif) do
-        if i > 8 then break end
-        texto = texto .. v.hora .. " - " .. v.titulo .. ": " .. v.texto .. "\n"
-    end
+    for i, v in ipairs(historicoNotif) do if i > 8 then break end; texto = texto .. v.hora .. " - " .. v.titulo .. ": " .. v.texto .. "\n" end
     notificar("Histórico", texto ~= "" and texto or "Nenhuma.", 5)
 end)
 
 -- ========== ABA HISTÓRICO ==========
 local histLabel = Instance.new("TextLabel")
-histLabel.Size = UDim2.new(1, -10, 0, 24)
-histLabel.BackgroundTransparency = 1
-histLabel.Text = "📜 Últimos scripts carregados"
-histLabel.TextColor3 = corDestaque
-histLabel.Font = Enum.Font.GothamBold
-histLabel.TextSize = tamanhoFonte + 1
-histLabel.TextXAlignment = Enum.TextXAlignment.Left
-histLabel.Parent = AbaHist
+histLabel.Size = UDim2.new(1, -10, 0, 24); histLabel.BackgroundTransparency = 1
+histLabel.Text = "📜 Últimos scripts carregados"; histLabel.TextColor3 = corDestaque
+histLabel.Font = Enum.Font.GothamBold; histLabel.TextSize = tamanhoFonte + 1
+histLabel.TextXAlignment = Enum.TextXAlignment.Left; histLabel.Parent = AbaHist
 
 local botoesHistorico = {}
-
 local function recriarHistorico()
-    for _, b in ipairs(botoesHistorico) do
-        pcall(function() b:Destroy() end)
-    end
+    for _, b in ipairs(botoesHistorico) do pcall(function() b:Destroy() end) end
     botoesHistorico = {}
     for i, item in ipairs(config.historico) do
-        local b = criarBotao(AbaHist, "🔄 " .. item.nome .. " (" .. item.hora .. ")", function()
-            carregarScript(item.nome, item.url)
-        end)
+        local b = criarBotao(AbaHist, "🔄 " .. item.nome .. " (" .. item.hora .. ")", function() carregarScript(item.nome, item.url) end)
         table.insert(botoesHistorico, b)
     end
     if #config.historico == 0 then
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, -10, 0, 30)
-        label.BackgroundTransparency = 1
-        label.Text = "Nenhum script carregado ainda."
-        label.TextColor3 = corTexto
-        label.Font = Enum.Font.Gotham
-        label.TextSize = tamanhoFonte
-        label.Parent = AbaHist
+        label.Size = UDim2.new(1, -10, 0, 30); label.BackgroundTransparency = 1; label.Text = "Nenhum script carregado ainda."
+        label.TextColor3 = corTexto; label.Font = Enum.Font.Gotham; label.TextSize = tamanhoFonte; label.Parent = AbaHist
         table.insert(botoesHistorico, label)
     end
 end
-
-criarBotao(AbaHist, "🔄 Atualizar Lista", function() recriarHistorico() end)
-criarBotao(AbaHist, "🗑️ Limpar Histórico", function()
-    config.historico = {}
-    salvarConfig()
-    recriarHistorico()
-    notificar("Histórico", "Limpo!", 2)
-end)
+criarBotao(AbaHist, "Atualizar Lista", function() recriarHistorico() end)
+criarBotao(AbaHist, "Limpar Histórico", function() config.historico = {}; salvarConfig(); recriarHistorico(); notificar("Histórico", "Limpo!", 2) end)
 
 -- ========== ABA PERFIS ==========
 local perfilLabel = Instance.new("TextLabel")
-perfilLabel.Size = UDim2.new(1, -10, 0, 24)
-perfilLabel.BackgroundTransparency = 1
-perfilLabel.Text = "💾 Perfil: " .. perfilAtual
-perfilLabel.TextColor3 = corDestaque
-perfilLabel.Font = Enum.Font.GothamBold
-perfilLabel.TextSize = tamanhoFonte + 1
-perfilLabel.TextXAlignment = Enum.TextXAlignment.Left
-perfilLabel.Parent = AbaPerfis
+perfilLabel.Size = UDim2.new(1, -10, 0, 24); perfilLabel.BackgroundTransparency = 1
+perfilLabel.Text = "💾 Perfil: " .. perfilAtual; perfilLabel.TextColor3 = corDestaque
+perfilLabel.Font = Enum.Font.GothamBold; perfilLabel.TextSize = tamanhoFonte + 1
+perfilLabel.TextXAlignment = Enum.TextXAlignment.Left; perfilLabel.Parent = AbaPerfis
 
 local listaPerfis = Instance.new("ScrollingFrame")
-listaPerfis.Size = UDim2.new(1, -10, 0, 100)
-listaPerfis.BackgroundTransparency = 1
-listaPerfis.BorderSizePixel = 0
-listaPerfis.ScrollBarThickness = 4
-listaPerfis.ScrollBarImageColor3 = corDestaque
-listaPerfis.AutomaticCanvasSize = Enum.AutomaticSize.Y
-listaPerfis.CanvasSize = UDim2.new(0, 0, 0, 0)
-listaPerfis.Parent = AbaPerfis
+listaPerfis.Size = UDim2.new(1, -10, 0, 100); listaPerfis.BackgroundTransparency = 1; listaPerfis.BorderSizePixel = 0
+listaPerfis.ScrollBarThickness = 4; listaPerfis.ScrollBarImageColor3 = corDestaque; listaPerfis.AutomaticCanvasSize = Enum.AutomaticSize.Y
+listaPerfis.CanvasSize = UDim2.new(0, 0, 0, 0); listaPerfis.Parent = AbaPerfis
 
 local layoutPerfis = Instance.new("UIListLayout")
-layoutPerfis.Padding = UDim.new(0, 4)
-layoutPerfis.Parent = listaPerfis
+layoutPerfis.Padding = UDim.new(0, 4); layoutPerfis.Parent = listaPerfis
 
 local function recriarListaPerfis()
-    for _, child in pairs(listaPerfis:GetChildren()) do
-        if child:IsA("TextButton") then child:Destroy() end
-    end
+    for _, child in pairs(listaPerfis:GetChildren()) do if child:IsA("TextButton") then child:Destroy() end end
     for nome, dados in pairs(perfis) do
         local b = Instance.new("TextButton")
-        b.Size = UDim2.new(1, -5, 0, 24)
-        b.BackgroundColor3 = (nome == perfilAtual) and corDestaque or corBotao
-        b.Text = "💾 " .. nome .. " (" .. (dados.data or "sem data") .. ")"
-        b.TextColor3 = corTexto
-        b.Font = Enum.Font.Gotham
-        b.TextSize = tamanhoFonte - 1
-        b.BorderSizePixel = 0
-        b.Parent = listaPerfis
-
-        local c = Instance.new("UICorner")
-        c.CornerRadius = UDim.new(0, 8)
-        c.Parent = b
-
+        b.Size = UDim2.new(1, -5, 0, 24); b.BackgroundColor3 = (nome == perfilAtual) and corDestaque or corBotao
+        b.Text = "💾 " .. nome .. " (" .. (dados.data or "sem data") .. ")"; b.TextColor3 = corTexto
+        b.Font = Enum.Font.Gotham; b.TextSize = tamanhoFonte - 1; b.BorderSizePixel = 0; b.Parent = listaPerfis
+        local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0, 8); c.Parent = b
+        
         b.MouseButton1Click:Connect(function()
-            perfilAtual = nome
-            perfilLabel.Text = "💾 Perfil: " .. nome
-            recriarListaPerfis()
+            perfilAtual = nome; perfilLabel.Text = "💾 Perfil: " .. nome; recriarListaPerfis()
             if perfis[nome] then
-                config.preset = perfis[nome].preset or "Black"
-                config.transparencia = perfis[nome].transparencia or 0
-                config.fonte = perfis[nome].fonte or 11
-                config.somNotif = perfis[nome].somNotif ~= false
-                config.modoCompacto = perfis[nome].modoCompacto or false
-                salvarConfig()
-                aplicarPreset(config.preset)
-                transparenciaPainel = config.transparencia
-                tamanhoFonte = config.fonte
-                janelaPrincipal.BackgroundTransparency = transparenciaPainel
-                notificar("Perfil", nome .. " carregado!", 2)
+                config.preset = perfis[nome].preset or "Black"; config.transparencia = perfis[nome].transparencia or 0
+                config.fonte = perfis[nome].fonte or 11; config.somNotif = perfis[nome].somNotif ~= false
+                config.modoCompacto = perfis[nome].modoCompacto or false; salvarConfig(); aplicarPreset(config.preset)
+                transparenciaPainel = config.transparencia; tamanhoFonte = config.fonte
+                janelaPrincipal.BackgroundTransparency = transparenciaPainel; notificar("Perfil", nome .. " carregado!", 2)
             end
         end)
     end
 end
 
-criarBotao(AbaPerfis, "💾 Salvar Perfil Atual", function()
-    perfis[perfilAtual] = {
-        preset = config.preset,
-        transparencia = config.transparencia,
-        fonte = config.fonte,
-        somNotif = config.somNotif,
-        modoCompacto = config.modoCompacto,
-        data = os.date("%d/%m %H:%M")
-    }
-    salvarPerfis()
-    recriarListaPerfis()
-    notificar("Perfil", perfilAtual .. " salvo!", 2)
+criarBotao(AbaPerfis, "Salvar Perfil Atual", function()
+    perfis[perfilAtual] = {preset = config.preset, transparencia = config.transparencia, fonte = config.fonte, somNotif = config.somNotif, modoCompacto = config.modoCompacto, data = os.date("%d/%m %H:%M")}
+    salvarPerfis(); recriarListaPerfis(); notificar("Perfil", perfilAtual .. " salvo!", 2)
 end)
-
-criarBotao(AbaPerfis, "➕ Criar Novo Perfil", function()
-    local nome = "Perfil_" .. os.date("%H%M%S")
-    perfilAtual = nome
-    perfis[nome] = {data = os.date("%d/%m %H:%M")}
-    perfilLabel.Text = "💾 Perfil: " .. nome
-    salvarPerfis()
-    recriarListaPerfis()
-    notificar("Perfil", nome .. " criado!", 2)
+criarBotao(AbaPerfis, "Criar Novo Perfil", function()
+    local nome = "Perfil_" .. os.date("%H%M%S"); perfilAtual = nome; perfis[nome] = {data = os.date("%d/%m %H:%M")}
+    perfilLabel.Text = "💾 Perfil: " .. nome; salvarPerfis(); recriarListaPerfis(); notificar("Perfil", nome .. " criado!", 2)
 end)
-
-criarBotao(AbaPerfis, "🗑️ Deletar Perfil Atual", function()
-    if perfilAtual == "Padrão" then
-        notificar("Perfil", "Não pode deletar o Padrão!", 2, true)
-        return
-    end
-    perfis[perfilAtual] = nil
-    salvarPerfis()
-    perfilAtual = "Padrão"
-    perfilLabel.Text = "💾 Perfil: Padrão"
-    recriarListaPerfis()
-    notificar("Perfil", "Deletado!", 2)
+criarBotao(AbaPerfis, "Deletar Perfil Atual", function()
+    if perfilAtual == "Padrão" then notificar("Perfil", "Não pode deletar o Padrão!", 2, true); return end
+    perfis[perfilAtual] = nil; salvarPerfis(); perfilAtual = "Padrão"; perfilLabel.Text = "💾 Perfil: Padrão"
+    recriarListaPerfis(); notificar("Perfil", "Deletado!", 2)
 end)
-
-criarBotao(AbaPerfis, "📤 Exportar Config", function()
-    pcall(function()
-        setclipboard(HttpService:JSONEncode(config))
-        notificar("Exportar", "Config copiada!", 3)
-    end)
-end)
-
-criarBotao(AbaPerfis, "📥 Importar Config", function()
+criarBotao(AbaPerfis, "Exportar Config", function() pcall(function() setclipboard(HttpService:JSONEncode(config)); notificar("Exportar", "Config copiada!", 3) end) end)
+criarBotao(AbaPerfis, "Importar Config", function()
     pcall(function()
         local texto = getclipboard()
         if texto and texto ~= "" then
-            local dados = HttpService:JSONDecode(texto)
-            for k, v in pairs(dados) do config[k] = v end
-            salvarConfig()
-            aplicarPreset(config.preset or "Black")
-            notificar("Importar", "Config importada!", 3)
-        else
-            notificar("Importar", "Clipboard vazio!", 2, true)
-        end
+            local dados = HttpService:JSONDecode(texto); for k, v in pairs(dados) do config[k] = v end
+            salvarConfig(); aplicarPreset(config.preset or "Black"); notificar("Importar", "Config importada!", 3)
+        else notificar("Importar", "Clipboard vazio!", 2, true) end
     end)
 end)
-
-criarBotao(AbaPerfis, "📦 Backup Agora", function()
+criarBotao(AbaPerfis, "Backup Agora", function()
     pcall(function()
-        local nome = "backup_" .. os.date("%Y%m%d_%H%M%S") .. ".json"
-        writefile(nome, HttpService:JSONEncode(config))
+        local nome = "backup_" .. os.date("%Y%m%d_%H%M%S") .. ".json"; writefile(nome, HttpService:JSONEncode(config))
         notificar("Backup", "Salvo: " .. nome, 3)
     end)
 end)
-
 recriarListaPerfis()
 
 -- ========== ABA DISCORD ==========
 local discordLabel = Instance.new("TextLabel")
-discordLabel.Size = UDim2.new(1, -10, 0, 34)
-discordLabel.BackgroundTransparency = 1
-discordLabel.Text = "𝐕 𝐒𝐂𝐑𝐈𝐏𝐓𝐒 𝗢𝗙𝗙𝗜𝗖𝗜𝗔𝗟\nEntre no servidor oficial!"
-discordLabel.TextColor3 = corDestaque
-discordLabel.Font = Enum.Font.GothamBold
-discordLabel.TextSize = tamanhoFonte
-discordLabel.TextWrapped = true
+discordLabel.Size = UDim2.new(1, -10, 0, 34); discordLabel.BackgroundTransparency = 1
+discordLabel.Text = "𝐕 𝐒𝐂𝐑𝐈𝐏𝐓𝐒 𝗢𝗙𝗙𝗜𝗖𝗜𝗔𝗟\nEntre no servidor oficial!"; discordLabel.TextColor3 = corDestaque
+discordLabel.Font = Enum.Font.GothamBold; discordLabel.TextSize = tamanhoFonte; discordLabel.TextWrapped = true
 discordLabel.Parent = AbaDiscord
 
-criarBotao(AbaDiscord, "💬 Entrar no Discord", function()
-    local url = "https://discord.gg/CYp5CTu8rY"
-    local ok = pcall(function() game:GetService("GuiService"):OpenBrowserWindow(url) end)
-    if not ok then
-        pcall(function() setclipboard(url) end)
-        notificar("Discord", "Link copiado!", 3)
-    end
+criarBotao(AbaDiscord, "Entrar no Discord", function()
+    local url = "https://discord.gg/CYp5CTu8rY"; local ok = pcall(function() game:GetService("GuiService"):OpenBrowserWindow(url) end)
+    if not ok then pcall(function() setclipboard(url) end); notificar("Discord", "Link copiado!", 3) end
 end)
-criarBotao(AbaDiscord, "📋 Copiar Link", function()
-    pcall(function() setclipboard("https://discord.gg/CYp5CTu8rY") end)
-    notificar("Copiado", "Link copiado!", 2)
-end)
+criarBotao(AbaDiscord, "Copiar Link", function() pcall(function() setclipboard("https://discord.gg/CYp5CTu8rY") end); notificar("Copiado", "Link copiado!", 2) end)
 
 -- ========== FUNÇÃO DE TAMANHO ==========
 local function aplicarTamanho()
     local tam = tamanhos[tamanhoIdx]
     TweenService:Create(janelaPrincipal, TweenInfo.new(0.3, Enum.EasingStyle.Back), {
-        Size = tam,
-        Position = UDim2.new(0.5, -(tam.X.Offset / 2), 0.5, -(tam.Y.Offset / 2))
+        Size = tam, Position = UDim2.new(0.5, -(tam.X.Offset / 2), 0.5, -(tam.Y.Offset / 2))
     }):Play()
 end
 
 -- ========== BOTÃO FLUTUANTE ==========
 local sgBotao = Instance.new("ScreenGui")
-sgBotao.Name = "PHANTOMBotao"
-sgBotao.ResetOnSpawn = false
-sgBotao.IgnoreGuiInset = true
-sgBotao.DisplayOrder = 999
-sgBotao.Parent = playerGui
+sgBotao.Name = "PHANTOMBotao"; sgBotao.ResetOnSpawn = false; sgBotao.IgnoreGuiInset = true; sgBotao.DisplayOrder = 999; sgBotao.Parent = playerGui
 
 btnContainer = Instance.new("Frame")
-btnContainer.Size = UDim2.new(0, 80, 0, 80)
-btnContainer.Position = UDim2.new(0, 15, 0.4, 0)
-btnContainer.BackgroundTransparency = 1
-btnContainer.Parent = sgBotao
+btnContainer.Size = UDim2.new(0, 80, 0, 80); btnContainer.Position = UDim2.new(0, 15, 0.4, 0)
+btnContainer.BackgroundTransparency = 1; btnContainer.Parent = sgBotao
 
 btnFlutuante = Instance.new("TextButton")
-btnFlutuante.Size = UDim2.new(0, 60, 0, 60)
-btnFlutuante.Position = UDim2.new(0.5, -30, 0.5, -30)
-btnFlutuante.BackgroundColor3 = corDestaque
-btnFlutuante.Text = "👻"
-btnFlutuante.TextColor3 = Color3.fromRGB(255, 255, 255)
-btnFlutuante.Font = Enum.Font.GothamBold
-btnFlutuante.TextSize = 28
-btnFlutuante.BorderSizePixel = 0
-btnFlutuante.Visible = true
-btnFlutuante.AutoButtonColor = false
-btnFlutuante.Parent = btnContainer
+btnFlutuante.Size = UDim2.new(0, 60, 0, 60); btnFlutuante.Position = UDim2.new(0.5, -30, 0.5, -30)
+btnFlutuante.BackgroundColor3 = corDestaque; btnFlutuante.Text = "👻"; btnFlutuante.TextColor3 = Color3.fromRGB(255, 255, 255)
+btnFlutuante.Font = Enum.Font.GothamBold; btnFlutuante.TextSize = 28; btnFlutuante.BorderSizePixel = 0
+btnFlutuante.Visible = true; btnFlutuante.AutoButtonColor = false; btnFlutuante.Parent = btnContainer
 
-local cBtn = Instance.new("UICorner")
-cBtn.CornerRadius = UDim.new(1, 0)
-cBtn.Parent = btnFlutuante
-
-local sBtn = Instance.new("UIStroke")
-sBtn.Color = Color3.fromRGB(255, 255, 255)
-sBtn.Thickness = 2
-sBtn.Parent = btnFlutuante
+local cBtn = Instance.new("UICorner"); cBtn.CornerRadius = UDim.new(1, 0); cBtn.Parent = btnFlutuante
+local sBtn = Instance.new("UIStroke"); sBtn.Color = Color3.fromRGB(255, 255, 255); sBtn.Thickness = 2; sBtn.Parent = btnFlutuante
 
 task.spawn(function()
     while btnFlutuante and btnFlutuante.Parent do
@@ -1843,68 +1584,45 @@ task.spawn(function()
         task.wait(0.8)
     end
 end)
-
 btnFlutuante.MouseButton1Click:Connect(function() abrirPainel() end)
 
 -- ========== ABRIR/FECHAR ==========
 function abrirPainel()
     if animando then return end
-    animando = true
-    painelAberto = true
-    sgPainel.Enabled = true
-    btnContainer.Visible = false
-    tocarSom("abrir", 0.4)
-    explodirParticulas()
+    animando = true; painelAberto = true; sgPainel.Enabled = true; btnContainer.Visible = false
+    tocarSom("abrir", 0.4); explodirParticulas()
 
     local tam = tamanhos[tamanhoIdx]
-    janelaPrincipal.Size = UDim2.new(0, 0, 0, 0)
-    janelaPrincipal.Position = UDim2.new(0.5, 0, 0.5, 0)
-    janelaPrincipal.BackgroundTransparency = 1
-    janelaPrincipal.Rotation = -15
+    janelaPrincipal.Size = UDim2.new(0, 0, 0, 0); janelaPrincipal.Position = UDim2.new(0.5, 0, 0.5, 0)
+    janelaPrincipal.BackgroundTransparency = 1; janelaPrincipal.Rotation = -15
 
     for i = 1, 3 do
-        janelaPrincipal.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-        task.wait(0.03)
-        janelaPrincipal.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        task.wait(0.03)
-        janelaPrincipal.BackgroundColor3 = corFundo
-        task.wait(0.03)
+        janelaPrincipal.BackgroundColor3 = Color3.fromRGB(200, 0, 0); task.wait(0.03)
+        janelaPrincipal.BackgroundColor3 = Color3.fromRGB(0, 0, 0); task.wait(0.03)
+        janelaPrincipal.BackgroundColor3 = corFundo; task.wait(0.03)
     end
 
     TweenService:Create(janelaPrincipal, TweenInfo.new(0.5, Enum.EasingStyle.Back), {
-        Size = tam,
-        Position = UDim2.new(0.5, -(tam.X.Offset / 2), 0.5, -(tam.Y.Offset / 2)),
-        BackgroundTransparency = transparenciaPainel,
-        Rotation = 0
+        Size = tam, Position = UDim2.new(0.5, -(tam.X.Offset / 2), 0.5, -(tam.Y.Offset / 2)),
+        BackgroundTransparency = transparenciaPainel, Rotation = 0
     }):Play()
 
-    task.wait(0.55)
-    animando = false
+    task.wait(0.55); animando = false
 end
 
 function fecharPainel()
     if animando then return end
-    animando = true
-    tocarSom("fechar", 0.4)
-
+    animando = true; tocarSom("fechar", 0.4)
     TweenService:Create(janelaPrincipal, TweenInfo.new(0.35, Enum.EasingStyle.Back), {
-        Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-        BackgroundTransparency = 1,
-        Rotation = 15
+        Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0),
+        BackgroundTransparency = 1, Rotation = 15
     }):Play()
-
-    task.wait(0.4)
-
-    painelAberto = false
-    sgPainel.Enabled = false
-    janelaPrincipal.Rotation = 0
-    btnContainer.Visible = true
-    animando = false
+    task.wait(0.4); painelAberto = false; sgPainel.Enabled = false; janelaPrincipal.Rotation = 0
+    btnContainer.Visible = true; animando = false
 end
 
 -- ========== INIT ==========
 abrirPainel()
 recriarHistorico()
 recriarListaPerfis()
-notificar("👻 PHANTOM HUB", "v2.0.0 - Black Edition Suprema!", 4)
+notificar("👻 PHANTOM HUB", "v2.2.0 - O Mais Completo!", 4)
