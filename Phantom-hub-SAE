@@ -1,6 +1,6 @@
 -- ============================================
 -- PHANTOM HUB - STEAL AN EGG
--- Visual super insano + todas as funções
+-- Visual insano + todos os scripts + animações
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -12,7 +12,7 @@ local HttpService = game:GetService("HttpService")
 local camera = workspace.CurrentCamera
 local Lighting = game:GetService("Lighting")
 
-local VERSAO = "1.5.0"
+local VERSAO = "1.6.0"
 local CONFIG_FILE = "PHANTOM_Config.json"
 local PERFIS_FILE = "PHANTOM_Perfis.json"
 
@@ -117,6 +117,7 @@ local tituloJanela, subTitulo, painelAbas, painelConteudo, indicador
 local logAcoes = {}
 local historicoNotif = {}
 local particulasFundo = {}
+local orbs = {}
 
 -- ========== LOG ==========
 local function addLog(acao)
@@ -253,7 +254,7 @@ local function carregarScript(nome, url)
     end
 end
 
--- ========== JANELA PRINCIPAL (super insana) ==========
+-- ========== JANELA PRINCIPAL ==========
 sgPainel = Instance.new("ScreenGui")
 sgPainel.Name = "PHANTOMPainel"
 sgPainel.ResetOnSpawn = false
@@ -275,7 +276,7 @@ local cJanela = Instance.new("UICorner")
 cJanela.CornerRadius = UDim.new(0, 14)
 cJanela.Parent = janelaPrincipal
 
--- Gradiente animado no fundo
+-- Gradiente animado
 local gradFundo = Instance.new("UIGradient")
 gradFundo.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, corDestaque),
@@ -291,7 +292,7 @@ gradFundo.Transparency = NumberSequence.new({
 })
 gradFundo.Parent = janelaPrincipal
 
--- Borda com brilho pulsante
+-- Borda pulsante
 sJanela = Instance.new("UIStroke")
 sJanela.Color = corDestaque
 sJanela.Thickness = 2
@@ -299,7 +300,7 @@ sJanela.Transparency = 0
 sJanela.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 sJanela.Parent = janelaPrincipal
 
--- Scanline passando
+-- Scanline
 local scanline = Instance.new("Frame")
 scanline.Size = UDim2.new(1, 0, 0, 2)
 scanline.Position = UDim2.new(0, 0, 0, 0)
@@ -312,7 +313,30 @@ local cScan = Instance.new("UICorner")
 cScan.CornerRadius = UDim.new(1, 0)
 cScan.Parent = scanline
 
--- Partículas flutuando no fundo
+-- Orbs com glow (partículas maiores e brilhantes)
+for i = 1, 6 do
+    local orb = Instance.new("Frame")
+    orb.Size = UDim2.new(0, math.random(8, 14), 0, math.random(8, 14))
+    orb.Position = UDim2.new(math.random(), 0, math.random(), 0)
+    orb.BackgroundColor3 = corDestaque
+    orb.BackgroundTransparency = 0.5
+    orb.BorderSizePixel = 0
+    orb.Parent = janelaPrincipal
+
+    local oc = Instance.new("UICorner")
+    oc.CornerRadius = UDim.new(1, 0)
+    oc.Parent = orb
+
+    local glow = Instance.new("UIStroke")
+    glow.Color = corDestaque
+    glow.Thickness = 3
+    glow.Transparency = 0.6
+    glow.Parent = orb
+
+    table.insert(orbs, {frame = orb, glow = glow})
+end
+
+-- Partículas pequenas
 for i = 1, 8 do
     local p = Instance.new("Frame")
     p.Size = UDim2.new(0, math.random(3, 6), 0, math.random(3, 6))
@@ -328,6 +352,28 @@ for i = 1, 8 do
 
     table.insert(particulasFundo, p)
 end
+
+-- Animações dos orbs
+task.spawn(function()
+    while janelaPrincipal and janelaPrincipal.Parent do
+        for i, orb in ipairs(orbs) do
+            if orb.frame and orb.frame.Parent then
+                local novaX = math.random()
+                local novaY = math.random()
+                local novoTam = math.random(8, 16)
+                TweenService:Create(orb.frame, TweenInfo.new(math.random(3, 6), Enum.EasingStyle.Sine), {
+                    Position = UDim2.new(novaX, 0, novaY, 0),
+                    Size = UDim2.new(0, novoTam, 0, novoTam),
+                    BackgroundTransparency = math.random(40, 70) / 100
+                }):Play()
+                TweenService:Create(orb.glow, TweenInfo.new(math.random(2, 4), Enum.EasingStyle.Sine), {
+                    Transparency = math.random(30, 70) / 100
+                }):Play()
+            end
+        end
+        task.wait(3)
+    end
+end)
 
 -- Animação das partículas
 task.spawn(function()
@@ -375,7 +421,7 @@ task.spawn(function()
     end
 end)
 
--- ========== BARRA TÍTULO (com brilho passando) ==========
+-- ========== BARRA TÍTULO ==========
 local barraTitulo = Instance.new("Frame")
 barraTitulo.Size = UDim2.new(1, 0, 0, 40)
 barraTitulo.BackgroundColor3 = corPainel
@@ -446,7 +492,7 @@ subTitulo.TextSize = 9
 subTitulo.TextXAlignment = Enum.TextXAlignment.Left
 subTitulo.Parent = barraTitulo
 
--- ========== BOTÕES TÍTULO (com hover 3D) ==========
+-- ========== BOTÕES TÍTULO ==========
 local function criarBotaoTitulo(icone, cor, posX, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0, 28, 0, 28)
@@ -649,7 +695,7 @@ local function criarAba(nome, icone)
     return frame
 end
 
--- ========== COMPONENTES (com visual insano) ==========
+-- ========== COMPONENTES ==========
 local function criarBotao(parent, nome, callback, altura)
     altura = altura or 28
     local btn = Instance.new("TextButton")
@@ -674,7 +720,6 @@ local function criarBotao(parent, nome, callback, altura)
     s.Transparency = 0.6
     s.Parent = btn
 
-    -- Sombra (bloco atrás)
     local sombra = Instance.new("Frame")
     sombra.Size = UDim2.new(1, 0, 1, 0)
     sombra.Position = UDim2.new(0, 2, 0, 2)
@@ -728,6 +773,31 @@ local function criarBotao(parent, nome, callback, altura)
             Position = UDim2.new(-0.25, 0, -0.25, 0),
             BackgroundTransparency = 1
         }):Play()
+
+        -- Explosão de partículas ao clicar
+        for i = 1, 6 do
+            local part = Instance.new("Frame")
+            part.Size = UDim2.new(0, 4, 0, 4)
+            part.Position = UDim2.new(0.5, 0, 0.5, 0)
+            part.BackgroundColor3 = corDestaque
+            part.BorderSizePixel = 0
+            part.ZIndex = 11
+            part.Parent = btn
+
+            local pc = Instance.new("UICorner")
+            pc.CornerRadius = UDim.new(1, 0)
+            pc.Parent = part
+
+            local angulo = math.random() * math.pi * 2
+            local distancia = math.random(20, 40)
+            TweenService:Create(part, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
+                Position = UDim2.new(0.5, math.cos(angulo) * distancia, 0.5, math.sin(angulo) * distancia),
+                BackgroundTransparency = 1,
+                Size = UDim2.new(0, 0, 0, 0)
+            }):Play()
+
+            task.delay(0.5, function() part:Destroy() end)
+        end
 
         task.delay(0.6, function() ripple:Destroy() end)
         pcall(callback)
@@ -917,6 +987,8 @@ indicador.Position = UDim2.new(0, 0, 0, 0)
 
 -- ========== KEYLESS ==========
 local function addKeyless(nome, url) criarBotao(AbaKeyless, nome, function() carregarScript(nome, url) end) end
+
+-- Scripts originais
 addKeyless("Polluted Hub", "https://raw.githubusercontent.com/PollutedHub/Sae/main/SaePolluted")
 addKeyless("Sena v6.2", "https://raw.githubusercontent.com/LSSOPS/OpenSource/refs/heads/main/Senav6.2Hub_Steal_An_Egg.lua")
 addKeyless("Moondiety", "https://moondiety.com/loader")
@@ -935,6 +1007,14 @@ addKeyless("Chilli Hub", "https://raw.githubusercontent.com/tienkhanh1/spicy/mai
 addKeyless("LKZ Hub", "https://raw.githubusercontent.com/LucasggkX/LKZ-Hub/refs/heads/main/Loader.lua")
 addKeyless("PulseZax", "https://raw.githubusercontent.com/PulseZax/Loader/main/.lua")
 
+-- Novos scripts (da pesquisa)
+addKeyless("Egg Hub", "https://raw.githubusercontent.com/robomohit/EggHub/main/egghub.lua")
+addKeyless("Sources Hub (64+)", "https://pastefy.app/Lk0vDMmN/raw")
+addKeyless("WZEUS Hub", "https://raw.githubusercontent.com/Wzeus-NTH/Wzeusno1/main/Wzeus/nthzz")
+addKeyless("Nox Hub", "https://noxscript.com/loader")
+addKeyless("Goha Hub", "https://api.goha.dev/loader")
+addKeyless("FynessedHub", "https://raw.githubusercontent.com/AhmadV6/StealAnEgg/refs/heads/main/FynessedHub")
+
 -- ========== COM KEY ==========
 local aviso = Instance.new("TextLabel")
 aviso.Size = UDim2.new(1, -10, 0, 32)
@@ -948,12 +1028,19 @@ aviso.TextWrapped = true
 aviso.Parent = AbaKey
 
 local function addKey(nome, url) criarBotao(AbaKey, nome, function() carregarScript(nome, url) end) end
+
+-- Originais
 addKey("UB Hub", "https://raw.githubusercontent.com/TeamUBHub/UBLoader/refs/heads/main/index/Key.lua")
 addKey("Monarch", "https://raw.githubusercontent.com/nobuxy/monarch.win/refs/heads/main/Monarch.lua")
 addKey("The BSMT", "https://thebsmt.xyz/BSMT")
 addKey("CRZ Hub", "https://flowauth.net/v1/loaders/3c4e87ed34813171b0f8d53a108a7d88.lua")
 addKey("Neva Hub", "https://raw.githubusercontent.com/VEZ2/NEVAHUB/main/2")
 addKey("BK's Hub", "https://api.luarmor.net/files/v4/loaders/9ee4edde227ac85f50872bf9e4226508.lua")
+
+-- Novos (da pesquisa)
+addKey("Codex Hub", "https://cdxhub.net/load.lua")
+addKey("Lennon Hub", "https://api.jnkie.com/api/v1/luascripts/public/bf52181bce5c28e6ecd16eebfa1a88ddaf646c7acb10015fbaa7b30dc7bad0a8/download")
+addKey("Fishy Hub", "https://api.jnkie.com/api/v1/loaders/public/f303b97c2bb24ac31f25d957eb3e28e66c09789bf720909e0f6a5d4b29503501/download")
 
 -- ========== FUNÇÕES ==========
 criarSlider(AbaFun, "FOV", 30, 120, camera.FieldOfView, function(v) camera.FieldOfView = v end)
@@ -1066,6 +1153,12 @@ local function aplicarPreset(nome)
 
     for _, p in ipairs(particulasFundo) do
         if p and p.Parent then p.BackgroundColor3 = corDestaque end
+    end
+    for _, orb in ipairs(orbs) do
+        if orb.frame and orb.frame.Parent then
+            orb.frame.BackgroundColor3 = corDestaque
+            orb.glow.Color = corDestaque
+        end
     end
 
     salvarConfig()
@@ -1650,7 +1743,7 @@ recriarListaPerfis()
 local sobreLabel = Instance.new("TextLabel")
 sobreLabel.Size = UDim2.new(1, -10, 1, -10)
 sobreLabel.BackgroundTransparency = 1
-sobreLabel.Text = "👻 PHANTOM HUB\n\nVersão: " .. VERSAO .. "\nAutor: V Scripts\n\nChangelog:\n• v1.5.0 - Visual super insano\n• v1.4.0 - Visual avançado + utils + perfis\n• v1.3.0 - Rolagem + LKZ + PulseZax\n• v1.2.0 - Sons + sem intro\n• v1.1.0 - ESP + Webhook\n• v1.0.0 - Lançamento\n\nDiscord: discord.gg/CYp5CTu8rY"
+sobreLabel.Text = "👻 PHANTOM HUB\n\nVersão: " .. VERSAO .. "\nAutor: V Scripts\n\nChangelog:\n• v1.6.0 - Novos scripts + orbs com glow + explosão de partículas\n• v1.5.0 - Visual super insano\n• v1.4.0 - Visual avançado + utils + perfis\n• v1.3.0 - Rolagem + LKZ + PulseZax\n• v1.2.0 - Sons + sem intro\n• v1.1.0 - ESP + Webhook\n• v1.0.0 - Lançamento\n\nDiscord: discord.gg/CYp5CTu8rY"
 sobreLabel.TextColor3 = corTexto
 sobreLabel.Font = Enum.Font.Gotham
 sobreLabel.TextSize = tamanhoFonte
@@ -1847,4 +1940,4 @@ end
 abrirPainel()
 recriarHistorico()
 recriarListaPerfis()
-notificar("👻 PHANTOM HUB", "Visual super insano ativado!", 4)
+notificar("👻 PHANTOM HUB", "v1.0.0, 4)
